@@ -6,6 +6,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -18,4 +21,9 @@ public class RoleEntity {
     private Long id;
     private String name;
     private String description;
+
+    @ManyToMany(mappedBy = "roles")
+    @ToString.Exclude
+    private Set<EmployeeEntity> employees = new HashSet<>();
+
 }

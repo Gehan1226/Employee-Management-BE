@@ -3,22 +3,34 @@ package edu.icet.demo.service.impl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.icet.demo.dto.Employee;
 import edu.icet.demo.entity.EmployeeEntity;
+import edu.icet.demo.entity.RoleEntity;
 import edu.icet.demo.repository.EmployeeRepository;
+import edu.icet.demo.repository.RoleRepository;
 import edu.icet.demo.service.EmployeeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class EmployeeServiceImpl implements EmployeeService {
 
     final EmployeeRepository employeeRepository;
+    final RoleRepository roleRepository;
+    private final ObjectMapper mapper;
 
     @Override
-    public void addEmployee(Employee employee) {
-        employeeRepository.save(new ObjectMapper().convertValue(employee, EmployeeEntity.class));
+    public Employee addEmployee(Employee employee, Long roleId) {
+        Optional<RoleEntity> roleEntityOptional = roleRepository.findById(roleId);
+        EmployeeEntity employeeEntity = mapper.convertValue(employee, EmployeeEntity.class);
+
+        if (roleEntityOptional.isPresent()) {
+            RoleEntity roleEntity = roleEntityOptional.get();
+            employeeEntity.setRole(roleEntity);
+        }
+        return mapper.convertValue(employeeRepository.save(employeeEntity), Employee.class);
     }
 
     @Override

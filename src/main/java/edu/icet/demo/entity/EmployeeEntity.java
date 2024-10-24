@@ -3,9 +3,6 @@ package edu.icet.demo.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.HashSet;
-import java.util.Set;
-
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
@@ -21,13 +18,8 @@ public class EmployeeEntity {
     private String lastName;
     private String email;
     private String departmentId;
-    private String roleId;
 
-    @ManyToMany
-    @JoinTable(
-            name = "employee_role",
-            joinColumns = @JoinColumn(name = "employee_id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id")
-    )
-    private Set<RoleEntity> roles = new HashSet<>();
+    @ManyToOne
+    @JoinColumn(name = "role_id")
+    private RoleEntity role;
 }

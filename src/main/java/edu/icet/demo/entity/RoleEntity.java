@@ -1,13 +1,13 @@
 package edu.icet.demo.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -22,8 +22,7 @@ public class RoleEntity {
     private String name;
     private String description;
 
-    @ManyToMany(mappedBy = "roles")
-    @ToString.Exclude
-    private Set<EmployeeEntity> employees = new HashSet<>();
-
+    @JsonIgnore
+    @OneToMany(mappedBy = "role", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<EmployeeEntity> employees;
 }

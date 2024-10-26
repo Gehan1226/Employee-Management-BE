@@ -10,6 +10,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/role")
 @RequiredArgsConstructor
+@CrossOrigin
 public class RoleController {
 
     final RoleService service;
@@ -18,7 +19,7 @@ public class RoleController {
         service.addRole(role);
     }
     @GetMapping("/get-all")
-    public List<Role> getRole(){
+    public List<Role> getRoles(){
         return service.getAll();
     }
 

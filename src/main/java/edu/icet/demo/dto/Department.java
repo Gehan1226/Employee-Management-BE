@@ -2,6 +2,8 @@ package edu.icet.demo.dto;
 
 import lombok.*;
 
+import java.util.List;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -12,4 +14,5 @@ public class Department {
     private Long id;
     private String name;
     private String description;
+    private List<Employee> employeeList;
 }

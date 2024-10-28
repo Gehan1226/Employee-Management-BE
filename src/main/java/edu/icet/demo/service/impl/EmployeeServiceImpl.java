@@ -2,8 +2,10 @@ package edu.icet.demo.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.icet.demo.dto.Employee;
+import edu.icet.demo.entity.DepartmentEntity;
 import edu.icet.demo.entity.EmployeeEntity;
 import edu.icet.demo.entity.RoleEntity;
+import edu.icet.demo.repository.DepartmentRepository;
 import edu.icet.demo.repository.EmployeeRepository;
 import edu.icet.demo.repository.RoleRepository;
 import edu.icet.demo.service.EmployeeService;
@@ -19,16 +21,22 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     final EmployeeRepository employeeRepository;
     final RoleRepository roleRepository;
+    final DepartmentRepository departmentRepository;
     private final ObjectMapper mapper;
 
     @Override
-    public Employee addEmployee(Employee employee, Long roleId) {
+    public Employee addEmployee(Employee employee, Long roleId,  Long departmentId) {
         Optional<RoleEntity> roleEntityOptional = roleRepository.findById(roleId);
+        Optional<DepartmentEntity> departmentEntityOptional = departmentRepository.findById(departmentId);
         EmployeeEntity employeeEntity = mapper.convertValue(employee, EmployeeEntity.class);
 
         if (roleEntityOptional.isPresent()) {
             RoleEntity roleEntity = roleEntityOptional.get();
             employeeEntity.setRole(roleEntity);
+        }
+        if (departmentEntityOptional.isPresent()){
+            DepartmentEntity departmentEntity = departmentEntityOptional.get();
+            employeeEntity.setDepartment(departmentEntity);
         }
         return mapper.convertValue(employeeRepository.save(employeeEntity), Employee.class);
     }

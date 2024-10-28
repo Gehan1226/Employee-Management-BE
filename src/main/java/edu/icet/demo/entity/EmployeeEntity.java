@@ -3,6 +3,8 @@ package edu.icet.demo.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.Date;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
@@ -17,7 +19,13 @@ public class EmployeeEntity {
     private String firstName;
     private String lastName;
     private String email;
-    private String departmentId;
+    private Date dob;
+    private String phoneNumber;
+    private String gender;
+
+    @ManyToOne
+    @JoinColumn(name = "department_id")
+    private DepartmentEntity department;
 
     @ManyToOne
     @JoinColumn(name = "role_id")

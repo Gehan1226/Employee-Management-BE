@@ -5,7 +5,7 @@ import edu.icet.demo.dto.Employee;
 import java.util.List;
 
 public interface EmployeeService {
-    Employee addEmployee(Employee employee, Long roleId);
+    Employee addEmployee(Employee employee, Long roleId, Long departmentId);
     List<Employee> getAll();
 
     void deleteEmployee(Long id);

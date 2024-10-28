@@ -1,7 +1,10 @@
 package edu.icet.demo.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -16,4 +19,8 @@ public class DepartmentEntity {
     private Long id;
     private String name;
     private String description;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "department", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<EmployeeEntity> employeeEntityList;
 }

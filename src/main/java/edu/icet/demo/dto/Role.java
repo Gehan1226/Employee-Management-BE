@@ -16,4 +16,5 @@ public class Role {
     private String name;
     private String description;
     private List<Employee> employeeList;
+    private Department department;
 }

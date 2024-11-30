@@ -31,7 +31,7 @@ public class EmployeeEntity {
     @JoinColumn(name = "role_id")
     private RoleEntity role;
 
-    @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "address_id", referencedColumnName = "id")
-    private AddressEntity address;
+    private AddressEntity addressEntity;
 }

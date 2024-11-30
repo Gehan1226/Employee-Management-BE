@@ -20,4 +20,7 @@ public class AddressEntity {
     private String postalCode;
     private String country;
     private String district;
+
+    @OneToOne(mappedBy = "addressEntity", cascade = CascadeType.ALL, orphanRemoval = true)
+    private EmployeeEntity employeeEntity;
 }

@@ -20,5 +20,4 @@ public class Employee {
     private String gender;
     private Department department;
     private Role role;
-    private Address address;
 }

@@ -30,8 +30,4 @@ public class EmployeeEntity {
     @ManyToOne
     @JoinColumn(name = "role_id")
     private RoleEntity role;
-
-    @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
-    @JoinColumn(name = "address_id", referencedColumnName = "id")
-    private AddressEntity address;
 }

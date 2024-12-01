@@ -13,7 +13,6 @@ import edu.icet.demo.repository.EmployeeRepository;
 import edu.icet.demo.repository.RoleRepository;
 import edu.icet.demo.service.EmployeeService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,16 +33,16 @@ public class EmployeeServiceImpl implements EmployeeService {
         validateEmployeeAttributes(employee);
         validateAddressAttributes(employee.getAddress());
 
-        Optional<RoleEntity> roleEntityOptional = roleRepository.findById(employee.getRole().getId());
+        Optional<RoleEntity> roleEntityOptional = roleRepository.findById(employee.getRoleId());
         if (roleEntityOptional.isEmpty()){
-            throw new DataNotFoundException("Role with ID %d not found".formatted(employee.getRole().getId()));
+            throw new DataNotFoundException("Role with ID %d not found".formatted(employee.getRoleId()));
         }
 
         Optional<DepartmentEntity> departmentEntityOptional =
-                departmentRepository.findById(employee.getDepartment().getId());
+                departmentRepository.findById(employee.getDepartmentId());
         if (departmentEntityOptional.isEmpty()){
             throw new DataNotFoundException("Department with ID %d not found"
-                    .formatted(employee.getDepartment().getId()));
+                    .formatted(employee.getDepartmentId()));
         }
 
         EmployeeEntity employeeEntity = mapper.convertValue(employee, EmployeeEntity.class);
@@ -110,14 +109,12 @@ public class EmployeeServiceImpl implements EmployeeService {
         if (employee.getGender() == null || employee.getGender().isEmpty()) {
             throw new MissingAttributeException("Gender is required.");
         }
-
-        if (employee.getRole() == null || employee.getRole().getId() == null) {
+        if (employee.getRoleId() == null) {
             throw new MissingAttributeException("Missing role assignment. Please select a role.");
         }
-        if (employee.getDepartment() == null || employee.getDepartment().getId() == null) {
+        if (employee.getDepartmentId() == null) {
             throw new MissingAttributeException("Missing department assignment. Please select a department.");
         }
-
     }
 
     private void validateAddressAttributes(Address address) {

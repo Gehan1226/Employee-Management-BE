@@ -15,7 +15,7 @@ public class Employee {
     private Date dob;
     private String phoneNumber;
     private String gender;
-    private Department department;
-    private Role role;
+    private Long departmentId;
+    private Long roleId;
     private Address address;
 }

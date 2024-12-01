@@ -25,9 +25,10 @@ public class EmployeeServiceImpl implements EmployeeService {
     private final ObjectMapper mapper;
 
     @Override
-    public Employee addEmployee(Employee employee, Long roleId,  Long departmentId) {
-        Optional<RoleEntity> roleEntityOptional = roleRepository.findById(roleId);
-        Optional<DepartmentEntity> departmentEntityOptional = departmentRepository.findById(departmentId);
+    public Employee addEmployee(Employee employee) {
+        Optional<RoleEntity> roleEntityOptional = roleRepository.findById(employee.getRole().getId());
+        Optional<DepartmentEntity> departmentEntityOptional =
+                departmentRepository.findById(employee.getDepartment().getId());
         EmployeeEntity employeeEntity = mapper.convertValue(employee, EmployeeEntity.class);
 
         if (roleEntityOptional.isPresent()) {

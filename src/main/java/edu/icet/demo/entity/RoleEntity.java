@@ -26,6 +26,7 @@ public class RoleEntity {
     @OneToMany(mappedBy = "role", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<EmployeeEntity> employees;
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "department_id")
     private DepartmentEntity department;

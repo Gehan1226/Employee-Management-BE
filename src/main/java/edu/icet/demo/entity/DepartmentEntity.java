@@ -23,6 +23,7 @@ public class DepartmentEntity {
     @OneToMany(mappedBy = "department", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<EmployeeEntity> employeeEntityList;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "department", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<RoleEntity> roles;
 }

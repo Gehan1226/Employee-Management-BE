@@ -6,9 +6,6 @@ import java.util.Set;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Getter
-@Setter
-@ToString
 public class Department {
     private Long id;
     private String name;

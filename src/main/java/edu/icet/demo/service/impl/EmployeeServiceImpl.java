@@ -5,6 +5,7 @@ import edu.icet.demo.dto.Employee;
 import edu.icet.demo.entity.DepartmentEntity;
 import edu.icet.demo.entity.EmployeeEntity;
 import edu.icet.demo.entity.RoleEntity;
+import edu.icet.demo.exception.MissingAttributeException;
 import edu.icet.demo.repository.DepartmentRepository;
 import edu.icet.demo.repository.EmployeeRepository;
 import edu.icet.demo.repository.RoleRepository;
@@ -19,26 +20,31 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class EmployeeServiceImpl implements EmployeeService {
 
-    final EmployeeRepository employeeRepository;
-    final RoleRepository roleRepository;
-    final DepartmentRepository departmentRepository;
+    private final EmployeeRepository employeeRepository;
+    private final RoleRepository roleRepository;
+    private final DepartmentRepository departmentRepository;
     private final ObjectMapper mapper;
 
     @Override
     public Employee addEmployee(Employee employee) {
+
+        if (employee.getRole() == null || employee.getRole().getId() == null){
+            throw new MissingAttributeException("Missing role assignment. Please select a role.");
+        }
+
         Optional<RoleEntity> roleEntityOptional = roleRepository.findById(employee.getRole().getId());
+        if (roleEntityOptional.isEmpty()){
+        }
+
         Optional<DepartmentEntity> departmentEntityOptional =
                 departmentRepository.findById(employee.getDepartment().getId());
-        EmployeeEntity employeeEntity = mapper.convertValue(employee, EmployeeEntity.class);
+        if (departmentEntityOptional.isEmpty()){
+            throw new MissingAttributeException("Missing department assignment. Please select a department.");
+        }
 
-        if (roleEntityOptional.isPresent()) {
-            RoleEntity roleEntity = roleEntityOptional.get();
-            employeeEntity.setRole(roleEntity);
-        }
-        if (departmentEntityOptional.isPresent()){
-            DepartmentEntity departmentEntity = departmentEntityOptional.get();
-            employeeEntity.setDepartment(departmentEntity);
-        }
+        EmployeeEntity employeeEntity = mapper.convertValue(employee, EmployeeEntity.class);
+        employeeEntity.setRole(roleEntityOptional.get());
+        employeeEntity.setDepartment(departmentEntityOptional.get());
         return mapper.convertValue(employeeRepository.save(employeeEntity), Employee.class);
     }
 

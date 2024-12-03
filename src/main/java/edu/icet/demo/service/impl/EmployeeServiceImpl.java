@@ -8,12 +8,14 @@ import edu.icet.demo.entity.EmployeeEntity;
 import edu.icet.demo.entity.RoleEntity;
 import edu.icet.demo.exception.DataNotFoundException;
 import edu.icet.demo.exception.MissingAttributeException;
+import edu.icet.demo.repository.AddressRepository;
 import edu.icet.demo.repository.DepartmentRepository;
 import edu.icet.demo.repository.EmployeeRepository;
 import edu.icet.demo.repository.RoleRepository;
 import edu.icet.demo.service.EmployeeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -25,6 +27,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     private final EmployeeRepository employeeRepository;
     private final RoleRepository roleRepository;
     private final DepartmentRepository departmentRepository;
+    private final AddressRepository addressRepository;
     private final ObjectMapper mapper;
 
     @Override
@@ -33,21 +36,17 @@ public class EmployeeServiceImpl implements EmployeeService {
         validateEmployeeAttributes(employee);
         validateAddressAttributes(employee.getAddress());
 
-        Optional<RoleEntity> roleEntityOptional = roleRepository.findById(employee.getRoleId());
-        if (roleEntityOptional.isEmpty()){
-            throw new DataNotFoundException("Role with ID %d not found".formatted(employee.getRoleId()));
-        }
+        RoleEntity roleEntity = roleRepository.findById(employee.getRoleId())
+                .orElseThrow(() -> new DataNotFoundException(
+                        "Role with ID %d not found.".formatted(employee.getRoleId())));
 
-        Optional<DepartmentEntity> departmentEntityOptional =
-                departmentRepository.findById(employee.getDepartmentId());
-        if (departmentEntityOptional.isEmpty()){
-            throw new DataNotFoundException("Department with ID %d not found"
-                    .formatted(employee.getDepartmentId()));
-        }
+        DepartmentEntity departmentEntity = departmentRepository.findById(employee.getDepartmentId())
+                .orElseThrow(() -> new DataNotFoundException(
+                        "Department with ID %d not found.".formatted(employee.getDepartmentId())));
 
         EmployeeEntity employeeEntity = mapper.convertValue(employee, EmployeeEntity.class);
-        employeeEntity.setRole(roleEntityOptional.get());
-        employeeEntity.setDepartment(departmentEntityOptional.get());
+        employeeEntity.setRole(roleEntity);
+        employeeEntity.setDepartment(departmentEntity);
         return mapper.convertValue(employeeRepository.save(employeeEntity), Employee.class);
     }
 
@@ -63,21 +62,46 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public void deleteEmployee(Long id) {
-        if (employeeRepository.existsById(id)){
+        if (employeeRepository.existsById(id)) {
             employeeRepository.deleteById(id);
         }
     }
 
     @Override
-    public void updateEmployee(Employee employee) {
-        if (employeeRepository.existsById(employee.getId())){
-            employeeRepository.save(new ObjectMapper().convertValue(employee, EmployeeEntity.class));
+    public Employee updateEmployee(Employee employee) {
+
+        validateEmployeeAttributes(employee);
+        validateAddressAttributes(employee.getAddress());
+
+        Long addressId = employee.getAddress().getId();
+        if (addressId == null) {
+            throw new MissingAttributeException("Address ID is missing.");
         }
+        if (!addressRepository.existsById(addressId)) {
+            throw new DataNotFoundException("Address with ID %d not found".formatted(employee.getAddress().getId()));
+        }
+
+        RoleEntity roleEntity = roleRepository.findById(employee.getRoleId())
+                .orElseThrow(() -> new DataNotFoundException(
+                        "Role with ID %d not found.".formatted(employee.getRoleId())));
+
+        DepartmentEntity departmentEntity = departmentRepository.findById(employee.getDepartmentId())
+                .orElseThrow(() -> new DataNotFoundException(
+                        "Department with ID %d not found.".formatted(employee.getDepartmentId())));
+
+        EmployeeEntity employeeEntity = mapper.convertValue(employee, EmployeeEntity.class);
+        employeeEntity.setRole(roleEntity);
+        employeeEntity.setDepartment(departmentEntity);
+
+        if (employeeRepository.existsById(employee.getId())) {
+            return mapper.convertValue(employeeRepository.save(employeeEntity), Employee.class);
+        }
+        throw new DataNotFoundException("Employee with ID %d not found".formatted(employee.getId()));
     }
 
     @Override
     public Employee findById(Long id) {
-        if (employeeRepository.findById(id).isPresent()){
+        if (employeeRepository.findById(id).isPresent()) {
             return new ObjectMapper().convertValue(
                     employeeRepository.findById(id).get(), Employee.class
             );
@@ -118,7 +142,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     private void validateAddressAttributes(Address address) {
-        if (address == null){
+        if (address == null) {
             throw new MissingAttributeException("Address details are missing.");
         }
         if (address.getStreet() == null || address.getStreet().isEmpty()) {

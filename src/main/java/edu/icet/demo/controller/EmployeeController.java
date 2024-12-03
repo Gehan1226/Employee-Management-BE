@@ -24,4 +24,14 @@ public class EmployeeController {
                 .data(createdEmployee)
                 .build();
     }
+
+    @PatchMapping("/update")
+    public SuccessResponse<Employee> updateEmployee(@RequestBody Employee employee){
+        Employee updatedEmployee = employeeService.updateEmployee(employee);
+        return SuccessResponse.<Employee>builder()
+                .status(HttpStatus.OK.value())
+                .message("Employee updated successfully.")
+                .data(updatedEmployee)
+                .build();
+    }
 }

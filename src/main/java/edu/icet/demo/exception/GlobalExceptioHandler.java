@@ -16,4 +16,11 @@ public class GlobalExceptioHandler extends ResponseEntityExceptionHandler {
                 .status(HttpStatus.BAD_REQUEST)
                 .body(ErrorResponse.builder().errorMessage(exception.getMessage()).status("BAD_REQUEST").build());
     }
+
+    @ExceptionHandler(DataNotFoundException.class)
+    ResponseEntity<ErrorResponse> handleDataNotFoundException(DataNotFoundException exception) {
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(ErrorResponse.builder().errorMessage(exception.getMessage()).status("NOT_FOUND").build());
+    }
 }

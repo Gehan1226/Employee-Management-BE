@@ -19,6 +19,14 @@ public class GlobalExceptioHandler extends ResponseEntityExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ErrorResponse.builder().errorMessage(exception.getMessage()).status("NOT_FOUND").build());
     }
 
+    @ExceptionHandler(MissingAttributeException.class)
+    ResponseEntity<ErrorResponse> handleMissingAttributeException(MissingAttributeException exception) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(ErrorResponse.builder().errorMessage(exception.getMessage()).status("BAD_REQUEST").build());
+    }
+
+
     @ExceptionHandler(ConstraintViolationException.class)
     ResponseEntity<ErrorResponse> handleConstraintViolationException(ConstraintViolationException exception) {
         String errorMessage = exception.getConstraintViolations()
@@ -33,5 +41,4 @@ public class GlobalExceptioHandler extends ResponseEntityExceptionHandler {
                         .status("BAD_REQUEST")
                         .build());
     }
-
 }

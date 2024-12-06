@@ -1,5 +1,6 @@
 package edu.icet.demo.dto;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import lombok.*;
 
@@ -25,19 +26,21 @@ public class Employee {
     @Past(message = "Date of birth must be in the past.")
     private Date dob;
 
-    @Pattern(regexp = "^[0-9]{10}$", message = "Phone number must be 10 digits.")
+    @NotBlank(message = "Phone number must be 10 digits.")
     private String phoneNumber;
 
     @NotBlank(message = "Gender is required.")
     @Pattern(regexp = "^(Male|Female|Other)$", message = "Gender must be Male, Female, or Other.")
     private String gender;
 
-    @NotNull(message = "Department ID is required.")
-    private Long departmentId;
+    @NotNull(message = "Department is required.")
+    @Valid
+    private Department department;
 
-    @NotNull(message = "Role ID is required.")
-    private Long roleId;
+    @NotNull(message = "Role is required.")
+    @Valid
+    private Role role;
 
-    @NotNull(message = "Address is required.")
+    @Valid
     private Address address;
 }

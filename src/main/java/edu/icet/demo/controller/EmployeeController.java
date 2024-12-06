@@ -10,6 +10,8 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/employee")
 @RequiredArgsConstructor
@@ -31,12 +33,23 @@ public class EmployeeController {
     }
 
     @PatchMapping("/update")
-    public SuccessResponse<Employee> updateEmployee(@Valid @RequestBody Employee employee){
+    public SuccessResponse<Employee> updateEmployee(@RequestBody Employee employee, BindingResult result){
         Employee updatedEmployee = employeeService.updateEmployee(employee);
         return SuccessResponse.<Employee>builder()
                 .status(HttpStatus.OK.value())
                 .message("Employee updated successfully.")
                 .data(updatedEmployee)
+                .build();
+    }
+
+    @GetMapping("/get-all")
+    public SuccessResponse<List<Employee>> getEmployees(){
+        List<Employee> employeeList = employeeService.getAll();
+        String message = employeeList.isEmpty() ? "Employee List is empty!" : "Employee list retrieved.";
+        return SuccessResponse.<List<Employee>>builder()
+                .status(HttpStatus.OK.value())
+                .message(message)
+                .data(employeeList)
                 .build();
     }
 }

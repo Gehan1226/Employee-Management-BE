@@ -2,10 +2,9 @@ package edu.icet.demo.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.icet.demo.dto.Employee;
-import edu.icet.demo.entity.DepartmentEntity;
 import edu.icet.demo.entity.EmployeeEntity;
-import edu.icet.demo.entity.RoleEntity;
 import edu.icet.demo.exception.DataNotFoundException;
+import edu.icet.demo.exception.MissingAttributeException;
 import edu.icet.demo.repository.AddressRepository;
 import edu.icet.demo.repository.DepartmentRepository;
 import edu.icet.demo.repository.EmployeeRepository;
@@ -30,18 +29,9 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public Employee addEmployee(Employee employee) {
 
-        RoleEntity roleEntity = roleRepository.findById(employee.getRoleId())
-                .orElseThrow(() -> new DataNotFoundException(
-                        "Role with ID %d not found.".formatted(employee.getRoleId())));
-
-        DepartmentEntity departmentEntity = departmentRepository.findById(employee.getDepartmentId())
-                .orElseThrow(() -> new DataNotFoundException(
-                        "Department with ID %d not found.".formatted(employee.getDepartmentId())));
-
-        EmployeeEntity employeeEntity = mapper.convertValue(employee, EmployeeEntity.class);
-        employeeEntity.setRole(roleEntity);
-        employeeEntity.setDepartment(departmentEntity);
-        return mapper.convertValue(employeeRepository.save(employeeEntity), Employee.class);
+        validateRoleAndDepartment(employee);
+        return mapper.convertValue(
+                employeeRepository.save(mapper.convertValue(employee, EmployeeEntity.class)), Employee.class);
     }
 
     @Override
@@ -56,56 +46,68 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public void deleteEmployee(Long id) {
-        if (employeeRepository.existsById(id)) {
+        try {
             employeeRepository.deleteById(id);
+        } catch (Exception e) {
+            throw new DataNotFoundException("Employee with ID %d not found.".formatted(id));
         }
     }
 
     @Override
     public Employee updateEmployee(Employee employee) {
 
-//        validateEmployeeAttributes(employee);
-//        validateAddressAttributes(employee.getAddress());
-//
-//        Long addressId = employee.getAddress().getId();
-//        if (addressId == null) {
-//            throw new MissingAttributeException("Address ID is missing.");
-//        }
-//        if (!addressRepository.existsById(addressId)) {
-//            throw new DataNotFoundException("Address with ID %d not found".formatted(employee.getAddress().getId()));
-//        }
-//
-//        RoleEntity roleEntity = roleRepository.findById(employee.getRoleId())
-//                .orElseThrow(() -> new DataNotFoundException(
-//                        "Role with ID %d not found.".formatted(employee.getRoleId())));
-//
-//        DepartmentEntity departmentEntity = departmentRepository.findById(employee.getDepartmentId())
-//                .orElseThrow(() -> new DataNotFoundException(
-//                        "Department with ID %d not found.".formatted(employee.getDepartmentId())));
-//
-//        EmployeeEntity employeeEntity = mapper.convertValue(employee, EmployeeEntity.class);
-//        employeeEntity.setRole(roleEntity);
-//        employeeEntity.setDepartment(departmentEntity);
-//
-//        if (employeeRepository.existsById(employee.getId())) {
-//            return mapper.convertValue(employeeRepository.save(employeeEntity), Employee.class);
-//        }
-//        throw new DataNotFoundException("Employee with ID %d not found".formatted(employee.getId()));
-        return null;
+        if (employee.getId() == null){
+            throw new MissingAttributeException("Employee ID is missing.");
+        }
+        if (!employeeRepository.existsById(employee.getId())) {
+            throw new DataNotFoundException("Employee with ID %d not found".formatted(employee.getId()));
+        }
+        Long addressId = employee.getAddress().getId();
+        if (addressId == null) {
+            throw new MissingAttributeException("Address ID is missing.");
+        }
+        if (!addressRepository.existsById(addressId)) {
+            throw new DataNotFoundException("Address with ID %d not found".formatted(employee.getAddress().getId()));
+        }
+        validateRoleAndDepartment(employee);
+        return mapper.convertValue(
+                employeeRepository.save(mapper.convertValue(employee, EmployeeEntity.class)), Employee.class);
     }
 
     @Override
     public Employee findById(Long id) {
-        if (employeeRepository.findById(id).isPresent()) {
-            return new ObjectMapper().convertValue(
-                    employeeRepository.findById(id).get(), Employee.class
-            );
-        }
-        return new Employee();
+        EmployeeEntity employeeEntity = employeeRepository.findById(id)
+                .orElseThrow(() -> new DataNotFoundException("Employee with ID %d not found.".formatted(id)));
+        return mapper.convertValue(employeeEntity, Employee.class);
     }
 
     @Override
     public Employee findByFirstName(String firstName) {
-        return new ObjectMapper().convertValue(employeeRepository.findByFirstName(firstName), Employee.class);
+        EmployeeEntity employeeEntity = employeeRepository.findByFirstName(firstName);
+        if (employeeEntity == null) {
+            throw new DataNotFoundException("Employee with first name '%s' not found.".formatted(firstName));
+        }
+        return mapper.convertValue(employeeEntity, Employee.class);
     }
+
+
+    public void validateRoleAndDepartment(Employee employee) {
+        if (employee.getRole().getId() == null) {
+            throw new MissingAttributeException("Role ID must not be null.");
+        }
+        if (employee.getDepartment().getId() == null) {
+            throw new MissingAttributeException("Department ID must not be null.");
+        }
+
+        if (!roleRepository.existsById(employee.getRole().getId())) {
+            throw new DataNotFoundException(
+                    "Role with ID %d not found.".formatted(employee.getRole().getId()));
+        }
+
+        if (!departmentRepository.existsById(employee.getDepartment().getId())) {
+            throw new DataNotFoundException(
+                    "Department with ID %d not found.".formatted(employee.getDepartment().getId()));
+        }
+    }
+
 }

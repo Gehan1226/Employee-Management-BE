@@ -48,11 +48,13 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public void deleteEmployee(Long id) {
-        try {
-            employeeRepository.deleteById(id);
-        } catch (Exception e) {
+        if (id == null) {
+            throw new MissingAttributeException("Employee ID must not be null.");
+        }
+        if (!employeeRepository.existsById(id)) {
             throw new DataNotFoundException("Employee with ID %d not found.".formatted(id));
         }
+        employeeRepository.deleteById(id);
     }
 
     @Override

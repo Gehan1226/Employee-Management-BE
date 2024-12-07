@@ -52,4 +52,13 @@ public class EmployeeController {
                 .data(employeeList)
                 .build();
     }
+
+    @DeleteMapping("/delete")
+    public SuccessResponse<String> deleteEmployees(@RequestParam Long id){
+        employeeService.deleteEmployee(id);
+        return SuccessResponse.<String>builder()
+                .status(HttpStatus.OK.value())
+                .message("Employee deleted!")
+                .build();
+    }
 }

@@ -16,7 +16,9 @@ public class GlobalExceptioHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(DataNotFoundException.class)
     ResponseEntity<ErrorResponse> handleDataNotFoundException(DataNotFoundException exception) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ErrorResponse.builder().errorMessage(exception.getMessage()).status("NOT_FOUND").build());
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(ErrorResponse.builder().errorMessage(exception.getMessage()).status("NOT_FOUND").build());
     }
 
     @ExceptionHandler(MissingAttributeException.class)
@@ -25,7 +27,6 @@ public class GlobalExceptioHandler extends ResponseEntityExceptionHandler {
                 .status(HttpStatus.BAD_REQUEST)
                 .body(ErrorResponse.builder().errorMessage(exception.getMessage()).status("BAD_REQUEST").build());
     }
-
 
     @ExceptionHandler(ConstraintViolationException.class)
     ResponseEntity<ErrorResponse> handleConstraintViolationException(ConstraintViolationException exception) {
@@ -40,5 +41,12 @@ public class GlobalExceptioHandler extends ResponseEntityExceptionHandler {
                         .errorMessage(errorMessage) // Include only the error message
                         .status("BAD_REQUEST")
                         .build());
+    }
+
+    @ExceptionHandler(DataMisMatchException.class)
+    ResponseEntity<ErrorResponse> handleDataMisMatchException(DataMisMatchException exception) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(ErrorResponse.builder().errorMessage(exception.getMessage()).status("BAD_REQUEST").build());
     }
 }

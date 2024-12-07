@@ -3,6 +3,7 @@ package edu.icet.demo.service.impl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.icet.demo.dto.Employee;
 import edu.icet.demo.entity.EmployeeEntity;
+import edu.icet.demo.exception.DataMisMatchException;
 import edu.icet.demo.exception.DataNotFoundException;
 import edu.icet.demo.exception.MissingAttributeException;
 import edu.icet.demo.repository.AddressRepository;
@@ -11,8 +12,10 @@ import edu.icet.demo.repository.EmployeeRepository;
 import edu.icet.demo.repository.RoleRepository;
 import edu.icet.demo.service.EmployeeService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,7 +26,6 @@ public class EmployeeServiceImpl implements EmployeeService {
     private final EmployeeRepository employeeRepository;
     private final RoleRepository roleRepository;
     private final DepartmentRepository departmentRepository;
-    private final AddressRepository addressRepository;
     private final ObjectMapper mapper;
 
     @Override
@@ -62,16 +64,16 @@ public class EmployeeServiceImpl implements EmployeeService {
         if (!employeeRepository.existsById(employee.getId())) {
             throw new DataNotFoundException("Employee with ID %d not found".formatted(employee.getId()));
         }
-        Long addressId = employee.getAddress().getId();
-        if (addressId == null) {
+        if (employee.getAddress().getId() == null) {
             throw new MissingAttributeException("Address ID is missing.");
         }
-        if (!addressRepository.existsById(addressId)) {
-            throw new DataNotFoundException("Address with ID %d not found".formatted(employee.getAddress().getId()));
-        }
         validateRoleAndDepartment(employee);
-        return mapper.convertValue(
-                employeeRepository.save(mapper.convertValue(employee, EmployeeEntity.class)), Employee.class);
+       try {
+           return mapper.convertValue(
+                   employeeRepository.save(mapper.convertValue(employee, EmployeeEntity.class)), Employee.class);
+       }catch (DataIntegrityViolationException e){
+           throw new DataMisMatchException("The current address id is already used!");
+       }
     }
 
     @Override

@@ -2,6 +2,7 @@ package edu.icet.demo.security.handler;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
@@ -14,9 +15,16 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
     @Override
     public void commence(HttpServletRequest request,
                          HttpServletResponse response, AuthenticationException authException) throws IOException {
-        System.out.println(authException);
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.setContentType("application/json");
-        response.getWriter().write("{\"error\": \"Unauthorized access. Please login.\"}");
+
+        String errorMessage;
+
+        if (authException instanceof BadCredentialsException) {
+            errorMessage = "Bad credentials. Please check your username and password.";
+        } else {
+            errorMessage = "Unauthorized access. Please login.";
+        }
+        response.getWriter().write(String.format("{\"error\": \"%s\"}", errorMessage));
     }
 }

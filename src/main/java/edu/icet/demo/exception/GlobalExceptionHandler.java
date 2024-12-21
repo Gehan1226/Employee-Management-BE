@@ -12,7 +12,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 import java.util.stream.Collectors;
 
 @ControllerAdvice
-public class GlobalExceptioHandler extends ResponseEntityExceptionHandler {
+public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(DataNotFoundException.class)
     ResponseEntity<ErrorResponse> handleDataNotFoundException(DataNotFoundException exception) {
@@ -38,7 +38,7 @@ public class GlobalExceptioHandler extends ResponseEntityExceptionHandler {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(ErrorResponse.builder()
-                        .errorMessage(errorMessage) // Include only the error message
+                        .errorMessage(errorMessage)
                         .status("BAD_REQUEST")
                         .build());
     }
@@ -47,6 +47,20 @@ public class GlobalExceptioHandler extends ResponseEntityExceptionHandler {
     ResponseEntity<ErrorResponse> handleDataMisMatchException(DataMisMatchException exception) {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
-                .body(ErrorResponse.builder().errorMessage(exception.getMessage()).status("BAD_REQUEST").build());
+                .body(ErrorResponse.builder()
+                        .errorMessage(exception.getMessage())
+                        .status("BAD_REQUEST")
+                        .build());
     }
+
+    @ExceptionHandler(DataDuplicateException.class)
+    ResponseEntity<ErrorResponse> handleDataDuplicateException(DataDuplicateException exception) {
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(ErrorResponse.builder()
+                        .errorMessage(exception.getMessage())
+                        .status("CONFLICT")
+                        .build());
+    }
+
 }

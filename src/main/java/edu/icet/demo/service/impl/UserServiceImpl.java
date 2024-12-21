@@ -32,6 +32,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public String verify(UserDTO userDTO) {
+        System.out.println("AAAAAAAAAAAAAA");
         Authentication authentication =
                 authenticationManager.authenticate(
                         new UsernamePasswordAuthenticationToken(userDTO.getUserName(), userDTO.getPassword()));

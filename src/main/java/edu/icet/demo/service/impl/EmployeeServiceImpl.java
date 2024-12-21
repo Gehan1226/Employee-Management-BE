@@ -6,7 +6,6 @@ import edu.icet.demo.entity.EmployeeEntity;
 import edu.icet.demo.exception.DataMisMatchException;
 import edu.icet.demo.exception.DataNotFoundException;
 import edu.icet.demo.exception.MissingAttributeException;
-import edu.icet.demo.repository.AddressRepository;
 import edu.icet.demo.repository.DepartmentRepository;
 import edu.icet.demo.repository.EmployeeRepository;
 import edu.icet.demo.repository.RoleRepository;
@@ -15,7 +14,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
-import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.ArrayList;
 import java.util.List;
 

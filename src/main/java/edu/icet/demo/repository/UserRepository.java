@@ -1,8 +1,11 @@
 package edu.icet.demo.repository;
 
-import edu.icet.demo.dto.UserDTO;
+import edu.icet.demo.entity.UserEntity;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-public interface UserRepository {
+@Repository
+public interface UserRepository extends JpaRepository<UserEntity, Integer> {
 
-    UserDTO findByUserName(String username);
+    UserEntity findByUserName(String username);
 }

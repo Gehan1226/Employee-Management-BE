@@ -24,7 +24,6 @@ public class EmployeeController {
     @PostMapping("/add")
     public SuccessResponse<Employee>  addEmployee(@Valid @RequestBody Employee employee, BindingResult result){
         Employee createdEmployee = employeeService.addEmployee(employee);
-
         return SuccessResponse.<Employee>builder()
                 .status(HttpStatus.CREATED.value())
                 .message("Employee created successfully.")

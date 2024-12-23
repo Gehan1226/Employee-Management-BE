@@ -14,6 +14,8 @@ import java.util.stream.Collectors;
 @ControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
+    private static final String BAD_REQUEST = "BAD_REQUEST";
+
     @ExceptionHandler(DataNotFoundException.class)
     ResponseEntity<ErrorResponse> handleDataNotFoundException(DataNotFoundException exception) {
         return ResponseEntity
@@ -25,7 +27,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     ResponseEntity<ErrorResponse> handleMissingAttributeException(MissingAttributeException exception) {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
-                .body(ErrorResponse.builder().errorMessage(exception.getMessage()).status("BAD_REQUEST").build());
+                .body(ErrorResponse.builder().errorMessage(exception.getMessage()).status(BAD_REQUEST).build());
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
@@ -39,7 +41,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 .status(HttpStatus.BAD_REQUEST)
                 .body(ErrorResponse.builder()
                         .errorMessage(errorMessage)
-                        .status("BAD_REQUEST")
+                        .status(BAD_REQUEST)
                         .build());
     }
 
@@ -49,12 +51,22 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 .status(HttpStatus.BAD_REQUEST)
                 .body(ErrorResponse.builder()
                         .errorMessage(exception.getMessage())
-                        .status("BAD_REQUEST")
+                        .status(BAD_REQUEST)
                         .build());
     }
 
     @ExceptionHandler(DataDuplicateException.class)
     ResponseEntity<ErrorResponse> handleDataDuplicateException(DataDuplicateException exception) {
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(ErrorResponse.builder()
+                        .errorMessage(exception.getMessage())
+                        .status("CONFLICT")
+                        .build());
+    }
+
+    @ExceptionHandler(DeletionException.class)
+    ResponseEntity<ErrorResponse> handleDeletionException(DeletionException exception) {
         return ResponseEntity
                 .status(HttpStatus.CONFLICT)
                 .body(ErrorResponse.builder()

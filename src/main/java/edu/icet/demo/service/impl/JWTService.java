@@ -1,6 +1,7 @@
 package edu.icet.demo.service.impl;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -50,7 +51,6 @@ public class JWTService {
     }
 
     public String extractUserName(String token) {
-        // extract the username from jwt token
         return extractClaim(token, Claims::getSubject);
     }
 
@@ -60,11 +60,11 @@ public class JWTService {
     }
 
     private Claims extractAllClaims(String token) {
-        return Jwts.parser()
-                .verifyWith(getKey())
-                .build()
-                .parseSignedClaims(token)
-                .getPayload();
+            return Jwts.parser()
+                    .verifyWith(getKey())
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload();
     }
 
     public boolean validateToken(String token, UserDetails userDetails) {

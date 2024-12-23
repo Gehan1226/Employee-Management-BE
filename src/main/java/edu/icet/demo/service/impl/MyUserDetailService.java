@@ -17,10 +17,10 @@ public class MyUserDetailService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) {
-        UserEntity users = userRepository.findByUserName(username);
-        if (users == null){
+        UserEntity user = userRepository.findByUserName(username);
+        if (user == null){
             throw new UsernameNotFoundException("User not found !");
         }
-        return new UserPrincipal(users);
+        return new UserPrincipal(user);
     }
 }

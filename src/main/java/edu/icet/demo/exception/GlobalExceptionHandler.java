@@ -62,5 +62,4 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                         .status("CONFLICT")
                         .build());
     }
-
 }

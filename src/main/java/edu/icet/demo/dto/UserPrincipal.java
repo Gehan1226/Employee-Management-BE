@@ -1,6 +1,5 @@
 package edu.icet.demo.dto;
 
-
 import edu.icet.demo.entity.UserEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
@@ -13,7 +12,7 @@ import java.util.Collections;
 @RequiredArgsConstructor
 public class UserPrincipal implements UserDetails {
 
-    private final UserEntity user;
+    private final transient UserEntity user;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

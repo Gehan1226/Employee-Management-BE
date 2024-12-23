@@ -1,5 +1,8 @@
 package edu.icet.demo.security.handler;
 
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -20,11 +23,20 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
 
         String errorMessage;
 
-        if (authException instanceof BadCredentialsException) {
+        Exception jwtException = (Exception) request.getAttribute("exception");
+
+        if (jwtException instanceof SignatureException) {
+            errorMessage = "Invalid JWT signature. Please login again.";
+        } else if (jwtException instanceof ExpiredJwtException) {
+            errorMessage = "JWT has expired. Please login again.";
+        } else if (jwtException instanceof MalformedJwtException) {
+            errorMessage = "Malformed JWT token. Please provide a valid token.";
+        } else if (authException instanceof BadCredentialsException) {
             errorMessage = "Bad credentials. Please check your username and password.";
         } else {
             errorMessage = "Unauthorized access. Please login.";
         }
+
         response.getWriter().write(String.format("{\"error\": \"%s\"}", errorMessage));
     }
 }

@@ -5,6 +5,7 @@ import edu.icet.demo.dto.Employee;
 import edu.icet.demo.entity.EmployeeEntity;
 import edu.icet.demo.exception.DataMisMatchException;
 import edu.icet.demo.exception.DataNotFoundException;
+import edu.icet.demo.exception.DeletionException;
 import edu.icet.demo.exception.MissingAttributeException;
 import edu.icet.demo.repository.DepartmentRepository;
 import edu.icet.demo.repository.EmployeeRepository;
@@ -28,7 +29,6 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public Employee addEmployee(Employee employee) {
-
         validateRoleAndDepartment(employee);
         return mapper.convertValue(
                 employeeRepository.save(mapper.convertValue(employee, EmployeeEntity.class)), Employee.class);
@@ -45,35 +45,32 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public void deleteEmployee(Long id) {
-        if (id == null) {
-            throw new MissingAttributeException("Employee ID must not be null.");
+    public void deleteEmployee(String email) {
+        if (!employeeRepository.existsByEmail(email)) {
+            throw new DataNotFoundException("Employee with email '%s' not found".formatted(email));
         }
-        if (!employeeRepository.existsById(id)) {
-            throw new DataNotFoundException("Employee with ID %d not found.".formatted(id));
+        try {
+            employeeRepository.deleteByEmail(email);
+        } catch (Exception e) {
+            throw new DeletionException("Failed to delete employee with email '%s'.".formatted(email));
         }
-        employeeRepository.deleteById(id);
     }
 
     @Override
     public Employee updateEmployee(Employee employee) {
-
-        if (employee.getId() == null){
-            throw new MissingAttributeException("Employee ID is missing.");
-        }
-        if (!employeeRepository.existsById(employee.getId())) {
-            throw new DataNotFoundException("Employee with ID %d not found".formatted(employee.getId()));
+        if (!employeeRepository.existsByEmail(employee.getEmail())) {
+            throw new DataNotFoundException("Employee with email '%s' not found".formatted(employee.getEmail()));
         }
         if (employee.getAddress().getId() == null) {
             throw new MissingAttributeException("Address ID is missing.");
         }
         validateRoleAndDepartment(employee);
-       try {
-           return mapper.convertValue(
-                   employeeRepository.save(mapper.convertValue(employee, EmployeeEntity.class)), Employee.class);
-       }catch (DataIntegrityViolationException e){
-           throw new DataMisMatchException("The current address id is already used!");
-       }
+        try {
+            return mapper.convertValue(
+                    employeeRepository.save(mapper.convertValue(employee, EmployeeEntity.class)), Employee.class);
+        } catch (DataIntegrityViolationException e) {
+            throw new DataMisMatchException("The current address id is already used!");
+        }
     }
 
     @Override

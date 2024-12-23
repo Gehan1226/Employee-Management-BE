@@ -1,5 +1,6 @@
 package edu.icet.demo.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -22,5 +23,6 @@ public class AddressEntity {
     private String district;
 
     @OneToOne(mappedBy = "address", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     private EmployeeEntity employee;
 }

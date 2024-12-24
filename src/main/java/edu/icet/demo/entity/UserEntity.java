@@ -1,6 +1,6 @@
 package edu.icet.demo.entity;
 
-import edu.icet.demo.dto.enums.UserRole;
+import edu.icet.demo.dto.enums.SecurityAuthorities;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -17,5 +17,5 @@ public class UserEntity {
     private String password;
 
     @Enumerated(EnumType.STRING)
-    private UserRole role;
+    private SecurityAuthorities role;
 }

@@ -1,6 +1,6 @@
 package edu.icet.demo.dto.enums;
 
-public enum UserRole {
+public enum SecurityAuthorities {
     ADMIN,
     USER,
     MANAGER,

@@ -1,7 +1,9 @@
 package edu.icet.demo.controller;
 
+import edu.icet.demo.aspect.anotations.HasEndpointAuthorities;
 import edu.icet.demo.dto.Employee;
 import edu.icet.demo.dto.SuccessResponse;
+import edu.icet.demo.dto.enums.SecurityAuthorities;
 import edu.icet.demo.service.EmployeeService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -41,6 +43,7 @@ public class EmployeeController {
                 .build();
     }
 
+    @HasEndpointAuthorities(authorities = { SecurityAuthorities.ADMIN })
     @GetMapping("/get-all")
     public SuccessResponse<List<Employee>> getEmployees(){
         List<Employee> employeeList = employeeService.getAll();

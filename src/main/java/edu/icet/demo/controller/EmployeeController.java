@@ -17,7 +17,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/employee")
 @RequiredArgsConstructor
-@CrossOrigin
+@CrossOrigin(origins = "http://localhost:3000") // Adjust to match your frontend origin
 @Validated
 public class EmployeeController {
 
@@ -43,7 +43,6 @@ public class EmployeeController {
                 .build();
     }
 
-    @HasEndpointAuthorities(authorities = { SecurityAuthorities.ADMIN })
     @GetMapping("/get-all")
     public SuccessResponse<List<Employee>> getEmployees(){
         List<Employee> employeeList = employeeService.getAll();

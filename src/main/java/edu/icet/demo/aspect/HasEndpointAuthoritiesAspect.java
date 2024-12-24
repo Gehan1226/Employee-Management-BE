@@ -12,7 +12,6 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
@@ -48,10 +47,12 @@ public class HasEndpointAuthoritiesAspect {
                     );
                 }
             } else {
-                log.error("The authentication is null when checking endpoint access for user request");
+                throw new UnauthorizedException("Access denied: You must be logged in to perform this action.");
             }
         } else {
-            log.error("The security context is null when checking endpoint access for user request");
+            throw new UnauthorizedException(
+                    "Access denied: Unable to verify your access. Please log in and try again."
+            );
         }
     }
 }

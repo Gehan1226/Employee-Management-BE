@@ -74,4 +74,14 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                         .status("CONFLICT")
                         .build());
     }
+
+    @ExceptionHandler(UnauthorizedException.class)
+    ResponseEntity<ErrorResponse> handleUnauthorizedException(UnauthorizedException exception) {
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
+                .body(ErrorResponse.builder()
+                        .errorMessage(exception.getMessage())
+                        .status("UNAUTHORIZED")
+                        .build());
+    }
 }

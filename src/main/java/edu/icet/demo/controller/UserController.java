@@ -4,6 +4,7 @@ package edu.icet.demo.controller;
 import edu.icet.demo.dto.AccessToken;
 import edu.icet.demo.dto.SuccessResponse;
 import edu.icet.demo.dto.UserDTO;
+import edu.icet.demo.dto.UserLoginRequest;
 import edu.icet.demo.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -34,8 +35,8 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public SuccessResponse<AccessToken> login(@Valid @RequestBody UserDTO user, BindingResult result){
-        AccessToken token = userService.verify(user);
+    public SuccessResponse<AccessToken> login(@Valid @RequestBody UserLoginRequest userLoginRequest, BindingResult result){
+        AccessToken token = userService.verify(userLoginRequest);
         return SuccessResponse.<AccessToken>builder()
                 .status(HttpStatus.OK.value())
                 .message("User login successfully !")

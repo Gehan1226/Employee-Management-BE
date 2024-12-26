@@ -34,6 +34,7 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
         } else if (authException instanceof BadCredentialsException) {
             errorMessage = "Bad credentials. Please check your username and password.";
         } else {
+            System.out.println(jwtException);
             errorMessage = "Unauthorized access. Please login.";
         }
 

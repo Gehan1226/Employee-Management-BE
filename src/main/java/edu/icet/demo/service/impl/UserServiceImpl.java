@@ -3,6 +3,7 @@ package edu.icet.demo.service.impl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.icet.demo.dto.AccessToken;
 import edu.icet.demo.dto.UserDTO;
+import edu.icet.demo.dto.UserLoginRequest;
 import edu.icet.demo.entity.UserEntity;
 import edu.icet.demo.exception.DataDuplicateException;
 import edu.icet.demo.repository.UserRepository;
@@ -28,6 +29,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDTO register(UserDTO userDTO) {
         userDTO.setPassword(encoder.encode(userDTO.getPassword()));
+        userDTO.setEnabled(false);
         try {
             UserEntity userEntity = userRepository.save(objectMapper.convertValue(userDTO, UserEntity.class));
             return objectMapper.convertValue(userEntity, UserDTO.class);
@@ -37,10 +39,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public AccessToken verify(UserDTO userDTO) {
+    public AccessToken verify(UserLoginRequest userLoginRequest) {
         authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(userDTO.getUserName(), userDTO.getPassword()));
+                new UsernamePasswordAuthenticationToken(
+                        userLoginRequest.getUserName(), userLoginRequest.getPassword()));
 
-        return new AccessToken(jwtService.genarateToken(userDTO.getUserName()));
+        return new AccessToken(jwtService.genarateToken(userLoginRequest.getUserName()));
     }
 }

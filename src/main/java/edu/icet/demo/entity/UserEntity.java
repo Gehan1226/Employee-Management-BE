@@ -16,6 +16,11 @@ public class UserEntity {
     private String userName;
     private String password;
 
+    @Column(unique = true, nullable = false)
+    private String email;
+
     @Enumerated(EnumType.STRING)
     private SecurityAuthorities role;
+
+    private boolean enabled;
 }

@@ -1,12 +1,12 @@
 package edu.icet.demo.dto;
 
-
-import edu.icet.demo.dto.enums.SecurityAuthorities;
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 @Data
-public class UserDTO {
+public class UserLoginRequest {
 
     @NotBlank(message = "Username cannot be blank")
     @Size(min = 3, max = 50, message = "Username must be between 3 and 50 characters")
@@ -20,13 +20,4 @@ public class UserDTO {
                     " least one digit, one lowercase, one uppercase letter, and one special character"
     )
     private String password;
-
-    @NotBlank(message = "Email cannot be blank")
-    @Email(message = "Email should be valid")
-    private String email;
-
-    @NotNull(message = "Role cannot be null")
-    private SecurityAuthorities role;
-
-    private boolean enabled;
 }

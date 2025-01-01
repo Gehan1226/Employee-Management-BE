@@ -1,8 +1,10 @@
 package edu.icet.demo.controller;
 
 import edu.icet.demo.dto.Role;
+import edu.icet.demo.dto.SuccessResponse;
 import edu.icet.demo.service.RoleService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -13,7 +15,8 @@ import java.util.List;
 @CrossOrigin
 public class RoleController {
 
-    final RoleService service;
+    private final RoleService service;
+
     @PostMapping("/add-role")
     public void addRole(@RequestBody Role role){
         service.addRole(role);
@@ -21,6 +24,17 @@ public class RoleController {
     @GetMapping("/get-all")
     public List<Role> getRoles(){
         return service.getAll();
+    }
+
+    @GetMapping("/get-by-department/{id}")
+    public SuccessResponse<List<Role>> getRolesByDepartmentId(@PathVariable Long id){
+        List<Role> rolesByDepartmentId = service.getRolesByDepartmentId(id);
+        String message = rolesByDepartmentId.isEmpty() ? "Roles not found for this department!" : "Roles retrieved.";
+        return SuccessResponse.<List<Role>>builder()
+                .status(HttpStatus.OK.value())
+                .message(message)
+                .data(rolesByDepartmentId)
+                .build();
     }
 
     @DeleteMapping("/delete-by-id/{id}")

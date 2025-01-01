@@ -1,12 +1,14 @@
 package edu.icet.demo.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import edu.icet.demo.dto.Employee;
 import edu.icet.demo.dto.Role;
 import edu.icet.demo.entity.RoleEntity;
 import edu.icet.demo.repository.RoleRepository;
 import edu.icet.demo.service.RoleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,8 +26,8 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     public List<Role> getAll() {
-        List<Role> roleList= new ArrayList<>();
-        repository.findAll().forEach(obj-> roleList.add(mapper.convertValue(obj, Role.class)));
+        List<Role> roleList = new ArrayList<>();
+        repository.findAll().forEach(obj -> roleList.add(mapper.convertValue(obj, Role.class)));
         return roleList;
     }
 
@@ -33,5 +35,14 @@ public class RoleServiceImpl implements RoleService {
     public boolean deleteRoleById(Long id) {
         repository.deleteById(id);
         return true;
+    }
+
+    @Override
+    public List<Role> getRolesByDepartmentId(Long id) {
+        List<Role> roleList = new ArrayList<>();
+        repository.findByDepartmentId(id).forEach(roleEntity ->
+                roleList.add(new ObjectMapper().convertValue(roleEntity, Role.class)
+                ));
+        return roleList;
     }
 }

@@ -19,4 +19,6 @@ public class Department {
     private String description;
 
     private Set<Employee> employeeList;
+
+    private Set<Role> roleList;
 }

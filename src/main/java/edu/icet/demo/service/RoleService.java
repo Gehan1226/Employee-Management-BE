@@ -10,4 +10,6 @@ public interface RoleService {
     List<Role> getAll();
 
     boolean deleteRoleById(Long id);
+
+    List<Role> getRolesByDepartmentId(Long id);
 }

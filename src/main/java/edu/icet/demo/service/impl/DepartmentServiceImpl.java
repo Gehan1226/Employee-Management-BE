@@ -26,9 +26,9 @@ public class DepartmentServiceImpl implements DepartmentService {
 
     @Override
     public List<Department> getAll() {
-        Iterable<DepartmentEntity> all = repository.findAll();
         List<Department> depList = new ArrayList<>();
-        all.forEach(departmentEntity -> depList.add(mapper.convertValue(departmentEntity, Department.class)));
+        repository.findAll().forEach(departmentEntity ->
+                depList.add(mapper.convertValue(departmentEntity, Department.class)));
         return depList;
     }
 

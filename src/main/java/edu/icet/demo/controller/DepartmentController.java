@@ -1,8 +1,11 @@
 package edu.icet.demo.controller;
 
 import edu.icet.demo.dto.Department;
+import edu.icet.demo.dto.Employee;
+import edu.icet.demo.dto.SuccessResponse;
 import edu.icet.demo.service.DepartmentService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,7 +24,13 @@ public class DepartmentController {
     }
 
     @GetMapping("/get-all")
-    public List<Department> getRoles(){
-        return departmentService.getAll();
+    public SuccessResponse<List<Department>> getRoles(){
+        List<Department> departmentList = departmentService.getAll();
+        String message = departmentList.isEmpty() ? "Department List is empty!" : "Department list retrieved.";
+        return SuccessResponse.<List<Department>>builder()
+                .status(HttpStatus.OK.value())
+                .message(message)
+                .data(departmentList)
+                .build();
     }
 }

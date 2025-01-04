@@ -1,9 +1,7 @@
 package edu.icet.demo.controller;
 
-import edu.icet.demo.aspect.anotations.HasEndpointAuthorities;
 import edu.icet.demo.dto.Employee;
 import edu.icet.demo.dto.SuccessResponse;
-import edu.icet.demo.dto.enums.SecurityAuthorities;
 import edu.icet.demo.service.EmployeeService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -15,9 +13,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/employee")
+@RequestMapping("/api/v1/employee") // Added versioning here
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:3000") // Adjust to match your frontend origin
 @Validated
 public class EmployeeController {
 

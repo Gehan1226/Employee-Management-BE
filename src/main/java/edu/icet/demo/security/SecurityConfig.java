@@ -36,12 +36,10 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
-                                "/user/register",
-                                "/user/login",
-                                "/department/get-all",
-                                "/role/add-role",
-                                "/employee/add",
-                                "/role/get-by-department/{id}").permitAll()
+                                "/api/v1/auth/**",
+                                "/api/v1/employee/**",                  //for development purposes
+                                "/api/v1/role/**",
+                                "/api/v1/department/**").permitAll()
                         .anyRequest().authenticated())
                 .httpBasic(httpBasic -> httpBasic.authenticationEntryPoint(customAuthenticationEntryPoint))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

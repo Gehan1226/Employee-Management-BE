@@ -37,9 +37,9 @@ public class Employee {
     @Valid
     private Department department;
 
-    @NotNull(message = "Role is required.")
+    @NotNull(message = "Role id is required.")
     @Valid
-    private Role role;
+    private RoleId role;
 
     @Valid
     private Address address;

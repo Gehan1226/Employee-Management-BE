@@ -1,7 +1,7 @@
 package edu.icet.demo.controller;
 
 import edu.icet.demo.dto.Role;
-import edu.icet.demo.dto.SuccessResponse;
+import edu.icet.demo.dto.response.SuccessResponse;
 import edu.icet.demo.service.RoleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

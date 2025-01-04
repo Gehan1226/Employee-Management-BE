@@ -1,9 +1,9 @@
 package edu.icet.demo.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import edu.icet.demo.dto.AccessToken;
-import edu.icet.demo.dto.UserDTO;
-import edu.icet.demo.dto.UserLoginRequest;
+import edu.icet.demo.dto.auth.AccessToken;
+import edu.icet.demo.dto.auth.UserDTO;
+import edu.icet.demo.dto.auth.UserLoginRequest;
 import edu.icet.demo.entity.UserEntity;
 import edu.icet.demo.exception.DataDuplicateException;
 import edu.icet.demo.repository.UserRepository;

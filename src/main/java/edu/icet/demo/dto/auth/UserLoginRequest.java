@@ -1,4 +1,4 @@
-package edu.icet.demo.dto;
+package edu.icet.demo.dto.auth;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;

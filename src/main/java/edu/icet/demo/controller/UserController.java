@@ -1,10 +1,10 @@
 package edu.icet.demo.controller;
 
 
-import edu.icet.demo.dto.AccessToken;
-import edu.icet.demo.dto.SuccessResponse;
-import edu.icet.demo.dto.UserDTO;
-import edu.icet.demo.dto.UserLoginRequest;
+import edu.icet.demo.dto.auth.AccessToken;
+import edu.icet.demo.dto.response.SuccessResponse;
+import edu.icet.demo.dto.auth.UserDTO;
+import edu.icet.demo.dto.auth.UserLoginRequest;
 import edu.icet.demo.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

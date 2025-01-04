@@ -1,4 +1,4 @@
-package edu.icet.demo.dto;
+package edu.icet.demo.dto.auth;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

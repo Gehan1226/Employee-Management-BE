@@ -1,6 +1,6 @@
 package edu.icet.demo.exception;
 
-import edu.icet.demo.dto.ErrorResponse;
+import edu.icet.demo.dto.response.ErrorResponse;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;

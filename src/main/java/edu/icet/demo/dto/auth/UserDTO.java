@@ -1,4 +1,4 @@
-package edu.icet.demo.dto;
+package edu.icet.demo.dto.auth;
 
 
 import edu.icet.demo.dto.enums.SecurityAuthorities;

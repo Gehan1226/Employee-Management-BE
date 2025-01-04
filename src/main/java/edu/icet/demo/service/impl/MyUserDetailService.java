@@ -1,6 +1,6 @@
 package edu.icet.demo.service.impl;
 
-import edu.icet.demo.dto.UserPrincipal;
+import edu.icet.demo.dto.auth.UserPrincipal;
 import edu.icet.demo.entity.UserEntity;
 import edu.icet.demo.repository.UserRepository;
 import lombok.RequiredArgsConstructor;

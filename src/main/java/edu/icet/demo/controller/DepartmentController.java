@@ -1,8 +1,7 @@
 package edu.icet.demo.controller;
 
 import edu.icet.demo.dto.Department;
-import edu.icet.demo.dto.Employee;
-import edu.icet.demo.dto.SuccessResponse;
+import edu.icet.demo.dto.response.SuccessResponse;
 import edu.icet.demo.service.DepartmentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

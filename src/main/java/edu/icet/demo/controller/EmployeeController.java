@@ -1,7 +1,7 @@
 package edu.icet.demo.controller;
 
 import edu.icet.demo.dto.Employee;
-import edu.icet.demo.dto.SuccessResponse;
+import edu.icet.demo.dto.response.SuccessResponse;
 import edu.icet.demo.service.EmployeeService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

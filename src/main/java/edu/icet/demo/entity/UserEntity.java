@@ -23,4 +23,12 @@ public class UserEntity {
     private SecurityAuthorities role;
 
     private boolean enabled;
+
+    public UserEntity(int id, String userName, String email, SecurityAuthorities role, boolean enabled) {
+        this.id = id;
+        this.userName = userName;
+        this.email = email;
+        this.role = role;
+        this.enabled = enabled;
+    }
 }

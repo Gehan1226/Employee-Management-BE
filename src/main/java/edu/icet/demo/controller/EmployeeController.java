@@ -15,6 +15,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/employee") // Added versioning here
 @RequiredArgsConstructor
+@CrossOrigin
 @Validated
 public class EmployeeController {
 
@@ -22,6 +23,7 @@ public class EmployeeController {
 
     @PostMapping("/add")
     public SuccessResponse<Employee>  addEmployee(@Valid @RequestBody Employee employee, BindingResult result){
+        System.out.println("Employee: " + employee);
         Employee createdEmployee = employeeService.addEmployee(employee);
         return SuccessResponse.<Employee>builder()
                 .status(HttpStatus.CREATED.value())

@@ -13,6 +13,8 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @CrossOrigin
@@ -39,6 +41,17 @@ public class UserController {
                 .status(HttpStatus.OK.value())
                 .message("User login successfully !")
                 .data(token)
+                .build();
+    }
+
+    @GetMapping("/disable-users")
+    public SuccessResponse<List<UserDTO>> getDisableUsers(){
+        List<UserDTO> disableUsers = userService.getDisableUsers();
+        String message = disableUsers.isEmpty() ? "Disable User List is empty!" : "Disable User list retrieved.";
+        return SuccessResponse.<List<UserDTO>>builder()
+                .status(HttpStatus.OK.value())
+                .message(message)
+                .data(disableUsers)
                 .build();
     }
 }

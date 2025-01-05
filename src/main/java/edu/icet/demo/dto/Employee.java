@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @Data
@@ -24,7 +25,7 @@ public class Employee {
 
     @NotNull(message = "Date of birth is required.")
     @Past(message = "Date of birth must be in the past.")
-    private Date dob;
+    private LocalDate dob;
 
     @NotBlank(message = "Phone number must be 10 digits.")
     private String phoneNumber;
@@ -35,7 +36,7 @@ public class Employee {
 
     @NotNull(message = "Department is required.")
     @Valid
-    private Department department;
+    private DepartmentId department;
 
     @NotNull(message = "Role id is required.")
     @Valid

@@ -3,6 +3,7 @@ package edu.icet.demo.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @AllArgsConstructor
@@ -19,7 +20,7 @@ public class EmployeeEntity {
     private String firstName;
     private String lastName;
     private String email;
-    private Date dob;
+    private LocalDate dob;
     private String phoneNumber;
     private String gender;
 

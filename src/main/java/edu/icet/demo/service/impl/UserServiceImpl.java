@@ -15,6 +15,9 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
@@ -45,5 +48,14 @@ public class UserServiceImpl implements UserService {
                         userLoginRequest.getUserName(), userLoginRequest.getPassword()));
 
         return new AccessToken(jwtService.genarateToken(userLoginRequest.getUserName()));
+    }
+
+    @Override
+    public List<UserDTO> getDisableUsers() {
+        List<UserDTO> userDTOList = new ArrayList<>();
+        userRepository.findByEnabledFalse().forEach(userEntity ->
+                userDTOList.add(objectMapper.convertValue(userEntity, UserDTO.class))
+        );
+        return userDTOList;
     }
 }

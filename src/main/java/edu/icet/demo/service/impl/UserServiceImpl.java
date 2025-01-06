@@ -4,8 +4,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.icet.demo.dto.auth.AccessToken;
 import edu.icet.demo.dto.auth.UserDTO;
 import edu.icet.demo.dto.auth.UserLoginRequest;
+import edu.icet.demo.dto.enums.SecurityAuthorities;
 import edu.icet.demo.entity.UserEntity;
 import edu.icet.demo.exception.DataDuplicateException;
+import edu.icet.demo.exception.DataMisMatchException;
+import edu.icet.demo.exception.DataNotFoundException;
 import edu.icet.demo.repository.UserRepository;
 import edu.icet.demo.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -57,5 +60,17 @@ public class UserServiceImpl implements UserService {
                 userDTOList.add(objectMapper.convertValue(userEntity, UserDTO.class))
         );
         return userDTOList;
+    }
+
+    @Override
+    public void updateRoleAndEnabled(UserDTO userDTO) {
+        int updatedRows = userRepository.updateUserRoleAndEnabled(
+                userDTO.getEmail(),
+                userDTO.getRole(),
+                userDTO.isEnabled()
+        );
+        if (updatedRows == 0) {
+            throw new DataNotFoundException("User with email '%s' not found".formatted(userDTO.getEmail()));
+        }
     }
 }

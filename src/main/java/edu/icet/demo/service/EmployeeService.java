@@ -1,6 +1,7 @@
 package edu.icet.demo.service;
 
 import edu.icet.demo.dto.Employee;
+import edu.icet.demo.dto.auth.UserDTO;
 
 import java.util.List;
 
@@ -15,4 +16,5 @@ public interface EmployeeService {
     Employee findById(Long id);
 
     Employee findByFirstName(String firstName);
+
 }

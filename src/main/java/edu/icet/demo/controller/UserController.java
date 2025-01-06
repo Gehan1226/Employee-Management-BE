@@ -25,7 +25,7 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/register")
-    public SuccessResponse<UserDTO> register(@Valid @RequestBody UserDTO user, BindingResult result){
+    public SuccessResponse<UserDTO> register(@Valid @RequestBody UserDTO user, BindingResult result) {
         UserDTO registeredUser = userService.register(user);
         return SuccessResponse.<UserDTO>builder()
                 .status(HttpStatus.CREATED.value())
@@ -35,7 +35,7 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public SuccessResponse<AccessToken> login(@Valid @RequestBody UserLoginRequest userLoginRequest, BindingResult result){
+    public SuccessResponse<AccessToken> login(@Valid @RequestBody UserLoginRequest userLoginRequest, BindingResult result) {
         AccessToken token = userService.verify(userLoginRequest);
         return SuccessResponse.<AccessToken>builder()
                 .status(HttpStatus.OK.value())
@@ -45,13 +45,22 @@ public class UserController {
     }
 
     @GetMapping("/disable-users")
-    public SuccessResponse<List<UserDTO>> getDisableUsers(){
+    public SuccessResponse<List<UserDTO>> getDisableUsers() {
         List<UserDTO> disableUsers = userService.getDisableUsers();
         String message = disableUsers.isEmpty() ? "Disable User List is empty!" : "Disable User list retrieved.";
         return SuccessResponse.<List<UserDTO>>builder()
                 .status(HttpStatus.OK.value())
                 .message(message)
                 .data(disableUsers)
+                .build();
+    }
+
+    @PatchMapping("/update-role-and-enabled")
+    public SuccessResponse<String> updateRoleAndEnabled(@RequestBody UserDTO userDTO) {
+        userService.updateRoleAndEnabled(userDTO);
+        return SuccessResponse.<String>builder()
+                .status(HttpStatus.OK.value())
+                .message("User updated successfully !")
                 .build();
     }
 }

@@ -12,4 +12,6 @@ public interface UserService {
     AccessToken verify(UserLoginRequest userLoginRequest);
 
     List<UserDTO> getDisableUsers();
+
+    void updateRoleAndEnabled(UserDTO userDTO);
 }

@@ -63,4 +63,13 @@ public class UserController {
                 .message("User updated successfully !")
                 .build();
     }
+
+    @DeleteMapping("/delete-by-email/{email}")
+    public SuccessResponse<String> deleteByEmail(@PathVariable String email) {
+        userService.deleteByEmail(email);
+        return SuccessResponse.<String>builder()
+                .status(HttpStatus.OK.value())
+                .message("User deleted successfully !")
+                .build();
+    }
 }

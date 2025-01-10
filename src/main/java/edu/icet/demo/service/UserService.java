@@ -14,4 +14,6 @@ public interface UserService {
     List<UserDTO> getDisableUsers();
 
     void updateRoleAndEnabled(UserDTO userDTO);
+
+    boolean deleteByEmail(String email);
 }

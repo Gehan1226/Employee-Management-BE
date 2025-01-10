@@ -28,4 +28,9 @@ public interface UserRepository extends JpaRepository<UserEntity, Integer> {
     int updateUserRoleAndEnabled(@Param("email") String email,
                                  @Param("role") SecurityAuthorities role,
                                  @Param("enabled") boolean enabled);
+
+    @Modifying
+    @Transactional
+    @Query("DELETE FROM edu.icet.demo.entity.UserEntity u WHERE u.email = :email")
+    int deleteUserByEmail(@Param("email") String email);
 }

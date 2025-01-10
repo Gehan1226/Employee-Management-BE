@@ -6,9 +6,7 @@ import edu.icet.demo.dto.auth.UserDTO;
 import edu.icet.demo.dto.auth.UserLoginRequest;
 import edu.icet.demo.dto.enums.SecurityAuthorities;
 import edu.icet.demo.entity.UserEntity;
-import edu.icet.demo.exception.DataDuplicateException;
-import edu.icet.demo.exception.DataMisMatchException;
-import edu.icet.demo.exception.DataNotFoundException;
+import edu.icet.demo.exception.*;
 import edu.icet.demo.repository.UserRepository;
 import edu.icet.demo.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -73,4 +71,23 @@ public class UserServiceImpl implements UserService {
             throw new DataNotFoundException("User with email '%s' not found".formatted(userDTO.getEmail()));
         }
     }
+
+    @Override
+    public boolean deleteByEmail(String email) {
+        if (email == null || email.isEmpty()) {
+            throw new MissingAttributeException("Email cannot be null or empty");
+        }
+        int deletedRows = 0;
+        try {
+            deletedRows = userRepository.deleteUserByEmail(email);
+        } catch (Exception e) {
+            throw new DeletionException("User with email '%s' cannot be deleted.".formatted(email));
+        }
+
+        if (deletedRows == 0) {
+            throw new DataNotFoundException("User with email '%s' not found.".formatted(email));
+        }
+        return true;
+    }
+
 }

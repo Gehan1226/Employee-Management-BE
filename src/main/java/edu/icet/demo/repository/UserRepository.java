@@ -2,6 +2,8 @@ package edu.icet.demo.repository;
 
 import edu.icet.demo.dto.enums.SecurityAuthorities;
 import edu.icet.demo.entity.UserEntity;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -9,7 +11,6 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 
 @Repository
 public interface UserRepository extends JpaRepository<UserEntity, Integer> {
@@ -20,7 +21,7 @@ public interface UserRepository extends JpaRepository<UserEntity, Integer> {
 
     @Query("SELECT new edu.icet.demo.entity.UserEntity(u.id, u.userName, u.email, u.role, u.enabled) " +
             "FROM UserEntity u WHERE u.enabled = false")
-    List<UserEntity> findByEnabledFalse();
+    Page<UserEntity> findByEnabledFalse(Pageable pageable);
 
     @Modifying
     @Transactional

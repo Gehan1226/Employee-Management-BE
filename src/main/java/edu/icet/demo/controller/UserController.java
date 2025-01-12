@@ -2,12 +2,15 @@ package edu.icet.demo.controller;
 
 
 import edu.icet.demo.dto.auth.AccessToken;
+import edu.icet.demo.dto.response.PaginatedResponse;
 import edu.icet.demo.dto.response.SuccessResponse;
 import edu.icet.demo.dto.auth.UserDTO;
 import edu.icet.demo.dto.auth.UserLoginRequest;
 import edu.icet.demo.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
@@ -45,14 +48,12 @@ public class UserController {
     }
 
     @GetMapping("/disable-users")
-    public SuccessResponse<List<UserDTO>> getDisableUsers() {
-        List<UserDTO> disableUsers = userService.getDisableUsers();
-        String message = disableUsers.isEmpty() ? "Disable User List is empty!" : "Disable User list retrieved.";
-        return SuccessResponse.<List<UserDTO>>builder()
-                .status(HttpStatus.OK.value())
-                .message(message)
-                .data(disableUsers)
-                .build();
+    public PaginatedResponse<UserDTO> getDisableUsers(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        Pageable pageable = PageRequest.of(page, size);
+        return userService.getDisableUsers(pageable);
     }
 
     @PatchMapping("/update-role-and-enabled")

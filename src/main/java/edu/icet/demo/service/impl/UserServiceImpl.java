@@ -4,13 +4,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.icet.demo.dto.auth.AccessToken;
 import edu.icet.demo.dto.auth.UserDTO;
 import edu.icet.demo.dto.auth.UserLoginRequest;
-import edu.icet.demo.dto.enums.SecurityAuthorities;
+import edu.icet.demo.dto.response.PaginatedResponse;
 import edu.icet.demo.entity.UserEntity;
 import edu.icet.demo.exception.*;
 import edu.icet.demo.repository.UserRepository;
 import edu.icet.demo.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -52,12 +55,21 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<UserDTO> getDisableUsers() {
+    public PaginatedResponse<UserDTO> getDisableUsers(Pageable pageable) {
         List<UserDTO> userDTOList = new ArrayList<>();
-        userRepository.findByEnabledFalse().forEach(userEntity ->
+        Page <UserEntity> userEntityPage = userRepository.findByEnabledFalse(pageable);
+        userEntityPage.forEach(userEntity ->
                 userDTOList.add(objectMapper.convertValue(userEntity, UserDTO.class))
         );
-        return userDTOList;
+
+        return new PaginatedResponse<>(
+                HttpStatus.OK.value(),
+                userDTOList.isEmpty() ? "Disable User List is empty!" : "Disable User list retrieved.",
+                userDTOList,
+                userEntityPage.getTotalPages(),
+                userEntityPage.getTotalElements(),
+                userEntityPage.getNumber()
+        );
     }
 
     @Override

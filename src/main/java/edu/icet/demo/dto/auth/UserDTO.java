@@ -5,6 +5,8 @@ import edu.icet.demo.dto.enums.SecurityAuthorities;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 
+import java.time.LocalDate;
+
 @Data
 public class UserDTO {
 
@@ -29,4 +31,6 @@ public class UserDTO {
     private SecurityAuthorities role;
 
     private boolean enabled;
+
+    private LocalDate createdDate;
 }

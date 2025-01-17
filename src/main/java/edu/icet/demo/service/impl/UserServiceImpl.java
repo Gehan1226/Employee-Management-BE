@@ -19,6 +19,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,6 +38,7 @@ public class UserServiceImpl implements UserService {
     public UserDTO register(UserDTO userDTO) {
         userDTO.setPassword(encoder.encode(userDTO.getPassword()));
         userDTO.setEnabled(true);
+        userDTO.setCreatedDate(LocalDate.now());
         try {
             UserEntity userEntity = userRepository.save(objectMapper.convertValue(userDTO, UserEntity.class));
             return objectMapper.convertValue(userEntity, UserDTO.class);

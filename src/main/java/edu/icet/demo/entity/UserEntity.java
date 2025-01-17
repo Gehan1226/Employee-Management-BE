@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+
 @Data
 @NoArgsConstructor
 @Entity
@@ -25,6 +27,8 @@ public class UserEntity {
     private SecurityAuthorities role;
 
     private boolean enabled;
+
+    private LocalDate createdDate;
 
     public UserEntity(int id, String userName, String email, SecurityAuthorities role, boolean enabled) {
         this.id = id;

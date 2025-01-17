@@ -38,7 +38,8 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public SuccessResponse<AccessToken> login(@Valid @RequestBody UserLoginRequest userLoginRequest, BindingResult result) {
+    public SuccessResponse<AccessToken> login(@Valid @RequestBody UserLoginRequest userLoginRequest,
+                                              BindingResult result) {
         AccessToken token = userService.verify(userLoginRequest);
         return SuccessResponse.<AccessToken>builder()
                 .status(HttpStatus.OK.value())

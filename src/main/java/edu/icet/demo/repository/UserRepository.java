@@ -11,6 +11,8 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+
 
 @Repository
 public interface UserRepository extends JpaRepository<UserEntity, Integer> {
@@ -19,9 +21,14 @@ public interface UserRepository extends JpaRepository<UserEntity, Integer> {
 
     UserEntity findByEmail(String email);
 
-    @Query("SELECT new edu.icet.demo.entity.UserEntity(u.id, u.userName, u.email, u.role, u.enabled) " +
-            "FROM UserEntity u WHERE u.enabled = false")
-    Page<UserEntity> findByEnabledFalse(Pageable pageable);
+    @Query("SELECT u FROM UserEntity u " +
+            "WHERE u.enabled = false " +
+            "AND (:startDate IS NULL OR u.createdDate >= :startDate) " +
+            "AND (:endDate IS NULL OR u.createdDate <= :endDate)")
+    Page<UserEntity> findByOptionalDateRangeAndEnabledFalse(
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate,
+            Pageable pageable);
 
     @Modifying
     @Transactional

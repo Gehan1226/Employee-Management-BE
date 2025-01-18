@@ -57,22 +57,26 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public PaginatedResponse<UserDTO> getDisableUsers(Pageable pageable) {
+    public PaginatedResponse<UserDTO> getDisableUsersByOptionalDateRange(
+            LocalDate startDate, LocalDate endDate, Pageable pageable) {
+
         List<UserDTO> userDTOList = new ArrayList<>();
-        Page <UserEntity> userEntityPage = userRepository.findByEnabledFalse(pageable);
+        Page<UserEntity> userEntityPage = userRepository.findByOptionalDateRangeAndEnabledFalse(startDate, endDate, pageable);
+
         userEntityPage.forEach(userEntity ->
                 userDTOList.add(objectMapper.convertValue(userEntity, UserDTO.class))
         );
 
         return new PaginatedResponse<>(
                 HttpStatus.OK.value(),
-                userDTOList.isEmpty() ? "Disable User List is empty!" : "Disable User list retrieved.",
+                userDTOList.isEmpty() ? "No disabled users found!" : "Disabled user list retrieved.",
                 userDTOList,
                 userEntityPage.getTotalPages(),
                 userEntityPage.getTotalElements(),
                 userEntityPage.getNumber()
         );
     }
+
 
     @Override
     public void updateRoleAndEnabled(UserDTO userDTO) {

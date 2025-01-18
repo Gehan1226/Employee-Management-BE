@@ -6,15 +6,12 @@ import edu.icet.demo.dto.auth.UserLoginRequest;
 import edu.icet.demo.dto.response.PaginatedResponse;
 import org.springframework.data.domain.Pageable;
 
-import java.time.LocalDate;
-
 public interface UserService {
     UserDTO register(UserDTO userDTO);
 
     AccessToken verify(UserLoginRequest userLoginRequest);
 
-    PaginatedResponse<UserDTO> getDisableUsersByOptionalDateRange(
-            LocalDate startDate, LocalDate endDate, Pageable pageable);
+    PaginatedResponse<UserDTO> getDisableUsers(Pageable pageable);
 
     void updateRoleAndEnabled(UserDTO userDTO);
 

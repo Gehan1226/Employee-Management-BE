@@ -11,12 +11,13 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.time.LocalDate;
 
 @RestController
 @RequiredArgsConstructor
@@ -49,12 +50,14 @@ public class UserController {
     }
 
     @GetMapping("/disable-users")
-    public PaginatedResponse<UserDTO> getDisableUsers(
+    public PaginatedResponse<UserDTO> getDisableUsersByOptionalDateRange(
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
 
         Pageable pageable = PageRequest.of(page, size);
-        return userService.getDisableUsers(pageable);
+        return userService.getDisableUsersByOptionalDateRange(startDate, endDate, pageable);
     }
 
     @PatchMapping("/update-role-and-enabled")

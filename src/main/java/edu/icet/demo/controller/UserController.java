@@ -54,12 +54,14 @@ public class UserController {
     public PaginatedResponse<UserDTO> getDisableUsersByOptionalDateRange(
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
+            @RequestParam(required = false) String searchTerm,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
 
         Pageable pageable = PageRequest.of(page, size);
-        return userService.getDisableUsersByOptionalDateRange(startDate, endDate, pageable);
+        return userService.getDisableUsersByOptionalDateRange(startDate, endDate, searchTerm, pageable);
     }
+
 
     @PatchMapping("/update-role-and-enabled")
     public SuccessResponse<String> updateRoleAndEnabled(@RequestBody UserDTO userDTO) {

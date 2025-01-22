@@ -14,7 +14,7 @@ public interface UserService {
     AccessToken verify(UserLoginRequest userLoginRequest);
 
     PaginatedResponse<UserDTO> getDisableUsersByOptionalDateRange(
-            LocalDate startDate, LocalDate endDate, Pageable pageable) ;
+            LocalDate startDate, LocalDate endDate, String searchTerm,Pageable pageable);
 
     void updateRoleAndEnabled(UserDTO userDTO);
 

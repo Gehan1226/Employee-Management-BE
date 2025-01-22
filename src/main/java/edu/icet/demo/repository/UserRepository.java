@@ -24,11 +24,14 @@ public interface UserRepository extends JpaRepository<UserEntity, Integer> {
     @Query("SELECT u FROM UserEntity u " +
             "WHERE u.enabled = false " +
             "AND (:startDate IS NULL OR u.createdDate >= :startDate) " +
-            "AND (:endDate IS NULL OR u.createdDate <= :endDate)")
-    Page<UserEntity> findByOptionalDateRangeAndEnabledFalse(
+            "AND (:endDate IS NULL OR u.createdDate <= :endDate) " +
+            "AND (:searchTerm IS NULL OR u.userName LIKE %:searchTerm% OR u.email LIKE %:searchTerm%)")
+    Page<UserEntity> findByOptionalDateRangeAndEnabledFalseAndSearchTerm(
             @Param("startDate") LocalDate startDate,
             @Param("endDate") LocalDate endDate,
+            @Param("searchTerm") String searchTerm,
             Pageable pageable);
+
 
     @Modifying
     @Transactional

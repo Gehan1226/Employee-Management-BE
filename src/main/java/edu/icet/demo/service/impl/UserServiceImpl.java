@@ -58,10 +58,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public PaginatedResponse<UserDTO> getDisableUsersByOptionalDateRange(
-            LocalDate startDate, LocalDate endDate, Pageable pageable) {
+            LocalDate startDate, LocalDate endDate, String searchTerm, Pageable pageable) {
 
         List<UserDTO> userDTOList = new ArrayList<>();
-        Page<UserEntity> userEntityPage = userRepository.findByOptionalDateRangeAndEnabledFalse(startDate, endDate, pageable);
+        Page<UserEntity> userEntityPage =
+                userRepository.findByOptionalDateRangeAndEnabledFalseAndSearchTerm(startDate, endDate, searchTerm, pageable);
 
         userEntityPage.forEach(userEntity ->
                 userDTOList.add(objectMapper.convertValue(userEntity, UserDTO.class))
@@ -76,6 +77,7 @@ public class UserServiceImpl implements UserService {
                 userEntityPage.getNumber()
         );
     }
+
 
 
     @Override

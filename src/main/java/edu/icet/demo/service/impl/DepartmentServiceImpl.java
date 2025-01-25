@@ -29,9 +29,9 @@ public class DepartmentServiceImpl implements DepartmentService {
     }
 
     @Override
-    public PaginatedResponse<Department> getAllWithPagination(Pageable pageable) {
+    public PaginatedResponse<Department> getAllWithPagination(Pageable pageable, String searchTerm) {
         List<Department> depList = new ArrayList<>();
-        Page<DepartmentEntity> response = repository.findAll(pageable);
+        Page<DepartmentEntity> response = repository.findAllWithSearch(searchTerm, pageable);
         response.forEach(departmentEntity ->
                 depList.add(mapper.convertValue(departmentEntity, Department.class)));
 

@@ -7,7 +7,7 @@ import org.springframework.data.domain.Pageable;
 public interface DepartmentService {
     Department addDepartment(Department department);
 
-    PaginatedResponse<Department> getAllWithPagination(Pageable pageable);
+    PaginatedResponse<Department> getAllWithPagination(Pageable pageable, String searchTerm);
 
     void deleteById(Long id);
 }

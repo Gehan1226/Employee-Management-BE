@@ -24,10 +24,11 @@ public class DepartmentController {
     @GetMapping("/get-all-paginated")
     public PaginatedResponse<Department> getAll(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String searchTerm) {
 
         Pageable pageable = PageRequest.of(page, size);
-        return departmentService.getAllWithPagination(pageable);
+        return departmentService.getAllWithPagination(pageable, searchTerm);
     }
 
 }

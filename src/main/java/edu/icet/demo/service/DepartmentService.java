@@ -1,13 +1,13 @@
 package edu.icet.demo.service;
 
 import edu.icet.demo.dto.Department;
-
-import java.util.List;
+import edu.icet.demo.dto.response.PaginatedResponse;
+import org.springframework.data.domain.Pageable;
 
 public interface DepartmentService {
     Department addDepartment(Department department);
 
-    List<Department> getAll();
+    PaginatedResponse<Department> getAllWithPagination(Pageable pageable);
 
     void deleteById(Long id);
 }

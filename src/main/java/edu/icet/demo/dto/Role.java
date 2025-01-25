@@ -20,6 +20,8 @@ public class Role {
     @NotBlank(message = "Role description is required.")
     private String description;
 
+    private Integer employeeCount;
+
     private List<Employee> employeeList;
 
     private Department department;

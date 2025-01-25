@@ -15,8 +15,12 @@ public class Department {
     @NotBlank(message = "Department name is required.")
     private String name;
 
-    @NotBlank(message = "Department description is required.")
-    private String description;
+    @NotBlank(message = "Department responsibility is required.")
+    private String responsibility;
+
+    private String manager;
+
+    private Integer employeeCount;
 
     private Set<Employee> employeeList;
 

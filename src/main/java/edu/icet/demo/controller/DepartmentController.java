@@ -32,4 +32,6 @@ public class DepartmentController {
                 .data(departmentList)
                 .build();
     }
+
+
 }

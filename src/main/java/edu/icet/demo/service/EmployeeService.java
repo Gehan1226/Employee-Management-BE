@@ -1,7 +1,8 @@
 package edu.icet.demo.service;
 
 import edu.icet.demo.dto.Employee;
-import edu.icet.demo.dto.auth.UserDTO;
+import edu.icet.demo.dto.response.PaginatedResponse;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -17,4 +18,5 @@ public interface EmployeeService {
 
     Employee findByFirstName(String firstName);
 
+    PaginatedResponse<Employee> getAllWithPaginated(String searchTerm, Pageable pageable);
 }

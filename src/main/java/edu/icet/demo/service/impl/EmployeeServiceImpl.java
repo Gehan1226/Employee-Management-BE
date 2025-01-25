@@ -2,6 +2,7 @@ package edu.icet.demo.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.icet.demo.dto.Employee;
+import edu.icet.demo.dto.response.PaginatedResponse;
 import edu.icet.demo.entity.EmployeeEntity;
 import edu.icet.demo.exception.DataMisMatchException;
 import edu.icet.demo.exception.DataNotFoundException;
@@ -13,6 +14,9 @@ import edu.icet.demo.repository.RoleRepository;
 import edu.icet.demo.service.EmployeeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -87,6 +91,23 @@ public class EmployeeServiceImpl implements EmployeeService {
             throw new DataNotFoundException("Employee with first name '%s' not found.".formatted(firstName));
         }
         return mapper.convertValue(employeeEntity, Employee.class);
+    }
+
+    @Override
+    public PaginatedResponse<Employee> getAllWithPaginated(String searchTerm, Pageable pageable) {
+        List<Employee> employeeList = new ArrayList<>();
+        Page<EmployeeEntity> response = employeeRepository.findAllWithSearch(searchTerm, pageable);
+        response.forEach(employeeEntity ->
+                employeeList.add(mapper.convertValue(employeeEntity, Employee.class)));
+
+        return new PaginatedResponse<>(
+                HttpStatus.OK.value(),
+                employeeList.isEmpty() ? "No roles found!" : "Roles retrieved.",
+                employeeList,
+                response.getTotalPages(),
+                response.getTotalElements(),
+                response.getNumber()
+        );
     }
 
 

@@ -1,10 +1,13 @@
 package edu.icet.demo.controller;
 
 import edu.icet.demo.dto.Employee;
+import edu.icet.demo.dto.response.PaginatedResponse;
 import edu.icet.demo.dto.response.SuccessResponse;
 import edu.icet.demo.service.EmployeeService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
@@ -23,7 +26,6 @@ public class EmployeeController {
 
     @PostMapping("/add")
     public SuccessResponse<Employee>  addEmployee(@Valid @RequestBody Employee employee, BindingResult result){
-        System.out.println("Employee: " + employee);
         Employee createdEmployee = employeeService.addEmployee(employee);
         return SuccessResponse.<Employee>builder()
                 .status(HttpStatus.CREATED.value())
@@ -51,6 +53,16 @@ public class EmployeeController {
                 .message(message)
                 .data(employeeList)
                 .build();
+    }
+
+    @GetMapping("/get-all-paginated")
+    public PaginatedResponse<Employee> getEmployeesPaginated(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String searchTerm){
+
+        Pageable pageable = PageRequest.of(page, size);
+        return employeeService.getAllWithPaginated(searchTerm, pageable);
     }
 
     @DeleteMapping("/delete")

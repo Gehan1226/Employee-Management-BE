@@ -35,4 +35,6 @@ public class EmployeeEntity {
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "address_id", referencedColumnName = "id")
     private AddressEntity address;
+
+    private boolean isManager;
 }

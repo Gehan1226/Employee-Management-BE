@@ -17,9 +17,12 @@ public class DepartmentEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
-    private String manager;
     private String responsibility;
     private Integer employeeCount;
+
+    @OneToOne
+    @JoinColumn(name = "manager_id", referencedColumnName = "id")
+    private EmployeeEntity manager;
 
     @JsonIgnore
     @OneToMany(mappedBy = "department", cascade = CascadeType.ALL, fetch = FetchType.LAZY)

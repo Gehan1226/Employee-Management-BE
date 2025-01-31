@@ -18,7 +18,7 @@ public class Department {
     @NotBlank(message = "Department responsibility is required.")
     private String responsibility;
 
-    private String manager;
+    private Employee manager;
 
     private Integer employeeCount;
 

@@ -43,4 +43,6 @@ public class Employee {
 
     @Valid
     private Address address;
+
+    private boolean isManager;
 }

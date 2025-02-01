@@ -1,6 +1,7 @@
 package edu.icet.demo.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 import java.util.Set;
@@ -22,6 +23,7 @@ public class DepartmentEntity {
 
     @OneToOne
     @JoinColumn(name = "manager_id", referencedColumnName = "id")
+    @JsonManagedReference
     private EmployeeEntity manager;
 
     @JsonIgnore

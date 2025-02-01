@@ -12,8 +12,10 @@ import org.springframework.stereotype.Repository;
 public interface DepartmentRepository extends JpaRepository<DepartmentEntity, Long> {
 
     @Query("SELECT d FROM DepartmentEntity d WHERE " +
-            "(:searchTerm IS NULL OR LOWER(d.name) LIKE LOWER(CONCAT('%', :searchTerm, '%')) " +
-            "OR LOWER(d.manager) LIKE LOWER(CONCAT('%', :searchTerm, '%')))")
+            "(:searchTerm IS NULL OR " +
+            "LOWER(d.name) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR " +
+            "LOWER(d.manager.firstName) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR " +
+            "LOWER(d.manager.lastName) LIKE LOWER(CONCAT('%', :searchTerm, '%')))")
     Page<DepartmentEntity> findAllWithSearch(@Param("searchTerm") String searchTerm, Pageable pageable);
 
 }

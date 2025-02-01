@@ -6,6 +6,7 @@ import edu.icet.demo.service.DepartmentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -25,9 +26,12 @@ public class DepartmentController {
     public PaginatedResponse<Department> getAll(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
-            @RequestParam(required = false) String searchTerm) {
+            @RequestParam(required = false) String searchTerm,
+            @RequestParam(defaultValue = "asc") String sortDirection,
+            @RequestParam(defaultValue = "employeeCount") String sortBy) {
 
-        Pageable pageable = PageRequest.of(page, size);
+        Sort sort = Sort.by(Sort.Direction.fromString(sortDirection), sortBy);
+        Pageable pageable = PageRequest.of(page, size, sort);
         return departmentService.getAllWithPagination(pageable, searchTerm);
     }
 

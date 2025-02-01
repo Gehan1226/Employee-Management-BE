@@ -19,4 +19,6 @@ public interface EmployeeService {
     Employee findByFirstName(String firstName);
 
     PaginatedResponse<Employee> getAllWithPaginated(String searchTerm, Pageable pageable);
+
+    List<Employee> getNonManagers();
 }

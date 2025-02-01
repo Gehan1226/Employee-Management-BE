@@ -110,6 +110,13 @@ public class EmployeeServiceImpl implements EmployeeService {
         );
     }
 
+    @Override
+    public List<Employee> getNonManagers() {
+        List<Employee> employeeList = new ArrayList<>();
+        employeeRepository.findByIsManagerFalse().forEach(employeeEntity ->
+                employeeList.add(mapper.convertValue(employeeEntity, Employee.class)));
+        return employeeList;
+    }
 
     public void validateRoleAndDepartment(Employee employee) {
         if (employee.getRole().getId() == null) {

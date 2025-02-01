@@ -8,6 +8,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface EmployeeRepository extends JpaRepository<EmployeeEntity,Long> {
 
@@ -26,4 +28,5 @@ public interface EmployeeRepository extends JpaRepository<EmployeeEntity,Long> {
             "LOWER(e.email) LIKE LOWER(CONCAT('%', :searchTerm, '%')))")
     Page<EmployeeEntity> findAllWithSearch(@Param("searchTerm") String searchTerm, Pageable pageable);
 
+    List<EmployeeEntity> findByIsManagerFalse();
 }

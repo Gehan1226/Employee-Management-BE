@@ -74,4 +74,14 @@ public class EmployeeController {
                 .build();
     }
 
+    @GetMapping("/non-managers")
+    public SuccessResponse<List<Employee>> getNonManagers(){
+        List<Employee> employeeList = employeeService.getNonManagers();
+        String message = employeeList.isEmpty() ? "No non-managers found!" : "Non-managers retrieved.";
+        return SuccessResponse.<List<Employee>>builder()
+                .status(HttpStatus.OK.value())
+                .message(message)
+                .data(employeeList)
+                .build();
+    }
 }

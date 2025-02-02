@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.icet.demo.dto.Role;
 import edu.icet.demo.dto.response.PaginatedResponse;
 import edu.icet.demo.entity.RoleEntity;
+import edu.icet.demo.exception.UnexpectedException;
 import edu.icet.demo.repository.RoleRepository;
 import edu.icet.demo.service.RoleService;
 import lombok.RequiredArgsConstructor;
@@ -51,18 +52,22 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     public PaginatedResponse<Role> getAllWithPagination(String searchTerm, Pageable pageable) {
-        List<Role> roleList = new ArrayList<>();
-        Page<RoleEntity> response = repository.findAllWithSearch(searchTerm, pageable);
-        response.forEach(roleEntity ->
-                roleList.add(mapper.convertValue(roleEntity, Role.class)));
+        try{
+            List<Role> roleList = new ArrayList<>();
+            Page<RoleEntity> response = repository.findAllWithSearch(searchTerm, pageable);
+            response.forEach(roleEntity ->
+                    roleList.add(mapper.convertValue(roleEntity, Role.class)));
 
-        return new PaginatedResponse<>(
-                HttpStatus.OK.value(),
-                roleList.isEmpty() ? "No roles found!" : "Roles retrieved.",
-                roleList,
-                response.getTotalPages(),
-                response.getTotalElements(),
-                response.getNumber()
-        );
+            return new PaginatedResponse<>(
+                    HttpStatus.OK.value(),
+                    roleList.isEmpty() ? "No roles found!" : "Roles retrieved.",
+                    roleList,
+                    response.getTotalPages(),
+                    response.getTotalElements(),
+                    response.getNumber()
+            );
+        } catch (Exception ex){
+            throw new UnexpectedException("An unexpected error occurred while fetching roles.");
+        }
     }
 }

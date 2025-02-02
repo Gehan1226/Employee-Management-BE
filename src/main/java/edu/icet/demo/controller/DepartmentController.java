@@ -27,12 +27,8 @@ public class DepartmentController {
     private final DepartmentService departmentService;
 
     @PostMapping("/add")
-    public SuccessResponse<Department> addDepartment(@Valid @RequestBody Department department, BindingResult result) {
-        departmentService.addDepartment(department);
-        return SuccessResponse.<Department>builder()
-                .status(HttpStatus.CREATED.value())
-                .message("Department added.")
-                .build();
+    public Department addDepartment(@Valid @RequestBody Department department, BindingResult result) {
+        return departmentService.addDepartment(department);
     }
 
     @GetMapping("/get-all-paginated")

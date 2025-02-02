@@ -105,27 +105,35 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public PaginatedResponse<Employee> getAllWithPaginated(String searchTerm, Pageable pageable) {
-        List<Employee> employeeList = new ArrayList<>();
-        Page<EmployeeEntity> response = employeeRepository.findAllWithSearch(searchTerm, pageable);
-        response.forEach(employeeEntity ->
-                employeeList.add(mapper.convertValue(employeeEntity, Employee.class)));
+        try {
+            List<Employee> employeeList = new ArrayList<>();
+            Page<EmployeeEntity> response = employeeRepository.findAllWithSearch(searchTerm, pageable);
+            response.forEach(employeeEntity ->
+                    employeeList.add(mapper.convertValue(employeeEntity, Employee.class)));
 
-        return new PaginatedResponse<>(
-                HttpStatus.OK.value(),
-                employeeList.isEmpty() ? "No roles found!" : "Roles retrieved.",
-                employeeList,
-                response.getTotalPages(),
-                response.getTotalElements(),
-                response.getNumber()
-        );
+            return new PaginatedResponse<>(
+                    HttpStatus.OK.value(),
+                    employeeList.isEmpty() ? "No roles found!" : "Roles retrieved.",
+                    employeeList,
+                    response.getTotalPages(),
+                    response.getTotalElements(),
+                    response.getNumber()
+            );
+        } catch (Exception e) {
+            throw new UnexpectedException("An unexpected error occurred while fetching employees.");
+        }
     }
 
     @Override
     public List<Employee> getNonManagers() {
-        List<Employee> employeeList = new ArrayList<>();
-        employeeRepository.findByIsManagerFalse().forEach(employeeEntity ->
-                employeeList.add(mapper.convertValue(employeeEntity, Employee.class)));
-        return employeeList;
+        try{
+            List<Employee> employeeList = new ArrayList<>();
+            employeeRepository.findByIsManagerFalse().forEach(employeeEntity ->
+                    employeeList.add(mapper.convertValue(employeeEntity, Employee.class)));
+            return employeeList;
+        } catch (Exception e) {
+            throw new UnexpectedException("An unexpected error occurred while fetching non-managers.");
+        }
     }
 
     public void validateRoleAndDepartment(Employee employee) {

@@ -62,7 +62,9 @@ public class UserServiceImpl implements UserService {
 
         List<UserDTO> userDTOList = new ArrayList<>();
         Page<UserEntity> userEntityPage =
-                userRepository.findByOptionalDateRangeAndEnabledFalseAndSearchTerm(startDate, endDate, searchTerm, pageable);
+                userRepository.findByOptionalDateRangeAndEnabledFalseAndSearchTerm(
+                        startDate, endDate, searchTerm, pageable
+                );
 
         userEntityPage.forEach(userEntity ->
                 userDTOList.add(objectMapper.convertValue(userEntity, UserDTO.class))
@@ -77,7 +79,6 @@ public class UserServiceImpl implements UserService {
                 userEntityPage.getNumber()
         );
     }
-
 
 
     @Override

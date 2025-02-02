@@ -47,19 +47,23 @@ public class DepartmentServiceImpl implements DepartmentService {
 
     @Override
     public PaginatedResponse<Department> getAllWithPagination(Pageable pageable, String searchTerm) {
-        List<Department> depList = new ArrayList<>();
-        Page<DepartmentEntity> response = repository.findAllWithSearch(searchTerm, pageable);
-        response.forEach(departmentEntity ->
-                depList.add(mapper.convertValue(departmentEntity, Department.class)));
+        try{
+            List<Department> depList = new ArrayList<>();
+            Page<DepartmentEntity> response = repository.findAllWithSearch(searchTerm, pageable);
+            response.forEach(departmentEntity ->
+                    depList.add(mapper.convertValue(departmentEntity, Department.class)));
 
-        return new PaginatedResponse<>(
-                HttpStatus.OK.value(),
-                depList.isEmpty() ? "No departments found!" : "Departments retrieved.",
-                depList,
-                response.getTotalPages(),
-                response.getTotalElements(),
-                response.getNumber()
-        );
+            return new PaginatedResponse<>(
+                    HttpStatus.OK.value(),
+                    depList.isEmpty() ? "No departments found!" : "Departments retrieved.",
+                    depList,
+                    response.getTotalPages(),
+                    response.getTotalElements(),
+                    response.getNumber()
+            );
+        } catch (Exception e) {
+            throw new UnexpectedException("An unexpected error occurred while retrieving departments");
+        }
     }
 
     @Override
@@ -71,7 +75,12 @@ public class DepartmentServiceImpl implements DepartmentService {
 
     @Override
     public List<DepartmentNameAndEmployeeCountDTO> getDepartmentNameWithEmployeeCount() {
-        return  repository.findAllDepartmentNamesAndEmployeeCounts();
-
+        try {
+            return  repository.findAllDepartmentNamesAndEmployeeCounts();
+        } catch (Exception e) {
+            throw new UnexpectedException(
+                    "An unexpected error occurred while retrieving department names and employee counts"
+            );
+        }
     }
 }

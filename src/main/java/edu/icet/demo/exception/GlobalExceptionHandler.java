@@ -45,8 +45,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                         .build());
     }
 
-    @ExceptionHandler(DataMisMatchException.class)
-    ResponseEntity<ErrorResponse> handleDataMisMatchException(DataMisMatchException exception) {
+    @ExceptionHandler(DataIntegrityException.class)
+    ResponseEntity<ErrorResponse> handleDataMisMatchException(DataIntegrityException exception) {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(ErrorResponse.builder()
@@ -82,6 +82,16 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 .body(ErrorResponse.builder()
                         .errorMessage(exception.getMessage())
                         .status("UNAUTHORIZED")
+                        .build());
+    }
+
+    @ExceptionHandler(UnexpectedException.class)
+    public ResponseEntity<ErrorResponse> handleUnexpectedException(Exception exception) {
+        return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(ErrorResponse.builder()
+                        .errorMessage(exception.getMessage())
+                        .status("INTERNAL_SERVER_ERROR")
                         .build());
     }
 }

@@ -14,6 +14,8 @@ import java.util.List;
 @Repository
 public interface DepartmentRepository extends JpaRepository<DepartmentEntity, Long> {
 
+    boolean existsByName(String name);
+
     @Query("SELECT d FROM DepartmentEntity d WHERE " +
             "(:searchTerm IS NULL OR " +
             "LOWER(d.name) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR " +

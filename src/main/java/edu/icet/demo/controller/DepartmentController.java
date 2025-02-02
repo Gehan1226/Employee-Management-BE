@@ -22,7 +22,7 @@ public class DepartmentController {
 
     private final DepartmentService departmentService;
 
-    @PostMapping("add-department")
+    @PostMapping("/add")
     public Department addDepartment(@RequestBody Department department) {
         return departmentService.addDepartment(department);
     }

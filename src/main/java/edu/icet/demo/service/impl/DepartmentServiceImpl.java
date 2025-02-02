@@ -5,9 +5,14 @@ import edu.icet.demo.dto.Department;
 import edu.icet.demo.dto.DepartmentNameAndEmployeeCountDTO;
 import edu.icet.demo.dto.response.PaginatedResponse;
 import edu.icet.demo.entity.DepartmentEntity;
+import edu.icet.demo.exception.DataDuplicateException;
+import edu.icet.demo.exception.DataIntegrityException;
+import edu.icet.demo.exception.UnexpectedException;
 import edu.icet.demo.repository.DepartmentRepository;
 import edu.icet.demo.service.DepartmentService;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.exception.ConstraintViolationException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -25,10 +30,21 @@ public class DepartmentServiceImpl implements DepartmentService {
 
     @Override
     public Department addDepartment(Department department) {
-        DepartmentEntity saved = repository.save(mapper.convertValue(department, DepartmentEntity.class));
-        return mapper.convertValue(saved, Department.class);
+        if (repository.existsByName(department.getName())) {
+            throw new DataDuplicateException(
+                    "A department with the name '" + department.getName() + "' already exists.");
+        }
+        try {
+            DepartmentEntity departmentEntity = mapper.convertValue(department, DepartmentEntity.class);
+            DepartmentEntity savedEntity = repository.save(departmentEntity);
+            return mapper.convertValue(savedEntity, Department.class);
+        } catch (DataIntegrityViolationException ex) {
+            throw new DataIntegrityException(
+                    "A data integrity violation occurred while saving the department");
+        } catch (Exception ex) {
+            throw new UnexpectedException("An unexpected error occurred while saving the department");
+        }
     }
-
     @Override
     public PaginatedResponse<Department> getAllWithPagination(Pageable pageable, String searchTerm) {
         List<Department> depList = new ArrayList<>();

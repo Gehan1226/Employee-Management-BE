@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.icet.demo.dto.Employee;
 import edu.icet.demo.dto.response.PaginatedResponse;
 import edu.icet.demo.entity.EmployeeEntity;
-import edu.icet.demo.exception.DataMisMatchException;
+import edu.icet.demo.exception.DataIntegrityException;
 import edu.icet.demo.exception.DataNotFoundException;
 import edu.icet.demo.exception.DeletionException;
 import edu.icet.demo.exception.MissingAttributeException;
@@ -73,7 +73,7 @@ public class EmployeeServiceImpl implements EmployeeService {
             return mapper.convertValue(
                     employeeRepository.save(mapper.convertValue(employee, EmployeeEntity.class)), Employee.class);
         } catch (DataIntegrityViolationException e) {
-            throw new DataMisMatchException("The current address id is already used!");
+            throw new DataIntegrityException("The current address id is already used!");
         }
     }
 

@@ -1,13 +1,12 @@
 package edu.icet.demo.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import edu.icet.demo.dto.Department;
 import edu.icet.demo.dto.Employee;
 import edu.icet.demo.dto.response.PaginatedResponse;
+import edu.icet.demo.entity.DepartmentEntity;
 import edu.icet.demo.entity.EmployeeEntity;
-import edu.icet.demo.exception.DataIntegrityException;
-import edu.icet.demo.exception.DataNotFoundException;
-import edu.icet.demo.exception.DeletionException;
-import edu.icet.demo.exception.MissingAttributeException;
+import edu.icet.demo.exception.*;
 import edu.icet.demo.repository.DepartmentRepository;
 import edu.icet.demo.repository.EmployeeRepository;
 import edu.icet.demo.repository.RoleRepository;
@@ -34,8 +33,19 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public Employee addEmployee(Employee employee) {
         validateRoleAndDepartment(employee);
-        return mapper.convertValue(
-                employeeRepository.save(mapper.convertValue(employee, EmployeeEntity.class)), Employee.class);
+        if (employeeRepository.existsByEmail(employee.getEmail())) {
+            throw new DataDuplicateException(
+                    "A employee with the email '" + employee.getEmail() + "' already exists.");
+        }
+        try {
+            return mapper.convertValue(
+                    employeeRepository.save(mapper.convertValue(employee, EmployeeEntity.class)), Employee.class);
+        } catch (DataIntegrityViolationException ex) {
+            throw new DataIntegrityException(
+                    "A data integrity violation occurred while saving the employee");
+        } catch (Exception ex) {
+            throw new UnexpectedException("An unexpected error occurred while saving the employee");
+        }
     }
 
     @Override

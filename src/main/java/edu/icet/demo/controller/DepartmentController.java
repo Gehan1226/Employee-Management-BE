@@ -5,11 +5,14 @@ import edu.icet.demo.dto.DepartmentNameAndEmployeeCountDTO;
 import edu.icet.demo.dto.response.PaginatedResponse;
 import edu.icet.demo.dto.response.SuccessResponse;
 import edu.icet.demo.service.DepartmentService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,12 +21,13 @@ import java.util.List;
 @RequestMapping("/api/v1/department")
 @RequiredArgsConstructor
 @CrossOrigin
+@Validated
 public class DepartmentController {
 
     private final DepartmentService departmentService;
 
     @PostMapping("/add")
-    public Department addDepartment(@RequestBody Department department) {
+    public Department addDepartment(@Valid @RequestBody Department department, BindingResult result) {
         return departmentService.addDepartment(department);
     }
 

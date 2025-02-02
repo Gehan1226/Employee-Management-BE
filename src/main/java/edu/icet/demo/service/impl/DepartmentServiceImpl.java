@@ -11,7 +11,6 @@ import edu.icet.demo.exception.UnexpectedException;
 import edu.icet.demo.repository.DepartmentRepository;
 import edu.icet.demo.service.DepartmentService;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -45,6 +44,7 @@ public class DepartmentServiceImpl implements DepartmentService {
             throw new UnexpectedException("An unexpected error occurred while saving the department");
         }
     }
+
     @Override
     public PaginatedResponse<Department> getAllWithPagination(Pageable pageable, String searchTerm) {
         List<Department> depList = new ArrayList<>();

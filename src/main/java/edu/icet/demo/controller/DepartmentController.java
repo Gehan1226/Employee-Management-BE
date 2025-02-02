@@ -1,5 +1,6 @@
 package edu.icet.demo.controller;
 
+import edu.icet.demo.dto.AddDepartmentDTO;
 import edu.icet.demo.dto.Department;
 import edu.icet.demo.dto.DepartmentNameAndEmployeeCountDTO;
 import edu.icet.demo.dto.response.PaginatedResponse;
@@ -27,8 +28,13 @@ public class DepartmentController {
     private final DepartmentService departmentService;
 
     @PostMapping("/add")
-    public Department addDepartment(@Valid @RequestBody Department department, BindingResult result) {
-        return departmentService.addDepartment(department);
+    public SuccessResponse<AddDepartmentDTO> addDepartment(@Valid @RequestBody AddDepartmentDTO department, BindingResult result) {
+        AddDepartmentDTO addedDepartment = departmentService.addDepartment(department);
+        return SuccessResponse.<AddDepartmentDTO>builder()
+                .status(HttpStatus.CREATED.value())
+                .message("Department added successfully.")
+                .data(addedDepartment)
+                .build();
     }
 
     @GetMapping("/get-all-paginated")

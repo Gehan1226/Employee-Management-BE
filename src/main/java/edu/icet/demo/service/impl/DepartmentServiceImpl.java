@@ -1,6 +1,7 @@
 package edu.icet.demo.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import edu.icet.demo.dto.AddDepartmentDTO;
 import edu.icet.demo.dto.Department;
 import edu.icet.demo.dto.DepartmentNameAndEmployeeCountDTO;
 import edu.icet.demo.dto.response.PaginatedResponse;
@@ -28,15 +29,15 @@ public class DepartmentServiceImpl implements DepartmentService {
     private final ObjectMapper mapper;
 
     @Override
-    public Department addDepartment(Department department) {
+    public AddDepartmentDTO addDepartment(AddDepartmentDTO department) {
         if (repository.existsByName(department.getName())) {
             throw new DataDuplicateException(
                     "A department with the name '" + department.getName() + "' already exists.");
         }
         try {
             DepartmentEntity departmentEntity = mapper.convertValue(department, DepartmentEntity.class);
-            DepartmentEntity savedEntity = repository.save(departmentEntity);
-            return mapper.convertValue(savedEntity, Department.class);
+            repository.save(departmentEntity);
+            return department;
         } catch (DataIntegrityViolationException ex) {
             throw new DataIntegrityException(
                     "A data integrity violation occurred while saving the department");

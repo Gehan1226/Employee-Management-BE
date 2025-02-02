@@ -2,6 +2,7 @@ package edu.icet.demo.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.icet.demo.dto.Department;
+import edu.icet.demo.dto.DepartmentNameAndEmployeeCountDTO;
 import edu.icet.demo.dto.response.PaginatedResponse;
 import edu.icet.demo.entity.DepartmentEntity;
 import edu.icet.demo.repository.DepartmentRepository;
@@ -47,8 +48,14 @@ public class DepartmentServiceImpl implements DepartmentService {
 
     @Override
     public void deleteById(Long id) {
-        if(repository.existsById(id)){
+        if (repository.existsById(id)) {
             repository.deleteById(id);
         }
+    }
+
+    @Override
+    public List<DepartmentNameAndEmployeeCountDTO> getDepartmentNameWithEmployeeCount() {
+        return  repository.findAllDepartmentNamesAndEmployeeCounts();
+
     }
 }

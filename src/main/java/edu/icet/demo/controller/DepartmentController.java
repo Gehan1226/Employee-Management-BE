@@ -69,4 +69,20 @@ public class DepartmentController {
                 .message("Department deleted.")
                 .build();
     }
+
+    @PutMapping("/update/{id}")
+    public SuccessResponse<DepartmentOperationDTO> updateDepartment(
+            @PathVariable Long id,
+            @Valid @RequestBody DepartmentOperationDTO department,
+            BindingResult result) {
+
+        DepartmentOperationDTO updatedDepartment = departmentService.updateDepartment(id, department);
+        return SuccessResponse.<DepartmentOperationDTO>builder()
+                .status(HttpStatus.OK.value())
+                .message("Department updated successfully.")
+                .data(updatedDepartment)
+                .build();
+    }
+
+
 }

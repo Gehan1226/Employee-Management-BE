@@ -16,4 +16,6 @@ public interface DepartmentService {
     void deleteById(Long id);
 
     List<DepartmentNameAndEmployeeCountDTO> getDepartmentNameWithEmployeeCount();
+
+    DepartmentOperationDTO updateDepartment(Long id, DepartmentOperationDTO department);
 }

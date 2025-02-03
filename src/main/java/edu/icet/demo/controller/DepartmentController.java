@@ -1,6 +1,6 @@
 package edu.icet.demo.controller;
 
-import edu.icet.demo.dto.AddDepartmentDTO;
+import edu.icet.demo.dto.operationDTOS.DepartmentOperationDTO;
 import edu.icet.demo.dto.Department;
 import edu.icet.demo.dto.DepartmentNameAndEmployeeCountDTO;
 import edu.icet.demo.dto.response.PaginatedResponse;
@@ -28,9 +28,11 @@ public class DepartmentController {
     private final DepartmentService departmentService;
 
     @PostMapping("/add")
-    public SuccessResponse<AddDepartmentDTO> addDepartment(@Valid @RequestBody AddDepartmentDTO department, BindingResult result) {
-        AddDepartmentDTO addedDepartment = departmentService.addDepartment(department);
-        return SuccessResponse.<AddDepartmentDTO>builder()
+    public SuccessResponse<DepartmentOperationDTO> addDepartment(
+            @Valid @RequestBody DepartmentOperationDTO department,
+            BindingResult result) {
+        DepartmentOperationDTO addedDepartment = departmentService.addDepartment(department);
+        return SuccessResponse.<DepartmentOperationDTO>builder()
                 .status(HttpStatus.CREATED.value())
                 .message("Department added successfully.")
                 .data(addedDepartment)
@@ -59,4 +61,12 @@ public class DepartmentController {
                 .build();
     }
 
+    @DeleteMapping("/delete")
+    public SuccessResponse<String> deleteDepartment(@RequestParam Long id) {
+        departmentService.deleteById(id);
+        return SuccessResponse.<String>builder()
+                .status(HttpStatus.OK.value())
+                .message("Department deleted.")
+                .build();
+    }
 }

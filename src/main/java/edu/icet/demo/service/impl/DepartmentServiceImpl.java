@@ -1,7 +1,7 @@
 package edu.icet.demo.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import edu.icet.demo.dto.AddDepartmentDTO;
+import edu.icet.demo.dto.operationDTOS.DepartmentOperationDTO;
 import edu.icet.demo.dto.Department;
 import edu.icet.demo.dto.DepartmentNameAndEmployeeCountDTO;
 import edu.icet.demo.dto.response.PaginatedResponse;
@@ -29,10 +29,11 @@ public class DepartmentServiceImpl implements DepartmentService {
     private final ObjectMapper mapper;
 
     @Override
-    public AddDepartmentDTO addDepartment(AddDepartmentDTO department) {
+    public DepartmentOperationDTO addDepartment(DepartmentOperationDTO department) {
         if (repository.existsByName(department.getName())) {
             throw new DataDuplicateException(
-                    "A department with the name '" + department.getName() + "' already exists.");
+                    String.format("A department with the name '%s' already exists.", department.getName())
+            );
         }
         try {
             DepartmentEntity departmentEntity = mapper.convertValue(department, DepartmentEntity.class);
@@ -40,7 +41,7 @@ public class DepartmentServiceImpl implements DepartmentService {
             return department;
         } catch (DataIntegrityViolationException ex) {
             throw new DataIntegrityException(
-                    "A data integrity violation occurred while saving the department");
+                    "Manager ID does not exist in the system. Please provide a valid manager ID.");
         } catch (Exception ex) {
             throw new UnexpectedException("An unexpected error occurred while saving the department");
         }
@@ -48,7 +49,7 @@ public class DepartmentServiceImpl implements DepartmentService {
 
     @Override
     public PaginatedResponse<Department> getAllWithPagination(Pageable pageable, String searchTerm) {
-        try{
+        try {
             List<Department> depList = new ArrayList<>();
             Page<DepartmentEntity> response = repository.findAllWithSearch(searchTerm, pageable);
             response.forEach(departmentEntity ->
@@ -69,15 +70,21 @@ public class DepartmentServiceImpl implements DepartmentService {
 
     @Override
     public void deleteById(Long id) {
-        if (repository.existsById(id)) {
-            repository.deleteById(id);
+        try {
+            if (repository.existsById(id)) {
+                repository.deleteById(id);
+                return;
+            }
+        } catch (Exception e) {
+            throw new UnexpectedException("An unexpected error occurred while deleting the department");
         }
+        throw new DataIntegrityException(String.format("Department with ID %d does not exist in the system.", id));
     }
 
     @Override
     public List<DepartmentNameAndEmployeeCountDTO> getDepartmentNameWithEmployeeCount() {
         try {
-            return  repository.findAllDepartmentNamesAndEmployeeCounts();
+            return repository.findAllDepartmentNamesAndEmployeeCounts();
         } catch (Exception e) {
             throw new UnexpectedException(
                     "An unexpected error occurred while retrieving department names and employee counts"

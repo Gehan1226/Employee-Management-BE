@@ -1,10 +1,8 @@
 package edu.icet.demo.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import edu.icet.demo.dto.Department;
 import edu.icet.demo.dto.Employee;
 import edu.icet.demo.dto.response.PaginatedResponse;
-import edu.icet.demo.entity.DepartmentEntity;
 import edu.icet.demo.entity.EmployeeEntity;
 import edu.icet.demo.exception.*;
 import edu.icet.demo.repository.DepartmentRepository;

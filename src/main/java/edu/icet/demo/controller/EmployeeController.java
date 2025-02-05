@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/employee") // Added versioning here
+@RequestMapping("/api/v1/employee")
 @RequiredArgsConstructor
 @CrossOrigin
 @Validated
@@ -24,7 +24,7 @@ public class EmployeeController {
 
     final EmployeeService employeeService;
 
-    @PostMapping("/add")
+    @PostMapping()
     public SuccessResponse<Employee>  addEmployee(@Valid @RequestBody Employee employee, BindingResult result){
         Employee createdEmployee = employeeService.addEmployee(employee);
         return SuccessResponse.<Employee>builder()
@@ -34,7 +34,7 @@ public class EmployeeController {
                 .build();
     }
 
-    @PatchMapping("/update")
+    @PatchMapping()
     public SuccessResponse<Employee> updateEmployee(@RequestBody Employee employee, BindingResult result){
         Employee updatedEmployee = employeeService.updateEmployee(employee);
         return SuccessResponse.<Employee>builder()
@@ -44,7 +44,7 @@ public class EmployeeController {
                 .build();
     }
 
-    @GetMapping("/get-all")
+    @GetMapping("/employees")
     public SuccessResponse<List<Employee>> getEmployees(){
         List<Employee> employeeList = employeeService.getAll();
         String message = employeeList.isEmpty() ? "Employee List is empty!" : "Employee list retrieved.";
@@ -55,7 +55,7 @@ public class EmployeeController {
                 .build();
     }
 
-    @GetMapping("/get-all-paginated")
+    @GetMapping("/paginated-employees")
     public PaginatedResponse<Employee> getEmployeesPaginated(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
@@ -65,7 +65,7 @@ public class EmployeeController {
         return employeeService.getAllWithPaginated(searchTerm, pageable);
     }
 
-    @DeleteMapping("/delete")
+    @DeleteMapping()
     public SuccessResponse<String> deleteEmployees(@RequestParam String email){
         employeeService.deleteEmployee(email);
         return SuccessResponse.<String>builder()

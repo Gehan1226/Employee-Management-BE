@@ -3,7 +3,7 @@ package edu.icet.demo.controller;
 
 import edu.icet.demo.dto.auth.AccessToken;
 import edu.icet.demo.dto.response.PaginatedResponse;
-import edu.icet.demo.dto.response.SuccessResponse;
+import edu.icet.demo.dto.response.SuccessResponseWithData;
 import edu.icet.demo.dto.auth.UserDTO;
 import edu.icet.demo.dto.auth.UserLoginRequest;
 import edu.icet.demo.service.UserService;
@@ -30,9 +30,9 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/register")
-    public SuccessResponse<UserDTO> register(@Valid @RequestBody UserDTO user, BindingResult result) {
+    public SuccessResponseWithData<UserDTO> register(@Valid @RequestBody UserDTO user, BindingResult result) {
         UserDTO registeredUser = userService.register(user);
-        return SuccessResponse.<UserDTO>builder()
+        return SuccessResponseWithData.<UserDTO>builder()
                 .status(HttpStatus.CREATED.value())
                 .message("User register successfully !")
                 .data(registeredUser)
@@ -40,10 +40,10 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public SuccessResponse<AccessToken> login(@Valid @RequestBody UserLoginRequest userLoginRequest,
-                                              BindingResult result) {
+    public SuccessResponseWithData<AccessToken> login(@Valid @RequestBody UserLoginRequest userLoginRequest,
+                                                      BindingResult result) {
         AccessToken token = userService.verify(userLoginRequest);
-        return SuccessResponse.<AccessToken>builder()
+        return SuccessResponseWithData.<AccessToken>builder()
                 .status(HttpStatus.OK.value())
                 .message("User login successfully !")
                 .data(token)
@@ -64,18 +64,18 @@ public class UserController {
 
 
     @PatchMapping("/update-role-and-enabled")
-    public SuccessResponse<String> updateRoleAndEnabled(@RequestBody UserDTO userDTO) {
+    public SuccessResponseWithData<String> updateRoleAndEnabled(@RequestBody UserDTO userDTO) {
         userService.updateRoleAndEnabled(userDTO);
-        return SuccessResponse.<String>builder()
+        return SuccessResponseWithData.<String>builder()
                 .status(HttpStatus.OK.value())
                 .message("User updated successfully !")
                 .build();
     }
 
     @DeleteMapping("/delete-by-email/{email}")
-    public SuccessResponse<String> deleteByEmail(@PathVariable String email) {
+    public SuccessResponseWithData<String> deleteByEmail(@PathVariable String email) {
         userService.deleteByEmail(email);
-        return SuccessResponse.<String>builder()
+        return SuccessResponseWithData.<String>builder()
                 .status(HttpStatus.OK.value())
                 .message("User deleted successfully !")
                 .build();

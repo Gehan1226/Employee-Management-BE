@@ -2,7 +2,7 @@ package edu.icet.demo.controller;
 
 import edu.icet.demo.dto.Role;
 import edu.icet.demo.dto.response.PaginatedResponse;
-import edu.icet.demo.dto.response.SuccessResponse;
+import edu.icet.demo.dto.response.SuccessResponseWithData;
 import edu.icet.demo.service.RoleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -41,10 +41,10 @@ public class RoleController {
     }
 
     @GetMapping("/get-by-department/{id}")
-    public SuccessResponse<List<Role>> getRolesByDepartmentId(@PathVariable Long id){
+    public SuccessResponseWithData<List<Role>> getRolesByDepartmentId(@PathVariable Long id){
         List<Role> rolesByDepartmentId = service.getRolesByDepartmentId(id);
         String message = rolesByDepartmentId.isEmpty() ? "Roles not found for this department!" : "Roles retrieved.";
-        return SuccessResponse.<List<Role>>builder()
+        return SuccessResponseWithData.<List<Role>>builder()
                 .status(HttpStatus.OK.value())
                 .message(message)
                 .data(rolesByDepartmentId)

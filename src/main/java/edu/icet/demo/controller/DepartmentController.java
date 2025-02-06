@@ -4,7 +4,7 @@ import edu.icet.demo.dto.operationDTOS.DepartmentOperationDTO;
 import edu.icet.demo.dto.Department;
 import edu.icet.demo.dto.DepartmentNameAndEmployeeCountDTO;
 import edu.icet.demo.dto.response.PaginatedResponse;
-import edu.icet.demo.dto.response.SuccessResponse;
+import edu.icet.demo.dto.response.SuccessResponseWithData;
 import edu.icet.demo.service.DepartmentService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -28,11 +28,11 @@ public class DepartmentController {
     private final DepartmentService departmentService;
 
     @PostMapping("/add")
-    public SuccessResponse<DepartmentOperationDTO> addDepartment(
+    public SuccessResponseWithData<DepartmentOperationDTO> addDepartment(
             @Valid @RequestBody DepartmentOperationDTO department,
             BindingResult result) {
         DepartmentOperationDTO addedDepartment = departmentService.addDepartment(department);
-        return SuccessResponse.<DepartmentOperationDTO>builder()
+        return SuccessResponseWithData.<DepartmentOperationDTO>builder()
                 .status(HttpStatus.CREATED.value())
                 .message("Department added successfully.")
                 .data(addedDepartment)
@@ -53,8 +53,8 @@ public class DepartmentController {
     }
 
     @GetMapping("/names-and-employee-counts")
-    public SuccessResponse<List<DepartmentNameAndEmployeeCountDTO>> getDepartmentNameWithEmployeeCount() {
-        return SuccessResponse.<List<DepartmentNameAndEmployeeCountDTO>>builder()
+    public SuccessResponseWithData<List<DepartmentNameAndEmployeeCountDTO>> getDepartmentNameWithEmployeeCount() {
+        return SuccessResponseWithData.<List<DepartmentNameAndEmployeeCountDTO>>builder()
                 .status(HttpStatus.OK.value())
                 .message("Department name and employee count retrieved.")
                 .data(departmentService.getDepartmentNameWithEmployeeCount())
@@ -62,22 +62,22 @@ public class DepartmentController {
     }
 
     @DeleteMapping("/delete")
-    public SuccessResponse<String> deleteDepartment(@RequestParam Long id) {
+    public SuccessResponseWithData<String> deleteDepartment(@RequestParam Long id) {
         departmentService.deleteById(id);
-        return SuccessResponse.<String>builder()
+        return SuccessResponseWithData.<String>builder()
                 .status(HttpStatus.OK.value())
                 .message("Department deleted.")
                 .build();
     }
 
     @PutMapping("/update/{id}")
-    public SuccessResponse<DepartmentOperationDTO> updateDepartment(
+    public SuccessResponseWithData<DepartmentOperationDTO> updateDepartment(
             @PathVariable Long id,
             @Valid @RequestBody DepartmentOperationDTO department,
             BindingResult result) {
 
         DepartmentOperationDTO updatedDepartment = departmentService.updateDepartment(id, department);
-        return SuccessResponse.<DepartmentOperationDTO>builder()
+        return SuccessResponseWithData.<DepartmentOperationDTO>builder()
                 .status(HttpStatus.OK.value())
                 .message("Department updated successfully.")
                 .data(updatedDepartment)

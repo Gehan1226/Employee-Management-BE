@@ -2,7 +2,7 @@ package edu.icet.demo.controller;
 
 import edu.icet.demo.dto.Employee;
 import edu.icet.demo.dto.response.PaginatedResponse;
-import edu.icet.demo.dto.response.SuccessResponse;
+import edu.icet.demo.dto.response.SuccessResponseWithData;
 import edu.icet.demo.service.EmployeeService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -25,9 +25,9 @@ public class EmployeeController {
     final EmployeeService employeeService;
 
     @PostMapping()
-    public SuccessResponse<Employee>  addEmployee(@Valid @RequestBody Employee employee, BindingResult result){
+    public SuccessResponseWithData<Employee> addEmployee(@Valid @RequestBody Employee employee, BindingResult result){
         Employee createdEmployee = employeeService.addEmployee(employee);
-        return SuccessResponse.<Employee>builder()
+        return SuccessResponseWithData.<Employee>builder()
                 .status(HttpStatus.CREATED.value())
                 .message("Employee created successfully.")
                 .data(createdEmployee)
@@ -35,9 +35,9 @@ public class EmployeeController {
     }
 
     @PatchMapping()
-    public SuccessResponse<Employee> updateEmployee(@RequestBody Employee employee, BindingResult result){
+    public SuccessResponseWithData<Employee> updateEmployee(@RequestBody Employee employee, BindingResult result){
         Employee updatedEmployee = employeeService.updateEmployee(employee);
-        return SuccessResponse.<Employee>builder()
+        return SuccessResponseWithData.<Employee>builder()
                 .status(HttpStatus.OK.value())
                 .message("Employee updated successfully.")
                 .data(updatedEmployee)
@@ -45,10 +45,10 @@ public class EmployeeController {
     }
 
     @GetMapping("/employees")
-    public SuccessResponse<List<Employee>> getEmployees(){
+    public SuccessResponseWithData<List<Employee>> getEmployees(){
         List<Employee> employeeList = employeeService.getAll();
         String message = employeeList.isEmpty() ? "Employee List is empty!" : "Employee list retrieved.";
-        return SuccessResponse.<List<Employee>>builder()
+        return SuccessResponseWithData.<List<Employee>>builder()
                 .status(HttpStatus.OK.value())
                 .message(message)
                 .data(employeeList)
@@ -66,19 +66,19 @@ public class EmployeeController {
     }
 
     @DeleteMapping()
-    public SuccessResponse<String> deleteEmployees(@RequestParam String email){
+    public SuccessResponseWithData<String> deleteEmployees(@RequestParam String email){
         employeeService.deleteEmployee(email);
-        return SuccessResponse.<String>builder()
+        return SuccessResponseWithData.<String>builder()
                 .status(HttpStatus.OK.value())
                 .message("Employee deleted!")
                 .build();
     }
 
     @GetMapping("/non-managers")
-    public SuccessResponse<List<Employee>> getNonManagers(){
+    public SuccessResponseWithData<List<Employee>> getNonManagers(){
         List<Employee> employeeList = employeeService.getNonManagers();
         String message = employeeList.isEmpty() ? "No non-managers found!" : "Non-managers retrieved.";
-        return SuccessResponse.<List<Employee>>builder()
+        return SuccessResponseWithData.<List<Employee>>builder()
                 .status(HttpStatus.OK.value())
                 .message(message)
                 .data(employeeList)

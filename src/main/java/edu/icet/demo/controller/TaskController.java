@@ -23,7 +23,7 @@ public class TaskController {
         return SuccessResponse.builder().status(HttpStatus.OK.value()).message("Task added successfully!").build();
     }
 
-    @PutMapping("/{id}")
+    @PatchMapping("/{id}")
     public SuccessResponse updateById(@PathVariable Long id, @RequestBody Task task) {
         taskService.updateById(id, task);
         return SuccessResponse.builder().status(HttpStatus.OK.value()).message("Task updated successfully!").build();

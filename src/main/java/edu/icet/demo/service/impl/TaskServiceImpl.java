@@ -2,8 +2,6 @@ package edu.icet.demo.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.icet.demo.dto.Task;
-import edu.icet.demo.entity.DepartmentEntity;
-import edu.icet.demo.entity.EmployeeEntity;
 import edu.icet.demo.entity.TaskEntity;
 import edu.icet.demo.exception.DataIntegrityException;
 import edu.icet.demo.exception.UnexpectedException;
@@ -52,5 +50,14 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public void deleteById(Long id) {
+        try {
+            if (taskRepository.existsById(id)) {
+                taskRepository.deleteById(id);
+                return;
+            }
+        } catch (Exception e) {
+            throw new UnexpectedException("An unexpected error occurred while deleting the task");
+        }
+        throw new DataIntegrityException(String.format("Task with ID %d does not exist in the system.", id));
     }
 }

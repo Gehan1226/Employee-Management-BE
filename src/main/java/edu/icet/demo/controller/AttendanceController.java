@@ -27,12 +27,12 @@ public class AttendanceController {
                 .message("Attendance marked successfully!").build();
     }
 
-    @GetMapping("/{id}")
-    public SuccessResponseWithData<Attendance> getAttendanceById(@PathVariable Long id) {
+    @GetMapping("/employee/{id}")
+    public SuccessResponseWithData<Attendance> getAttendanceByEmployeeId(@PathVariable Long id) {
         return SuccessResponseWithData.<Attendance>builder()
                 .status(HttpStatus.OK.value())
                 .message("Attendance retrieved.")
-                .data(attendanceService.getAttendanceById(id))
+                .data(attendanceService.getAttendanceByEmployeeId(id))
                 .build();
     }
 }

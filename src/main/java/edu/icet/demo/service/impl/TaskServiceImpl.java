@@ -5,6 +5,7 @@ import edu.icet.demo.dto.Task;
 import edu.icet.demo.entity.EmployeeEntity;
 import edu.icet.demo.entity.TaskEntity;
 import edu.icet.demo.exception.DataIntegrityException;
+import edu.icet.demo.exception.DataNotFoundException;
 import edu.icet.demo.exception.UnexpectedException;
 import edu.icet.demo.repository.TaskRepository;
 import edu.icet.demo.service.TaskService;
@@ -37,7 +38,7 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public void updateById(Long id, Task task) {
          TaskEntity taskEntity = taskRepository.findById(id)
-                .orElseThrow(() -> new DataIntegrityException(
+                .orElseThrow(() -> new DataNotFoundException(
                         String.format("Task with ID %d does not exist in the system.", id)));
 
         List<EmployeeEntity> employeeList = new ArrayList<>();

@@ -6,6 +6,5 @@ import edu.icet.demo.dto.SaveAttendanceDTO;
 
 public interface AttendanceService {
     void markAttendance(SaveAttendanceDTO attendance);
-
-    Attendance getAttendanceById(Long id);
+    Attendance getAttendanceByEmployeeId(Long id);
 }

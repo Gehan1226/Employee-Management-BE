@@ -6,6 +6,7 @@ import edu.icet.demo.dto.SaveAttendanceDTO;
 import edu.icet.demo.entity.AttendanceEntity;
 import edu.icet.demo.exception.DataDuplicateException;
 import edu.icet.demo.exception.DataIntegrityException;
+import edu.icet.demo.exception.DataNotFoundException;
 import edu.icet.demo.exception.UnexpectedException;
 import edu.icet.demo.repository.AttendanceRepository;
 import edu.icet.demo.service.AttendanceService;
@@ -37,9 +38,9 @@ public class AttendanceServiceImpl implements AttendanceService {
     }
 
     @Override
-    public Attendance getAttendanceById(Long id) {
-        return null;
+    public Attendance getAttendanceByEmployeeId(Long id) {
+        AttendanceEntity attendanceEntity = attendanceRepository.findById(id).
+                orElseThrow(() -> new DataNotFoundException("Attendance for employee with ID " + id + " not found."));
+        return mapper.convertValue(attendanceEntity, Attendance.class);
     }
-
-
 }

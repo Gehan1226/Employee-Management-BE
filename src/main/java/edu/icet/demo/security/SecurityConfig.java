@@ -39,7 +39,8 @@ public class SecurityConfig {
                                 "/api/v1/auth/**",
                                 "/api/v1/employee/**",                  //for development purposes
                                 "/api/v1/role/**",
-                                "/api/v1/department/**").permitAll()
+                                "/api/v1/department/**",
+                                "/api/v1/task/**").permitAll()
                         .anyRequest().authenticated())
                 .httpBasic(httpBasic -> httpBasic.authenticationEntryPoint(customAuthenticationEntryPoint))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

@@ -2,6 +2,7 @@ package edu.icet.demo.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.icet.demo.dto.Task;
+import edu.icet.demo.entity.EmployeeEntity;
 import edu.icet.demo.entity.TaskEntity;
 import edu.icet.demo.exception.DataIntegrityException;
 import edu.icet.demo.exception.UnexpectedException;
@@ -10,6 +11,9 @@ import edu.icet.demo.service.TaskService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -35,10 +39,16 @@ public class TaskServiceImpl implements TaskService {
          TaskEntity taskEntity = taskRepository.findById(id)
                 .orElseThrow(() -> new DataIntegrityException(
                         String.format("Task with ID %d does not exist in the system.", id)));
+
+        List<EmployeeEntity> employeeList = new ArrayList<>();
+
+        task.getEmployeeList().forEach(employee ->
+                employeeList.add(mapper.convertValue(employee, EmployeeEntity.class)));
         try {
             taskEntity.setTaskDescription(task.getTaskDescription());
             taskEntity.setAssignedTime(task.getAssignedTime());
             taskEntity.setAssignedDate(task.getDueDate());
+            taskEntity.setEmployeeList(employeeList);
             taskRepository.save(taskEntity);
         } catch (DataIntegrityViolationException ex) {
             throw new DataIntegrityException(
@@ -60,4 +70,5 @@ public class TaskServiceImpl implements TaskService {
         }
         throw new DataIntegrityException(String.format("Task with ID %d does not exist in the system.", id));
     }
+
 }

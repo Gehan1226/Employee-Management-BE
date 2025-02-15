@@ -15,10 +15,10 @@ import org.springframework.web.bind.annotation.*;
 @Validated
 public class TaskController {
 
-    TaskService taskService;
+    private final TaskService taskService;
 
     @PostMapping()
-    public SuccessResponse addTask(Task task) {
+    public SuccessResponse addTask(@RequestBody Task task) {
         taskService.addTask(task);
         return SuccessResponse.builder().status(HttpStatus.OK.value()).message("Task added successfully!").build();
     }

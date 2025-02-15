@@ -10,7 +10,7 @@ import java.time.LocalTime;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Attendance {
+public class SaveAttendanceDTO {
     private Long id;
     private LocalDate date;
     private String status;
@@ -18,5 +18,5 @@ public class Attendance {
     private LocalTime checkOutTime;
     private Integer hoursWorked;
     private String shift;
-    private Employee employee;
+    private Long employee;
 }

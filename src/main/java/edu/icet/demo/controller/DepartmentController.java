@@ -1,7 +1,7 @@
 package edu.icet.demo.controller;
 
-import edu.icet.demo.dto.operationDTOS.DepartmentOperationDTO;
-import edu.icet.demo.dto.Department;
+import edu.icet.demo.dto.department.DepartmentRequest;
+import edu.icet.demo.dto.department.DepartmentResponse;
 import edu.icet.demo.dto.DepartmentNameAndEmployeeCountDTO;
 import edu.icet.demo.dto.response.PaginatedResponse;
 import edu.icet.demo.dto.response.SuccessResponseWithData;
@@ -28,11 +28,11 @@ public class DepartmentController {
     private final DepartmentService departmentService;
 
     @PostMapping("/add")
-    public SuccessResponseWithData<DepartmentOperationDTO> addDepartment(
-            @Valid @RequestBody DepartmentOperationDTO department,
+    public SuccessResponseWithData<DepartmentRequest> addDepartment(
+            @Valid @RequestBody DepartmentRequest department,
             BindingResult result) {
-        DepartmentOperationDTO addedDepartment = departmentService.addDepartment(department);
-        return SuccessResponseWithData.<DepartmentOperationDTO>builder()
+        DepartmentRequest addedDepartment = departmentService.addDepartment(department);
+        return SuccessResponseWithData.<DepartmentRequest>builder()
                 .status(HttpStatus.CREATED.value())
                 .message("Department added successfully.")
                 .data(addedDepartment)
@@ -40,7 +40,7 @@ public class DepartmentController {
     }
 
     @GetMapping("/get-all-paginated")
-    public PaginatedResponse<Department> getAll(
+    public PaginatedResponse<DepartmentResponse> getAll(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) String searchTerm,
@@ -71,13 +71,13 @@ public class DepartmentController {
     }
 
     @PutMapping("/update/{id}")
-    public SuccessResponseWithData<DepartmentOperationDTO> updateDepartment(
+    public SuccessResponseWithData<DepartmentRequest> updateDepartment(
             @PathVariable Long id,
-            @Valid @RequestBody DepartmentOperationDTO department,
+            @Valid @RequestBody DepartmentRequest department,
             BindingResult result) {
 
-        DepartmentOperationDTO updatedDepartment = departmentService.updateDepartment(id, department);
-        return SuccessResponseWithData.<DepartmentOperationDTO>builder()
+        DepartmentRequest updatedDepartment = departmentService.updateDepartment(id, department);
+        return SuccessResponseWithData.<DepartmentRequest>builder()
                 .status(HttpStatus.OK.value())
                 .message("Department updated successfully.")
                 .data(updatedDepartment)

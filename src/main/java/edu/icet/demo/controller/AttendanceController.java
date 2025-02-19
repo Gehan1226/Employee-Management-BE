@@ -1,7 +1,7 @@
 package edu.icet.demo.controller;
 
-import edu.icet.demo.dto.Attendance;
-import edu.icet.demo.dto.SaveAttendanceDTO;
+import edu.icet.demo.dto.attendance.AttendanceResponse;
+import edu.icet.demo.dto.attendance.AttendanceRequest;
 import edu.icet.demo.dto.response.SuccessResponse;
 import edu.icet.demo.dto.response.SuccessResponseWithData;
 import edu.icet.demo.service.AttendanceService;
@@ -20,7 +20,7 @@ public class AttendanceController {
     private final AttendanceService attendanceService;
 
     @PostMapping()
-    public SuccessResponse markAttendance(@RequestBody SaveAttendanceDTO attendance) {
+    public SuccessResponse markAttendance(@RequestBody AttendanceRequest attendance) {
         attendanceService.markAttendance(attendance);
         return SuccessResponse.builder()
                 .status(HttpStatus.OK.value())
@@ -28,8 +28,8 @@ public class AttendanceController {
     }
 
     @GetMapping("/employee/{id}")
-    public SuccessResponseWithData<Attendance> getAttendanceByEmployeeId(@PathVariable Long id) {
-        return SuccessResponseWithData.<Attendance>builder()
+    public SuccessResponseWithData<AttendanceResponse> getAttendanceByEmployeeId(@PathVariable Long id) {
+        return SuccessResponseWithData.<AttendanceResponse>builder()
                 .status(HttpStatus.OK.value())
                 .message("Attendance retrieved.")
                 .data(attendanceService.getAttendanceByEmployeeId(id))

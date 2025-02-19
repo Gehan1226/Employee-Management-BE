@@ -1,8 +1,8 @@
 package edu.icet.demo.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import edu.icet.demo.dto.Attendance;
-import edu.icet.demo.dto.SaveAttendanceDTO;
+import edu.icet.demo.dto.attendance.AttendanceResponse;
+import edu.icet.demo.dto.attendance.AttendanceRequest;
 import edu.icet.demo.entity.AttendanceEntity;
 import edu.icet.demo.exception.DataDuplicateException;
 import edu.icet.demo.exception.DataIntegrityException;
@@ -22,7 +22,7 @@ public class AttendanceServiceImpl implements AttendanceService {
     private final ObjectMapper mapper;
 
     @Override
-    public void markAttendance(SaveAttendanceDTO attendance) {
+    public void markAttendance(AttendanceRequest attendance) {
         if (attendanceRepository.existsByEmployeeIdAndDate(attendance.getEmployee(), attendance.getDate())) {
             throw new DataDuplicateException("Attendance for today is already marked for this employee.");
         }
@@ -38,9 +38,9 @@ public class AttendanceServiceImpl implements AttendanceService {
     }
 
     @Override
-    public Attendance getAttendanceByEmployeeId(Long id) {
+    public AttendanceResponse getAttendanceByEmployeeId(Long id) {
         AttendanceEntity attendanceEntity = attendanceRepository.findById(id).
                 orElseThrow(() -> new DataNotFoundException("Attendance for employee with ID " + id + " not found."));
-        return mapper.convertValue(attendanceEntity, Attendance.class);
+        return mapper.convertValue(attendanceEntity, AttendanceResponse.class);
     }
 }

@@ -1,8 +1,8 @@
 package edu.icet.demo.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import edu.icet.demo.dto.operationDTOS.DepartmentOperationDTO;
-import edu.icet.demo.dto.Department;
+import edu.icet.demo.dto.department.DepartmentRequest;
+import edu.icet.demo.dto.department.DepartmentResponse;
 import edu.icet.demo.dto.DepartmentNameAndEmployeeCountDTO;
 import edu.icet.demo.dto.response.PaginatedResponse;
 import edu.icet.demo.entity.DepartmentEntity;
@@ -32,7 +32,7 @@ public class DepartmentServiceImpl implements DepartmentService {
     private final ObjectMapper mapper;
 
     @Override
-    public DepartmentOperationDTO addDepartment(DepartmentOperationDTO department) {
+    public DepartmentRequest addDepartment(DepartmentRequest department) {
         if (departmentRepository.existsByName(department.getName())) {
             throw new DataDuplicateException(
                     String.format("A department with the name '%s' already exists.", department.getName())
@@ -51,12 +51,12 @@ public class DepartmentServiceImpl implements DepartmentService {
     }
 
     @Override
-    public PaginatedResponse<Department> getAllWithPagination(Pageable pageable, String searchTerm) {
+    public PaginatedResponse<DepartmentResponse> getAllWithPagination(Pageable pageable, String searchTerm) {
         try {
-            List<Department> depList = new ArrayList<>();
+            List<DepartmentResponse> depList = new ArrayList<>();
             Page<DepartmentEntity> response = departmentRepository.findAllWithSearch(searchTerm, pageable);
             response.forEach(departmentEntity ->
-                    depList.add(mapper.convertValue(departmentEntity, Department.class)));
+                    depList.add(mapper.convertValue(departmentEntity, DepartmentResponse.class)));
 
             return new PaginatedResponse<>(
                     HttpStatus.OK.value(),
@@ -96,7 +96,7 @@ public class DepartmentServiceImpl implements DepartmentService {
     }
 
     @Override
-    public DepartmentOperationDTO updateDepartment(Long id, DepartmentOperationDTO department) {
+    public DepartmentRequest updateDepartment(Long id, DepartmentRequest department) {
         DepartmentEntity departmentEntity = departmentRepository.findById(id)
                 .orElseThrow(() -> new DataIntegrityException(
                         String.format("Department with ID %d does not exist in the system.", id)));

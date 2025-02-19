@@ -1,16 +1,15 @@
-package edu.icet.demo.dto;
+package edu.icet.demo.dto.department;
 
-
-import jakarta.validation.Valid;
+import edu.icet.demo.dto.Employee;
+import edu.icet.demo.dto.Role;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
-
 import java.util.Set;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Department {
+public class DepartmentResponse {
 
     private Long id;
 

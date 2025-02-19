@@ -1,4 +1,4 @@
-package edu.icet.demo.dto.operationDTOS;
+package edu.icet.demo.dto.department;
 
 import edu.icet.demo.dto.records.ManagerID;
 import jakarta.validation.constraints.NotBlank;
@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class DepartmentOperationDTO {
+public class DepartmentRequest {
 
     @NotBlank(message = "Department name is required.")
     private String name;

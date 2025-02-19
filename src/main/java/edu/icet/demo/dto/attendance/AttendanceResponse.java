@@ -1,5 +1,6 @@
-package edu.icet.demo.dto;
+package edu.icet.demo.dto.attendance;
 
+import edu.icet.demo.dto.Employee;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -10,7 +11,7 @@ import java.time.LocalTime;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Attendance {
+public class AttendanceResponse {
     private Long id;
     private LocalDate date;
     private String status;

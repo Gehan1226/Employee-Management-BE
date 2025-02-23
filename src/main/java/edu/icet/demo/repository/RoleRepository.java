@@ -17,4 +17,6 @@ public interface RoleRepository  extends JpaRepository<RoleEntity,Long> {
     @Query("SELECT d FROM RoleEntity d WHERE " +
             "(:searchTerm IS NULL OR LOWER(d.name) LIKE LOWER(CONCAT('%', :searchTerm, '%')))")
     Page<RoleEntity> findAllWithSearch(@Param("searchTerm") String searchTerm, Pageable pageable);
+
+    boolean existsByName(String name);
 }

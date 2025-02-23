@@ -3,10 +3,16 @@ package edu.icet.demo.service.impl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.icet.demo.dto.Role;
 import edu.icet.demo.dto.response.PaginatedResponse;
+import edu.icet.demo.dto.role.RoleRequest;
+import edu.icet.demo.entity.DepartmentEntity;
 import edu.icet.demo.entity.RoleEntity;
+import edu.icet.demo.exception.DataDuplicateException;
+import edu.icet.demo.exception.DataIntegrityException;
+import edu.icet.demo.exception.UnexpectedException;
 import edu.icet.demo.repository.RoleRepository;
 import edu.icet.demo.service.RoleService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -23,8 +29,22 @@ public class RoleServiceImpl implements RoleService {
     private final ObjectMapper mapper;
 
     @Override
-    public void addRole(Role role) {
-        repository.save(mapper.convertValue(role, RoleEntity.class));
+    public void addRole(RoleRequest role) {
+        if (repository.existsByName(role.getName())) {
+            throw new DataDuplicateException(
+                    String.format("A role with the name '%s' already exists.", role.getName())
+            );
+        }
+        try {
+            RoleEntity roleEntity = mapper.convertValue(role, RoleEntity.class);
+            roleEntity.setDepartment(new DepartmentEntity(role.getDepartment().id()));
+            repository.save(roleEntity);
+        } catch (DataIntegrityViolationException ex) {
+            throw new DataIntegrityException(
+                    "Database constraint violation. Please check that all provided values are valid and unique.");
+        } catch (Exception ex) {
+            throw new UnexpectedException("An unexpected error occurred while saving the role");
+        }
     }
 
     @Override

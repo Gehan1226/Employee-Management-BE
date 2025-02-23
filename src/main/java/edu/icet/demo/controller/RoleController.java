@@ -2,12 +2,17 @@ package edu.icet.demo.controller;
 
 import edu.icet.demo.dto.Role;
 import edu.icet.demo.dto.response.PaginatedResponse;
+import edu.icet.demo.dto.response.SuccessResponse;
 import edu.icet.demo.dto.response.SuccessResponseWithData;
+import edu.icet.demo.dto.role.RoleRequest;
 import edu.icet.demo.service.RoleService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,13 +21,18 @@ import java.util.List;
 @RequestMapping("/api/v1/role")
 @RequiredArgsConstructor
 @CrossOrigin
+@Validated
 public class RoleController {
 
     private final RoleService service;
 
-    @PostMapping("/add-role")
-    public void addRole(@RequestBody Role role){
+    @PostMapping()
+    public SuccessResponse addRole(@Valid @RequestBody RoleRequest role, BindingResult result){
         service.addRole(role);
+        return SuccessResponse.builder()
+                .status(HttpStatus.CREATED.value())
+                .message("Role added successfully.")
+                .build();
     }
 
     @GetMapping("/get-all")

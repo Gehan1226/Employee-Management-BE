@@ -38,4 +38,8 @@ public class DepartmentEntity {
     @JsonIgnore
     @OneToMany(mappedBy = "department", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<RoleEntity> roles;
+
+    public DepartmentEntity(Long id) {
+        this.id = id;
+    }
 }

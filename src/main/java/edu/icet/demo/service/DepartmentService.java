@@ -18,4 +18,6 @@ public interface DepartmentService {
     List<DepartmentNameAndEmployeeCountDTO> getDepartmentNameWithEmployeeCount();
 
     DepartmentRequest updateDepartment(Long id, DepartmentRequest department);
+
+    List<DepartmentResponse> getAll();
 }

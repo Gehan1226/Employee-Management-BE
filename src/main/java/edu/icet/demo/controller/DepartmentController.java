@@ -84,5 +84,12 @@ public class DepartmentController {
                 .build();
     }
 
-
+    @GetMapping("/get-all")
+    public SuccessResponseWithData<List<DepartmentResponse>> getAll() {
+        return SuccessResponseWithData.<List<DepartmentResponse>>builder()
+                .status(HttpStatus.OK.value())
+                .message("Departments retrieved.")
+                .data(departmentService.getAll())
+                .build();
+    }
 }

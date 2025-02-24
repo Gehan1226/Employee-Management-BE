@@ -1,9 +1,12 @@
 package edu.icet.demo.controller;
 
 import edu.icet.demo.dto.Task;
+import edu.icet.demo.dto.response.PaginatedResponse;
 import edu.icet.demo.dto.response.SuccessResponse;
 import edu.icet.demo.service.TaskService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -33,6 +36,16 @@ public class TaskController {
     public SuccessResponse deleteById(@PathVariable Long id) {
         taskService.deleteById(id);
         return SuccessResponse.builder().status(HttpStatus.OK.value()).message("Task deleted successfully!").build();
+    }
+
+    @GetMapping("/get-all-paginated")
+    public PaginatedResponse<Task> getAll(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String searchTerm) {
+
+        Pageable pageable = PageRequest.of(page, size);
+        return taskService.getAllWithPagination(pageable, searchTerm);
     }
 
 }

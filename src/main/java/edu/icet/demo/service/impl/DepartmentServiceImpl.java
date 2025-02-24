@@ -117,4 +117,16 @@ public class DepartmentServiceImpl implements DepartmentService {
             throw new UnexpectedException("An unexpected error occurred while updating the department");
         }
     }
+
+    @Override
+    public List<DepartmentResponse> getAll() {
+        List<DepartmentResponse> departmentList = new ArrayList<>();
+        try {
+            departmentRepository.findAll().forEach(departmentEntity ->
+                    departmentList.add(mapper.convertValue(departmentEntity, DepartmentResponse.class)));
+            return departmentList;
+        } catch (Exception e) {
+            throw new UnexpectedException("An unexpected error occurred while retrieving departments");
+        }
+    }
 }

@@ -2,6 +2,7 @@ package edu.icet.demo.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.icet.demo.dto.Task;
+import edu.icet.demo.dto.response.PaginatedResponse;
 import edu.icet.demo.entity.EmployeeEntity;
 import edu.icet.demo.entity.TaskEntity;
 import edu.icet.demo.exception.DataIntegrityException;
@@ -11,6 +12,9 @@ import edu.icet.demo.repository.TaskRepository;
 import edu.icet.demo.service.TaskService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -72,4 +76,23 @@ public class TaskServiceImpl implements TaskService {
         throw new DataIntegrityException(String.format("Task with ID %d does not exist in the system.", id));
     }
 
+    @Override
+    public PaginatedResponse<Task> getAllWithPagination(Pageable pageable, String searchTerm) {
+        try {
+            List<Task> taskList = new ArrayList<>();
+            Page<TaskEntity> response = taskRepository.findAllWithSearch(searchTerm, pageable);
+            response.forEach(taskEntity ->
+                    taskList.add(mapper.convertValue(taskEntity, Task.class)));
+            return new PaginatedResponse<>(
+                    HttpStatus.OK.value(),
+                    taskList.isEmpty() ? "No departments found!" : "Departments retrieved.",
+                    taskList,
+                    response.getTotalPages(),
+                    response.getTotalElements(),
+                    response.getNumber()
+            );
+        } catch (Exception e) {
+            throw new UnexpectedException("An unexpected error occurred while retrieving tasks");
+        }
+    }
 }

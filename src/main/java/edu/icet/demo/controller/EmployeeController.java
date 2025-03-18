@@ -84,4 +84,15 @@ public class EmployeeController {
                 .data(employeeList)
                 .build();
     }
+
+    @GetMapping("/by-department/{id}")
+    public SuccessResponseWithData<List<Employee>> getEmployeesByDepartmentId(@PathVariable Long id){
+        List<Employee> employeeList = employeeService.getEmployeesByDepartmentId(id);
+        String message = employeeList.isEmpty() ? "No employees found for this department!" : "Employees retrieved.";
+        return SuccessResponseWithData.<List<Employee>>builder()
+                .status(HttpStatus.OK.value())
+                .message(message)
+                .data(employeeList)
+                .build();
+    }
 }

@@ -1,9 +1,7 @@
 package edu.icet.demo.dto.department;
 
 import edu.icet.demo.dto.Employee;
-import edu.icet.demo.dto.Role;
 import lombok.*;
-import java.util.Set;
 
 @Data
 @AllArgsConstructor
@@ -15,6 +13,4 @@ public class DepartmentResponse {
     private String responsibility;
     private Employee manager;
     private Integer employeeCount;
-    private Set<Employee> employeeList;
-    private Set<Role> roleList;
 }

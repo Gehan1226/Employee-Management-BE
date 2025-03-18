@@ -27,9 +27,13 @@ public class TaskEntity {
     private LocalTime dueTime;
     private String status;
 
+    @ManyToOne
+    @JoinColumn(name = "manager_id")
+    private ManagerEntity manager;
+
     @ManyToMany
     @JoinTable(
-            name = "task_employees",
+            name = "task_employee",
             joinColumns = @JoinColumn(name = "task_id"),
             inverseJoinColumns = @JoinColumn(name = "employee_id")
     )

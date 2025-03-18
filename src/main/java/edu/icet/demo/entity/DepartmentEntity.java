@@ -1,10 +1,8 @@
 package edu.icet.demo.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
-import java.util.Set;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -29,15 +27,7 @@ public class DepartmentEntity {
     @OneToOne
     @JoinColumn(name = "manager_id", referencedColumnName = "id")
     @JsonManagedReference
-    private EmployeeEntity manager;
-
-    @JsonIgnore
-    @OneToMany(mappedBy = "department", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private Set<EmployeeEntity> employeeEntityList;
-
-    @JsonIgnore
-    @OneToMany(mappedBy = "department", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private Set<RoleEntity> roles;
+    private ManagerEntity manager;
 
     public DepartmentEntity(Long id) {
         this.id = id;

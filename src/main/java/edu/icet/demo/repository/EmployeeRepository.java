@@ -28,5 +28,7 @@ public interface EmployeeRepository extends JpaRepository<EmployeeEntity,Long> {
             "LOWER(e.email) LIKE LOWER(CONCAT('%', :searchTerm, '%')))")
     Page<EmployeeEntity> findAllWithSearch(@Param("searchTerm") String searchTerm, Pageable pageable);
 
-    List<EmployeeEntity> findByIsManagerFalse();
+
+
+    List<EmployeeEntity> findByDepartmentId(Long departmentId);
 }

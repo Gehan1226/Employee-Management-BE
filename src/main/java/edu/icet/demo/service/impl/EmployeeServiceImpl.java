@@ -126,12 +126,27 @@ public class EmployeeServiceImpl implements EmployeeService {
     public List<Employee> getNonManagers() {
         try{
             List<Employee> employeeList = new ArrayList<>();
-            employeeRepository.findByIsManagerFalse().forEach(employeeEntity ->
-                    employeeList.add(mapper.convertValue(employeeEntity, Employee.class)));
+//            employeeRepository.findByIsManagerFalse().forEach(employeeEntity ->
+//                    employeeList.add(mapper.convertValue(employeeEntity, Employee.class)));
             return employeeList;
         } catch (Exception e) {
             throw new UnexpectedException("An unexpected error occurred while fetching non-managers.");
         }
+    }
+
+    @Override
+    public List<Employee> getEmployeesByDepartmentId(Long id) {
+        try{
+            if (departmentRepository.existsById(id)) {
+                List<Employee> employeeList = new ArrayList<>();
+                employeeRepository.findByDepartmentId(id).forEach(employeeEntity ->
+                        employeeList.add(mapper.convertValue(employeeEntity, Employee.class)));
+                return employeeList;
+            }
+        } catch (Exception e) {
+            throw new UnexpectedException("An unexpected error occurred while fetching employees.");
+        }
+        throw new DataNotFoundException("Department with ID %d not found.".formatted(id));
     }
 
     public void validateRoleAndDepartment(Employee employee) {

@@ -21,4 +21,6 @@ public interface EmployeeService {
     PaginatedResponse<Employee> getAllWithPaginated(String searchTerm, Pageable pageable);
 
     List<Employee> getNonManagers();
+
+    List<Employee> getEmployeesByDepartmentId(Long id);
 }

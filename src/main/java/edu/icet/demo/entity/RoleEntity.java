@@ -7,8 +7,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-import java.util.Set;
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -22,10 +20,6 @@ public class RoleEntity {
     private String name;
     private String description;
     private Integer employeeCount;
-
-    @JsonIgnore
-    @OneToMany(mappedBy = "role", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private Set<EmployeeEntity> employees;
 
     @JsonIgnore
     @ManyToOne

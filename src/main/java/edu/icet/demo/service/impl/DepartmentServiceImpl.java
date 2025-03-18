@@ -54,18 +54,19 @@ public class DepartmentServiceImpl implements DepartmentService {
     public PaginatedResponse<DepartmentResponse> getAllWithPagination(Pageable pageable, String searchTerm) {
         try {
             List<DepartmentResponse> depList = new ArrayList<>();
-            Page<DepartmentEntity> response = departmentRepository.findAllWithSearch(searchTerm, pageable);
-            response.forEach(departmentEntity ->
-                    depList.add(mapper.convertValue(departmentEntity, DepartmentResponse.class)));
+//            Page<DepartmentEntity> response = departmentRepository.findAllWithSearch(searchTerm, pageable);
+//            response.forEach(departmentEntity ->
+//                    depList.add(mapper.convertValue(departmentEntity, DepartmentResponse.class)));
 
-            return new PaginatedResponse<>(
-                    HttpStatus.OK.value(),
-                    depList.isEmpty() ? "No departments found!" : "Departments retrieved.",
-                    depList,
-                    response.getTotalPages(),
-                    response.getTotalElements(),
-                    response.getNumber()
-            );
+//            return new PaginatedResponse<>(
+//                    HttpStatus.OK.value(),
+//                    depList.isEmpty() ? "No departments found!" : "Departments retrieved.",
+//                    depList,
+//                    response.getTotalPages(),
+//                    response.getTotalElements(),
+//                    response.getNumber()
+//            );
+            return null;
         } catch (Exception e) {
             throw new UnexpectedException("An unexpected error occurred while retrieving departments");
         }
@@ -107,7 +108,7 @@ public class DepartmentServiceImpl implements DepartmentService {
         try {
             departmentEntity.setName(department.getName());
             departmentEntity.setResponsibility(department.getResponsibility());
-            departmentEntity.setManager(employeeEntity);
+//            departmentEntity.setManager(employeeEntity);
             departmentRepository.save(departmentEntity);
             return department;
         } catch (DataIntegrityViolationException ex) {

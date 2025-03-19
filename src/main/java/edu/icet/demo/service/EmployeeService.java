@@ -20,9 +20,9 @@ public interface EmployeeService {
 
     EmployeeRequest findByFirstName(String firstName);
 
-    PaginatedResponse<EmployeeRequest> getAllWithPaginated(String searchTerm, Pageable pageable);
+    PaginatedResponse<EmployeeResponse> getAllWithPaginated(String searchTerm, Pageable pageable);
 
     List<EmployeeResponse> getNonManagers();
 
-    List<EmployeeRequest> getEmployeesByDepartmentId(Long id);
+    List<EmployeeResponse> getEmployeesByDepartmentId(Long id);
 }

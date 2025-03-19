@@ -57,7 +57,7 @@ public class EmployeeController {
     }
 
     @GetMapping("/paginated-employees")
-    public PaginatedResponse<EmployeeRequest> getEmployeesPaginated(
+    public PaginatedResponse<EmployeeResponse> getEmployeesPaginated(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) String searchTerm){
@@ -86,11 +86,11 @@ public class EmployeeController {
                 .build();
     }
 
-    @GetMapping("/by-department/{id}")
-    public SuccessResponseWithData<List<EmployeeRequest>> getEmployeesByDepartmentId(@PathVariable Long id){
-        List<EmployeeRequest> employeeRequestList = employeeService.getEmployeesByDepartmentId(id);
+    @GetMapping("/department/{id}")
+    public SuccessResponseWithData<List<EmployeeResponse>> getEmployeesByDepartmentId(@PathVariable Long id){
+        List<EmployeeResponse> employeeRequestList = employeeService.getEmployeesByDepartmentId(id);
         String message = employeeRequestList.isEmpty() ? "No employees found for this department!" : "Employees retrieved.";
-        return SuccessResponseWithData.<List<EmployeeRequest>>builder()
+        return SuccessResponseWithData.<List<EmployeeResponse>>builder()
                 .status(HttpStatus.OK.value())
                 .message(message)
                 .data(employeeRequestList)

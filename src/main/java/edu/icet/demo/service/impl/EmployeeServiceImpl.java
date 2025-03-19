@@ -127,12 +127,12 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public PaginatedResponse<EmployeeRequest> getAllWithPaginated(String searchTerm, Pageable pageable) {
+    public PaginatedResponse<EmployeeResponse> getAllWithPaginated(String searchTerm, Pageable pageable) {
         try {
-            List<EmployeeRequest> employeeRequestList = new ArrayList<>();
+            List<EmployeeResponse> employeeRequestList = new ArrayList<>();
             Page<EmployeeEntity> response = employeeRepository.findAllWithSearch(searchTerm, pageable);
             response.forEach(employeeEntity ->
-                    employeeRequestList.add(mapper.convertValue(employeeEntity, EmployeeRequest.class)));
+                    employeeRequestList.add(mapper.convertValue(employeeEntity, EmployeeResponse.class)));
 
             return new PaginatedResponse<>(
                     HttpStatus.OK.value(),
@@ -143,6 +143,7 @@ public class EmployeeServiceImpl implements EmployeeService {
                     response.getNumber()
             );
         } catch (Exception e) {
+            log.error(e.getMessage());
             throw new UnexpectedException(ERROR_MESSAGE);
         }
     }
@@ -161,15 +162,16 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public List<EmployeeRequest> getEmployeesByDepartmentId(Long id) {
+    public List<EmployeeResponse> getEmployeesByDepartmentId(Long id) {
         try {
             if (departmentRepository.existsById(id)) {
-                List<EmployeeRequest> employeeRequestList = new ArrayList<>();
+                List<EmployeeResponse> employeeRequestList = new ArrayList<>();
                 employeeRepository.findByDepartmentId(id).forEach(employeeEntity ->
-                        employeeRequestList.add(mapper.convertValue(employeeEntity, EmployeeRequest.class)));
+                        employeeRequestList.add(mapper.convertValue(employeeEntity, EmployeeResponse.class)));
                 return employeeRequestList;
             }
         } catch (Exception e) {
+            log.error(e.getMessage());
             throw new UnexpectedException(ERROR_MESSAGE);
         }
         throw new DataNotFoundException("Department with ID %d not found.".formatted(id));

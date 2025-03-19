@@ -1,29 +1,17 @@
-package edu.icet.demo.dto;
+package edu.icet.demo.dto.role;
 
 import edu.icet.demo.dto.department.DepartmentResponse;
-import edu.icet.demo.dto.employee.EmployeeRequest;
-import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import java.util.List;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Role {
-
+public class RoleResponse {
     private Long id;
-
-    @NotBlank(message = "Role name is required.")
     private String name;
-
-    @NotBlank(message = "Role description is required.")
     private String description;
-
     private Integer employeeCount;
-
-    private List<EmployeeRequest> employeeRequestList;
-
     private DepartmentResponse department;
 }

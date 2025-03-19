@@ -2,6 +2,7 @@ package edu.icet.demo.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.icet.demo.dto.employee.EmployeeRequest;
+import edu.icet.demo.dto.employee.EmployeeResponse;
 import edu.icet.demo.dto.response.PaginatedResponse;
 import edu.icet.demo.entity.DepartmentEntity;
 import edu.icet.demo.entity.EmployeeEntity;
@@ -12,6 +13,7 @@ import edu.icet.demo.repository.EmployeeRepository;
 import edu.icet.demo.repository.RoleRepository;
 import edu.icet.demo.service.EmployeeService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,12 +25,15 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class EmployeeServiceImpl implements EmployeeService {
 
     private final EmployeeRepository employeeRepository;
     private final RoleRepository roleRepository;
     private final DepartmentRepository departmentRepository;
     private final ObjectMapper mapper;
+
+    private static final String ERROR_MESSAGE = "An unexpected error occurred while fetching employees.";
 
     @Override
     public void addEmployee(EmployeeRequest employeeRequest) {
@@ -58,12 +63,17 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public List<EmployeeRequest> getAll() {
-        List<EmployeeRequest> employeeRequestList = new ArrayList<>();
+    public List<EmployeeResponse> getAll() {
+        List<EmployeeResponse> employeeRequestList = new ArrayList<>();
 
-        employeeRepository.findAll().forEach(employeeEntity ->
-                employeeRequestList.add(new ObjectMapper().convertValue(employeeEntity, EmployeeRequest.class)
-                ));
+        try {
+            employeeRepository.findAll().forEach(employeeEntity ->
+                    employeeRequestList.add(mapper.convertValue(employeeEntity, EmployeeResponse.class)
+                    ));
+        } catch (Exception e) {
+            log.error(ERROR_MESSAGE, e);
+            throw new UnexpectedException(ERROR_MESSAGE);
+        }
         return employeeRequestList;
     }
 
@@ -128,7 +138,7 @@ public class EmployeeServiceImpl implements EmployeeService {
                     response.getNumber()
             );
         } catch (Exception e) {
-            throw new UnexpectedException("An unexpected error occurred while fetching employees.");
+            throw new UnexpectedException(ERROR_MESSAGE);
         }
     }
 
@@ -154,28 +164,8 @@ public class EmployeeServiceImpl implements EmployeeService {
                 return employeeRequestList;
             }
         } catch (Exception e) {
-            throw new UnexpectedException("An unexpected error occurred while fetching employees.");
+            throw new UnexpectedException(ERROR_MESSAGE);
         }
         throw new DataNotFoundException("Department with ID %d not found.".formatted(id));
     }
-
-//    public void validateRoleAndDepartment(EmployeeRequest employeeRequest) {
-//        if (employeeRequest.getRole().getId() == null) {
-//            throw new MissingAttributeException("Role ID must not be null.");
-//        }
-//        if (employeeRequest.getDepartment().getId() == null) {
-//            throw new MissingAttributeException("Department ID must not be null.");
-//        }
-//
-//        if (!roleRepository.existsById(employeeRequest.getRole().getId())) {
-//            throw new DataNotFoundException(
-//                    "Role with ID %d not found.".formatted(employeeRequest.getRole().getId()));
-//        }
-//
-//        if (!departmentRepository.existsById(employeeRequest.getDepartment().getId())) {
-//            throw new DataNotFoundException(
-//                    "Department with ID %d not found.".formatted(employeeRequest.getDepartment().getId()));
-//        }
-//    }
-
 }

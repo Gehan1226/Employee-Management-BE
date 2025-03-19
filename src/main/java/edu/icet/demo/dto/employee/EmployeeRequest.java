@@ -1,6 +1,6 @@
 package edu.icet.demo.dto.employee;
 
-import edu.icet.demo.dto.Address;
+import edu.icet.demo.dto.address.Address;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import lombok.*;

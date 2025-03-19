@@ -1,7 +1,7 @@
 package edu.icet.demo.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import edu.icet.demo.dto.Role;
+import edu.icet.demo.dto.role.RoleResponse;
 import edu.icet.demo.dto.response.PaginatedResponse;
 import edu.icet.demo.dto.role.RoleRequest;
 import edu.icet.demo.entity.DepartmentEntity;
@@ -48,10 +48,10 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public List<Role> getAll() {
-        List<Role> roleList = new ArrayList<>();
-        repository.findAll().forEach(obj -> roleList.add(mapper.convertValue(obj, Role.class)));
-        return roleList;
+    public List<RoleResponse> getAll() {
+        List<RoleResponse> roleResponseList = new ArrayList<>();
+        repository.findAll().forEach(obj -> roleResponseList.add(mapper.convertValue(obj, RoleResponse.class)));
+        return roleResponseList;
     }
 
     @Override
@@ -61,25 +61,25 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public List<Role> getRolesByDepartmentId(Long id) {
-        List<Role> roleList = new ArrayList<>();
+    public List<RoleResponse> getRolesByDepartmentId(Long id) {
+        List<RoleResponse> roleResponseList = new ArrayList<>();
         repository.findByDepartmentId(id).forEach(roleEntity ->
-                roleList.add(new ObjectMapper().convertValue(roleEntity, Role.class)
+                roleResponseList.add(new ObjectMapper().convertValue(roleEntity, RoleResponse.class)
                 ));
-        return roleList;
+        return roleResponseList;
     }
 
     @Override
-    public PaginatedResponse<Role> getAllWithPagination(String searchTerm, Pageable pageable) {
-        List<Role> roleList = new ArrayList<>();
+    public PaginatedResponse<RoleResponse> getAllWithPagination(String searchTerm, Pageable pageable) {
+        List<RoleResponse> roleResponseList = new ArrayList<>();
         Page<RoleEntity> response = repository.findAllWithSearch(searchTerm, pageable);
         response.forEach(roleEntity ->
-                roleList.add(mapper.convertValue(roleEntity, Role.class)));
+                roleResponseList.add(mapper.convertValue(roleEntity, RoleResponse.class)));
 
         return new PaginatedResponse<>(
                 HttpStatus.OK.value(),
-                roleList.isEmpty() ? "No roles found!" : "Roles retrieved.",
-                roleList,
+                roleResponseList.isEmpty() ? "No roles found!" : "Roles retrieved.",
+                roleResponseList,
                 response.getTotalPages(),
                 response.getTotalElements(),
                 response.getNumber()

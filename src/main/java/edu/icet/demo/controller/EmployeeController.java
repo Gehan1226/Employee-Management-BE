@@ -1,6 +1,7 @@
 package edu.icet.demo.controller;
 
 import edu.icet.demo.dto.employee.EmployeeRequest;
+import edu.icet.demo.dto.employee.EmployeeResponse;
 import edu.icet.demo.dto.response.PaginatedResponse;
 import edu.icet.demo.dto.response.SuccessResponse;
 import edu.icet.demo.dto.response.SuccessResponseWithData;
@@ -44,11 +45,11 @@ public class EmployeeController {
                 .build();
     }
 
-    @GetMapping("/employees")
-    public SuccessResponseWithData<List<EmployeeRequest>> getEmployees(){
-        List<EmployeeRequest> employeeRequestList = employeeService.getAll();
+    @GetMapping()
+    public SuccessResponseWithData<List<EmployeeResponse>> getEmployees(){
+        List<EmployeeResponse> employeeRequestList = employeeService.getAll();
         String message = employeeRequestList.isEmpty() ? "Employee List is empty!" : "Employee list retrieved.";
-        return SuccessResponseWithData.<List<EmployeeRequest>>builder()
+        return SuccessResponseWithData.<List<EmployeeResponse>>builder()
                 .status(HttpStatus.OK.value())
                 .message(message)
                 .data(employeeRequestList)

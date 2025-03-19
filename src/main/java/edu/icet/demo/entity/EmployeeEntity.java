@@ -1,5 +1,6 @@
 package edu.icet.demo.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDate;
@@ -9,7 +10,6 @@ import java.time.LocalDate;
 @Entity
 @Getter
 @Setter
-@ToString
 @Table(name = "employee")
 public class EmployeeEntity {
     @Id
@@ -24,6 +24,7 @@ public class EmployeeEntity {
 
     @ManyToOne
     @JoinColumn(name = "department_id")
+    @JsonManagedReference
     private DepartmentEntity department;
 
     @ManyToOne

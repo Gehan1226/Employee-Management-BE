@@ -1,6 +1,6 @@
 package edu.icet.demo.controller;
 
-import edu.icet.demo.dto.Role;
+import edu.icet.demo.dto.role.RoleResponse;
 import edu.icet.demo.dto.response.PaginatedResponse;
 import edu.icet.demo.dto.response.SuccessResponse;
 import edu.icet.demo.dto.response.SuccessResponseWithData;
@@ -36,12 +36,12 @@ public class RoleController {
     }
 
     @GetMapping("/get-all")
-    public List<Role> getRoles(){
+    public List<RoleResponse> getRoles(){
         return service.getAll();
     }
 
     @GetMapping("/get-all-paginated")
-    public PaginatedResponse<Role> getRolesPaginated(
+    public PaginatedResponse<RoleResponse> getRolesPaginated(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) String searchTerm) {
@@ -51,10 +51,10 @@ public class RoleController {
     }
 
     @GetMapping("/get-by-department/{id}")
-    public SuccessResponseWithData<List<Role>> getRolesByDepartmentId(@PathVariable Long id){
-        List<Role> rolesByDepartmentId = service.getRolesByDepartmentId(id);
+    public SuccessResponseWithData<List<RoleResponse>> getRolesByDepartmentId(@PathVariable Long id){
+        List<RoleResponse> rolesByDepartmentId = service.getRolesByDepartmentId(id);
         String message = rolesByDepartmentId.isEmpty() ? "Roles not found for this department!" : "Roles retrieved.";
-        return SuccessResponseWithData.<List<Role>>builder()
+        return SuccessResponseWithData.<List<RoleResponse>>builder()
                 .status(HttpStatus.OK.value())
                 .message(message)
                 .data(rolesByDepartmentId)

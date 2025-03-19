@@ -1,5 +1,6 @@
 package edu.icet.demo.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -8,7 +9,6 @@ import lombok.*;
 @Entity
 @Getter
 @Setter
-@ToString
 @Table(name = "manger")
 public class ManagerEntity {
     @Id
@@ -17,5 +17,6 @@ public class ManagerEntity {
 
     @OneToOne
     @JoinColumn(name = "employee_id", referencedColumnName = "id")
+    @JsonBackReference
     private EmployeeEntity employee;
 }

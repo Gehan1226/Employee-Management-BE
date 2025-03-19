@@ -1,6 +1,5 @@
 package edu.icet.demo.entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDate;
@@ -25,7 +24,6 @@ public class EmployeeEntity {
 
     @ManyToOne
     @JoinColumn(name = "department_id")
-    @JsonBackReference
     private DepartmentEntity department;
 
     @ManyToOne

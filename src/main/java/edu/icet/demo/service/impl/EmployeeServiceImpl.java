@@ -1,9 +1,11 @@
 package edu.icet.demo.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import edu.icet.demo.dto.Employee;
+import edu.icet.demo.dto.employee.EmployeeRequest;
 import edu.icet.demo.dto.response.PaginatedResponse;
+import edu.icet.demo.entity.DepartmentEntity;
 import edu.icet.demo.entity.EmployeeEntity;
+import edu.icet.demo.entity.RoleEntity;
 import edu.icet.demo.exception.*;
 import edu.icet.demo.repository.DepartmentRepository;
 import edu.icet.demo.repository.EmployeeRepository;
@@ -29,15 +31,24 @@ public class EmployeeServiceImpl implements EmployeeService {
     private final ObjectMapper mapper;
 
     @Override
-    public Employee addEmployee(Employee employee) {
-        validateRoleAndDepartment(employee);
-        if (employeeRepository.existsByEmail(employee.getEmail())) {
+    public void addEmployee(EmployeeRequest employeeRequest) {
+        if (employeeRepository.existsByEmail(employeeRequest.getEmail())) {
             throw new DataDuplicateException(
-                    "A employee with the email '" + employee.getEmail() + "' already exists.");
+                    "An employee with the email '" + employeeRequest.getEmail() + "' already exists.");
+        }
+        if (!departmentRepository.existsById(employeeRequest.getDepartmentId())) {
+            throw new DataNotFoundException("Department with ID %d not found."
+                    .formatted(employeeRequest.getDepartmentId()));
+        }
+        if (!roleRepository.existsById(employeeRequest.getRoleId())) {
+            throw new DataNotFoundException("Role with ID %d not found."
+                    .formatted(employeeRequest.getRoleId()));
         }
         try {
-            return mapper.convertValue(
-                    employeeRepository.save(mapper.convertValue(employee, EmployeeEntity.class)), Employee.class);
+            EmployeeEntity employeeEntity = mapper.convertValue(employeeRequest, EmployeeEntity.class);
+            employeeEntity.setDepartment(DepartmentEntity.builder().id(employeeRequest.getDepartmentId()).build());
+            employeeEntity.setRole(RoleEntity.builder().id(employeeRequest.getRoleId()).build());
+            employeeRepository.save(employeeEntity);
         } catch (DataIntegrityViolationException ex) {
             throw new DataIntegrityException(
                     "A data integrity violation occurred while saving the employee");
@@ -47,13 +58,13 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public List<Employee> getAll() {
-        List<Employee> employeeList = new ArrayList<>();
+    public List<EmployeeRequest> getAll() {
+        List<EmployeeRequest> employeeRequestList = new ArrayList<>();
 
         employeeRepository.findAll().forEach(employeeEntity ->
-                employeeList.add(new ObjectMapper().convertValue(employeeEntity, Employee.class)
+                employeeRequestList.add(new ObjectMapper().convertValue(employeeEntity, EmployeeRequest.class)
                 ));
-        return employeeList;
+        return employeeRequestList;
     }
 
     @Override
@@ -69,50 +80,49 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public Employee updateEmployee(Employee employee) {
-        if (!employeeRepository.existsByEmail(employee.getEmail())) {
-            throw new DataNotFoundException("Employee with email '%s' not found".formatted(employee.getEmail()));
+    public EmployeeRequest updateEmployee(EmployeeRequest employeeRequest) {
+        if (!employeeRepository.existsByEmail(employeeRequest.getEmail())) {
+            throw new DataNotFoundException("Employee with email '%s' not found".formatted(employeeRequest.getEmail()));
         }
-        if (employee.getAddress().getId() == null) {
+        if (employeeRequest.getAddress().getId() == null) {
             throw new MissingAttributeException("Address ID is missing.");
         }
-        validateRoleAndDepartment(employee);
         try {
             return mapper.convertValue(
-                    employeeRepository.save(mapper.convertValue(employee, EmployeeEntity.class)), Employee.class);
+                    employeeRepository.save(mapper.convertValue(employeeRequest, EmployeeEntity.class)), EmployeeRequest.class);
         } catch (DataIntegrityViolationException e) {
             throw new DataIntegrityException("The current address id is already used!");
         }
     }
 
     @Override
-    public Employee findById(Long id) {
+    public EmployeeRequest findById(Long id) {
         EmployeeEntity employeeEntity = employeeRepository.findById(id)
                 .orElseThrow(() -> new DataNotFoundException("Employee with ID %d not found.".formatted(id)));
-        return mapper.convertValue(employeeEntity, Employee.class);
+        return mapper.convertValue(employeeEntity, EmployeeRequest.class);
     }
 
     @Override
-    public Employee findByFirstName(String firstName) {
+    public EmployeeRequest findByFirstName(String firstName) {
         EmployeeEntity employeeEntity = employeeRepository.findByFirstName(firstName);
         if (employeeEntity == null) {
             throw new DataNotFoundException("Employee with first name '%s' not found.".formatted(firstName));
         }
-        return mapper.convertValue(employeeEntity, Employee.class);
+        return mapper.convertValue(employeeEntity, EmployeeRequest.class);
     }
 
     @Override
-    public PaginatedResponse<Employee> getAllWithPaginated(String searchTerm, Pageable pageable) {
+    public PaginatedResponse<EmployeeRequest> getAllWithPaginated(String searchTerm, Pageable pageable) {
         try {
-            List<Employee> employeeList = new ArrayList<>();
+            List<EmployeeRequest> employeeRequestList = new ArrayList<>();
             Page<EmployeeEntity> response = employeeRepository.findAllWithSearch(searchTerm, pageable);
             response.forEach(employeeEntity ->
-                    employeeList.add(mapper.convertValue(employeeEntity, Employee.class)));
+                    employeeRequestList.add(mapper.convertValue(employeeEntity, EmployeeRequest.class)));
 
             return new PaginatedResponse<>(
                     HttpStatus.OK.value(),
-                    employeeList.isEmpty() ? "No roles found!" : "Roles retrieved.",
-                    employeeList,
+                    employeeRequestList.isEmpty() ? "No roles found!" : "Roles retrieved.",
+                    employeeRequestList,
                     response.getTotalPages(),
                     response.getTotalElements(),
                     response.getNumber()
@@ -123,25 +133,25 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public List<Employee> getNonManagers() {
-        try{
-            List<Employee> employeeList = new ArrayList<>();
+    public List<EmployeeRequest> getNonManagers() {
+        try {
+            List<EmployeeRequest> employeeRequestList = new ArrayList<>();
 //            employeeRepository.findByIsManagerFalse().forEach(employeeEntity ->
 //                    employeeList.add(mapper.convertValue(employeeEntity, Employee.class)));
-            return employeeList;
+            return employeeRequestList;
         } catch (Exception e) {
             throw new UnexpectedException("An unexpected error occurred while fetching non-managers.");
         }
     }
 
     @Override
-    public List<Employee> getEmployeesByDepartmentId(Long id) {
-        try{
+    public List<EmployeeRequest> getEmployeesByDepartmentId(Long id) {
+        try {
             if (departmentRepository.existsById(id)) {
-                List<Employee> employeeList = new ArrayList<>();
+                List<EmployeeRequest> employeeRequestList = new ArrayList<>();
                 employeeRepository.findByDepartmentId(id).forEach(employeeEntity ->
-                        employeeList.add(mapper.convertValue(employeeEntity, Employee.class)));
-                return employeeList;
+                        employeeRequestList.add(mapper.convertValue(employeeEntity, EmployeeRequest.class)));
+                return employeeRequestList;
             }
         } catch (Exception e) {
             throw new UnexpectedException("An unexpected error occurred while fetching employees.");
@@ -149,23 +159,23 @@ public class EmployeeServiceImpl implements EmployeeService {
         throw new DataNotFoundException("Department with ID %d not found.".formatted(id));
     }
 
-    public void validateRoleAndDepartment(Employee employee) {
-        if (employee.getRole().getId() == null) {
-            throw new MissingAttributeException("Role ID must not be null.");
-        }
-        if (employee.getDepartment().getId() == null) {
-            throw new MissingAttributeException("Department ID must not be null.");
-        }
-
-        if (!roleRepository.existsById(employee.getRole().getId())) {
-            throw new DataNotFoundException(
-                    "Role with ID %d not found.".formatted(employee.getRole().getId()));
-        }
-
-        if (!departmentRepository.existsById(employee.getDepartment().getId())) {
-            throw new DataNotFoundException(
-                    "Department with ID %d not found.".formatted(employee.getDepartment().getId()));
-        }
-    }
+//    public void validateRoleAndDepartment(EmployeeRequest employeeRequest) {
+//        if (employeeRequest.getRole().getId() == null) {
+//            throw new MissingAttributeException("Role ID must not be null.");
+//        }
+//        if (employeeRequest.getDepartment().getId() == null) {
+//            throw new MissingAttributeException("Department ID must not be null.");
+//        }
+//
+//        if (!roleRepository.existsById(employeeRequest.getRole().getId())) {
+//            throw new DataNotFoundException(
+//                    "Role with ID %d not found.".formatted(employeeRequest.getRole().getId()));
+//        }
+//
+//        if (!departmentRepository.existsById(employeeRequest.getDepartment().getId())) {
+//            throw new DataNotFoundException(
+//                    "Department with ID %d not found.".formatted(employeeRequest.getDepartment().getId()));
+//        }
+//    }
 
 }

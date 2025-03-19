@@ -9,6 +9,7 @@ import edu.icet.demo.exception.DataIntegrityException;
 import edu.icet.demo.exception.DataNotFoundException;
 import edu.icet.demo.exception.UnexpectedException;
 import edu.icet.demo.repository.AttendanceRepository;
+import edu.icet.demo.repository.EmployeeRepository;
 import edu.icet.demo.service.AttendanceService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -19,12 +20,16 @@ import org.springframework.stereotype.Service;
 public class AttendanceServiceImpl implements AttendanceService {
 
     private final AttendanceRepository attendanceRepository;
+    private final EmployeeRepository employeeRepository;
     private final ObjectMapper mapper;
 
     @Override
     public void markAttendance(AttendanceRequest attendance) {
-        if (attendanceRepository.existsByEmployeeIdAndDate(attendance.getEmployee(), attendance.getDate())) {
+        if (attendanceRepository.existsByEmployeeIdAndDate(attendance.getEmployeeId(), attendance.getDate())) {
             throw new DataDuplicateException("Attendance for today is already marked for this employee.");
+        }
+        if (!employeeRepository.existsById(attendance.getEmployeeId())) {
+            throw new DataNotFoundException("Employee with ID " + attendance.getEmployeeId() + " not found.");
         }
         try {
             AttendanceEntity attendanceEntity = mapper.convertValue(attendance, AttendanceEntity.class);

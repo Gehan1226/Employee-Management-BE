@@ -1,5 +1,6 @@
-package edu.icet.demo.dto;
+package edu.icet.demo.dto.employee;
 
+import edu.icet.demo.dto.Address;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import lombok.*;
@@ -9,7 +10,7 @@ import java.time.LocalDate;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Employee {
+public class EmployeeRequest {
 
     private Long id;
 
@@ -33,16 +34,12 @@ public class Employee {
     @Pattern(regexp = "^(Male|Female|Other)$", message = "Gender must be Male, Female, or Other.")
     private String gender;
 
-    @NotNull(message = "Department is required.")
-    @Valid
-    private DepartmentId department;
+    @NotNull(message = "Department ID is required.")
+    private Long departmentId;
 
-    @NotNull(message = "Role id is required.")
-    @Valid
-    private Role role;
+    @NotNull(message = "Role ID is required.")
+    private Long roleId;
 
     @Valid
     private Address address;
-
-    private boolean isManager;
 }

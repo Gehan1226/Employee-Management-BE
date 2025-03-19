@@ -1,6 +1,7 @@
 package edu.icet.demo.dto;
 
 import edu.icet.demo.dto.department.DepartmentResponse;
+import edu.icet.demo.dto.employee.EmployeeRequest;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -22,7 +23,7 @@ public class Role {
 
     private Integer employeeCount;
 
-    private List<Employee> employeeList;
+    private List<EmployeeRequest> employeeRequestList;
 
     private DepartmentResponse department;
 }

@@ -1,26 +1,27 @@
 package edu.icet.demo.service;
 
-import edu.icet.demo.dto.Employee;
+import edu.icet.demo.dto.employee.EmployeeRequest;
 import edu.icet.demo.dto.response.PaginatedResponse;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
 public interface EmployeeService {
-    Employee addEmployee(Employee employee);
-    List<Employee> getAll();
+    void addEmployee(EmployeeRequest employeeRequest);
+
+    List<EmployeeRequest> getAll();
 
     void deleteEmployee(String email);
 
-    Employee updateEmployee(Employee employee);
+    EmployeeRequest updateEmployee(EmployeeRequest employeeRequest);
 
-    Employee findById(Long id);
+    EmployeeRequest findById(Long id);
 
-    Employee findByFirstName(String firstName);
+    EmployeeRequest findByFirstName(String firstName);
 
-    PaginatedResponse<Employee> getAllWithPaginated(String searchTerm, Pageable pageable);
+    PaginatedResponse<EmployeeRequest> getAllWithPaginated(String searchTerm, Pageable pageable);
 
-    List<Employee> getNonManagers();
+    List<EmployeeRequest> getNonManagers();
 
-    List<Employee> getEmployeesByDepartmentId(Long id);
+    List<EmployeeRequest> getEmployeesByDepartmentId(Long id);
 }

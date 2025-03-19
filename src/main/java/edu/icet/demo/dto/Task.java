@@ -1,5 +1,6 @@
 package edu.icet.demo.dto;
 
+import edu.icet.demo.dto.employee.EmployeeRequest;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -19,5 +20,5 @@ public class Task {
     private LocalDate dueDate;
     private LocalTime dueTime;
     private String status;
-    private List<Employee> employeeList;
+    private List<EmployeeRequest> employeeRequestList;
 }

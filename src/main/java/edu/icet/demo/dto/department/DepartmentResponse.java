@@ -1,6 +1,6 @@
 package edu.icet.demo.dto.department;
 
-import edu.icet.demo.dto.Employee;
+import edu.icet.demo.dto.employee.EmployeeRequest;
 import lombok.*;
 
 @Data
@@ -11,6 +11,6 @@ public class DepartmentResponse {
     private Long id;
     private String name;
     private String responsibility;
-    private Employee manager;
+    private EmployeeRequest manager;
     private Integer employeeCount;
 }

@@ -18,5 +18,5 @@ public class AttendanceRequest {
     private LocalTime checkOutTime;
     private Integer hoursWorked;
     private String shift;
-    private Long employee;
+    private Long employeeId;
 }

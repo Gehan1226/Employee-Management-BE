@@ -1,5 +1,6 @@
 package edu.icet.demo.dto;
 
+import edu.icet.demo.dto.employee.EmployeeRequest;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
@@ -28,5 +29,5 @@ public class Address {
     @NotBlank(message = "Address district is required.")
     private String district;
 
-    private Employee employee;
+    private EmployeeRequest employeeRequest;
 }

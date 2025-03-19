@@ -19,6 +19,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,9 +56,11 @@ public class EmployeeServiceImpl implements EmployeeService {
             employeeEntity.setRole(RoleEntity.builder().id(employeeRequest.getRoleId()).build());
             employeeRepository.save(employeeEntity);
         } catch (DataIntegrityViolationException ex) {
+            log.error(ex.getMessage());
             throw new DataIntegrityException(
                     "A data integrity violation occurred while saving the employee");
         } catch (Exception ex) {
+            log.error(ex.getMessage());
             throw new UnexpectedException("An unexpected error occurred while saving the employee");
         }
     }
@@ -71,13 +74,14 @@ public class EmployeeServiceImpl implements EmployeeService {
                     employeeRequestList.add(mapper.convertValue(employeeEntity, EmployeeResponse.class)
                     ));
         } catch (Exception e) {
-            log.error(ERROR_MESSAGE, e);
+            log.error(e.getMessage());
             throw new UnexpectedException(ERROR_MESSAGE);
         }
         return employeeRequestList;
     }
 
     @Override
+    @Transactional
     public void deleteEmployee(String email) {
         if (!employeeRepository.existsByEmail(email)) {
             throw new DataNotFoundException("Employee with email '%s' not found".formatted(email));
@@ -85,6 +89,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         try {
             employeeRepository.deleteByEmail(email);
         } catch (Exception e) {
+            log.error(e.getMessage());
             throw new DeletionException("Failed to delete employee with email '%s'.".formatted(email));
         }
     }
@@ -143,13 +148,14 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public List<EmployeeRequest> getNonManagers() {
+    public List<EmployeeResponse> getNonManagers() {
         try {
-            List<EmployeeRequest> employeeRequestList = new ArrayList<>();
-//            employeeRepository.findByIsManagerFalse().forEach(employeeEntity ->
-//                    employeeList.add(mapper.convertValue(employeeEntity, Employee.class)));
-            return employeeRequestList;
+            List<EmployeeResponse> employeeList = new ArrayList<>();
+            employeeRepository.findNonManagerEmployees().forEach(employeeEntity ->
+                    employeeList.add(mapper.convertValue(employeeEntity, EmployeeResponse.class)));
+            return employeeList;
         } catch (Exception e) {
+            log.error(e.getMessage());
             throw new UnexpectedException("An unexpected error occurred while fetching non-managers.");
         }
     }

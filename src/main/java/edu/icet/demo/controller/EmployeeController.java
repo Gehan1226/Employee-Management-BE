@@ -67,19 +67,19 @@ public class EmployeeController {
     }
 
     @DeleteMapping()
-    public SuccessResponseWithData<String> deleteEmployees(@RequestParam String email){
+    public SuccessResponse deleteEmployees(@RequestParam String email){
         employeeService.deleteEmployee(email);
-        return SuccessResponseWithData.<String>builder()
+        return SuccessResponse.builder()
                 .status(HttpStatus.OK.value())
                 .message("Employee deleted!")
                 .build();
     }
 
     @GetMapping("/non-managers")
-    public SuccessResponseWithData<List<EmployeeRequest>> getNonManagers(){
-        List<EmployeeRequest> employeeRequestList = employeeService.getNonManagers();
+    public SuccessResponseWithData<List<EmployeeResponse>> getNonManagers(){
+        List<EmployeeResponse> employeeRequestList = employeeService.getNonManagers();
         String message = employeeRequestList.isEmpty() ? "No non-managers found!" : "Non-managers retrieved.";
-        return SuccessResponseWithData.<List<EmployeeRequest>>builder()
+        return SuccessResponseWithData.<List<EmployeeResponse>>builder()
                 .status(HttpStatus.OK.value())
                 .message(message)
                 .data(employeeRequestList)

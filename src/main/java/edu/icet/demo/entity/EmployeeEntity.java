@@ -24,7 +24,6 @@ public class EmployeeEntity {
 
     @ManyToOne
     @JoinColumn(name = "department_id")
-    @JsonManagedReference
     private DepartmentEntity department;
 
     @ManyToOne

@@ -22,7 +22,7 @@ public interface EmployeeService {
 
     PaginatedResponse<EmployeeRequest> getAllWithPaginated(String searchTerm, Pageable pageable);
 
-    List<EmployeeRequest> getNonManagers();
+    List<EmployeeResponse> getNonManagers();
 
     List<EmployeeRequest> getEmployeesByDepartmentId(Long id);
 }

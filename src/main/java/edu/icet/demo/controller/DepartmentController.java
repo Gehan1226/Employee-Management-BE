@@ -27,7 +27,7 @@ public class DepartmentController {
 
     private final DepartmentService departmentService;
 
-    @PostMapping("/add")
+    @PostMapping()
     public SuccessResponseWithData<DepartmentRequest> addDepartment(
             @Valid @RequestBody DepartmentRequest department,
             BindingResult result) {

@@ -18,6 +18,7 @@ import edu.icet.demo.repository.ManagerRepository;
 import edu.icet.demo.service.DepartmentService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -29,6 +30,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class DepartmentServiceImpl implements DepartmentService {
 
     private final DepartmentRepository departmentRepository;
@@ -38,7 +40,7 @@ public class DepartmentServiceImpl implements DepartmentService {
 
     @Override
     @Transactional
-    public DepartmentRequest addDepartment(DepartmentRequest department) {
+    public void addDepartment(DepartmentRequest department) {
         if (departmentRepository.existsByName(department.getName())) {
             throw new DataDuplicateException(
                     String.format("A department with the name '%s' already exists.", department.getName())
@@ -63,7 +65,6 @@ public class DepartmentServiceImpl implements DepartmentService {
             DepartmentEntity departmentEntity = mapper.convertValue(department, DepartmentEntity.class);
             departmentEntity.setManager(managerEntity);
             departmentRepository.save(departmentEntity);
-            return department;
         } catch (DataIntegrityViolationException ex) {
             throw new DataIntegrityException(
                     "Database constraint violation. Please check that all provided values are valid and unique.");
@@ -76,20 +77,22 @@ public class DepartmentServiceImpl implements DepartmentService {
     public PaginatedResponse<DepartmentResponse> getAllWithPagination(Pageable pageable, String searchTerm) {
         try {
             List<DepartmentResponse> depList = new ArrayList<>();
-//            Page<DepartmentEntity> response = departmentRepository.findAllWithSearch(searchTerm, pageable);
-//            response.forEach(departmentEntity ->
-//                    depList.add(mapper.convertValue(departmentEntity, DepartmentResponse.class)));
+            Page<DepartmentEntity> response = departmentRepository.findAllWithSearch(searchTerm, pageable);
+            response.forEach(departmentEntity -> {
+                DepartmentResponse departmentResponse = mapper.convertValue(departmentEntity, DepartmentResponse.class);
+                depList.add(departmentResponse);
+            });
 
-//            return new PaginatedResponse<>(
-//                    HttpStatus.OK.value(),
-//                    depList.isEmpty() ? "No departments found!" : "Departments retrieved.",
-//                    depList,
-//                    response.getTotalPages(),
-//                    response.getTotalElements(),
-//                    response.getNumber()
-//            );
-            return null;
+            return new PaginatedResponse<>(
+                    HttpStatus.OK.value(),
+                    depList.isEmpty() ? "No departments found!" : "Departments retrieved.",
+                    depList,
+                    response.getTotalPages(),
+                    response.getTotalElements(),
+                    response.getNumber()
+            );
         } catch (Exception e) {
+            log.error(e.getMessage());
             throw new UnexpectedException("An unexpected error occurred while retrieving departments");
         }
     }

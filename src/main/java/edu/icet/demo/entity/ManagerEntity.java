@@ -1,5 +1,8 @@
 package edu.icet.demo.entity;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -9,6 +12,7 @@ import lombok.*;
 @Getter
 @Setter
 @Table(name = "manger")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class ManagerEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -16,5 +20,6 @@ public class ManagerEntity {
 
     @OneToOne
     @JoinColumn(name = "employee_id", referencedColumnName = "id")
+    @JsonManagedReference
     private EmployeeEntity employee;
 }

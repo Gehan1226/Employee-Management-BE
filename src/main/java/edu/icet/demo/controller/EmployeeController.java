@@ -36,7 +36,8 @@ public class EmployeeController {
     }
 
     @PatchMapping()
-    public SuccessResponseWithData<EmployeeRequest> updateEmployee(@RequestBody EmployeeRequest employeeRequest, BindingResult result){
+    public SuccessResponseWithData<EmployeeRequest> updateEmployee(
+            @RequestBody EmployeeRequest employeeRequest, BindingResult result){
         EmployeeRequest updatedEmployeeRequest = employeeService.updateEmployee(employeeRequest);
         return SuccessResponseWithData.<EmployeeRequest>builder()
                 .status(HttpStatus.OK.value())

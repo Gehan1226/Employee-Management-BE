@@ -1,6 +1,6 @@
 package edu.icet.demo.entity;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDate;
@@ -11,6 +11,8 @@ import java.time.LocalDate;
 @Getter
 @Setter
 @Table(name = "employee")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+
 public class EmployeeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

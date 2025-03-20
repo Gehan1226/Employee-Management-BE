@@ -4,6 +4,7 @@ import edu.icet.demo.dto.department.DepartmentRequest;
 import edu.icet.demo.dto.department.DepartmentResponse;
 import edu.icet.demo.dto.DepartmentNameAndEmployeeCountDTO;
 import edu.icet.demo.dto.response.PaginatedResponse;
+import edu.icet.demo.dto.response.SuccessResponse;
 import edu.icet.demo.dto.response.SuccessResponseWithData;
 import edu.icet.demo.service.DepartmentService;
 import jakarta.validation.Valid;
@@ -28,14 +29,13 @@ public class DepartmentController {
     private final DepartmentService departmentService;
 
     @PostMapping()
-    public SuccessResponseWithData<DepartmentRequest> addDepartment(
+    public SuccessResponse addDepartment(
             @Valid @RequestBody DepartmentRequest department,
             BindingResult result) {
-        DepartmentRequest addedDepartment = departmentService.addDepartment(department);
-        return SuccessResponseWithData.<DepartmentRequest>builder()
+        departmentService.addDepartment(department);
+        return SuccessResponse.builder()
                 .status(HttpStatus.CREATED.value())
-                .message("Department added successfully.")
-                .data(addedDepartment)
+                .message("Department created successfully.")
                 .build();
     }
 

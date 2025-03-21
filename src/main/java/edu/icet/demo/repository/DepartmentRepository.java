@@ -5,9 +5,11 @@ import edu.icet.demo.entity.DepartmentEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -23,4 +25,9 @@ public interface DepartmentRepository extends JpaRepository<DepartmentEntity, Lo
     @Query("SELECT NEW edu.icet.demo.dto.DepartmentNameAndEmployeeCountDTO(d.name, d.employeeCount) " +
             "FROM DepartmentEntity d")
     List<DepartmentNameAndEmployeeCountDTO> findAllDepartmentNamesAndEmployeeCounts();
+
+    @Modifying
+    @Query("UPDATE DepartmentEntity d SET d.manager = NULL WHERE d.manager.id " +
+            "IN (SELECT m.id FROM ManagerEntity m WHERE m.employee.id = :employeeId)")
+    void removeManagerByEmployeeId(@Param("employeeId") Long employeeId);
 }

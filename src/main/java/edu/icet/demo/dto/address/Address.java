@@ -3,7 +3,8 @@ package edu.icet.demo.dto.address;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class Address {

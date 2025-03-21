@@ -28,7 +28,7 @@ public class DepartmentEntity {
 
     private Integer employeeCount;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "manager_id", referencedColumnName = "id")
     private ManagerEntity manager;
 

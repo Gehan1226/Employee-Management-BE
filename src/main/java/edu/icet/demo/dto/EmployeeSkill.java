@@ -1,6 +1,6 @@
 package edu.icet.demo.dto;
 
-import edu.icet.demo.dto.employee.EmployeeRequest;
+import edu.icet.demo.dto.employee.EmployeeCreateRequest;
 import lombok.*;
 
 import java.sql.Date;
@@ -10,7 +10,7 @@ import java.sql.Date;
 @NoArgsConstructor
 public class EmployeeSkill {
     private Long id;
-    private EmployeeRequest employeeRequest;
+    private EmployeeCreateRequest employeeCreateRequest;
     private Skill skill;
     private String proficiencyLevel;
     private Date acquisitionDate;

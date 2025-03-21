@@ -1,6 +1,6 @@
 package edu.icet.demo.dto.attendance;
 
-import edu.icet.demo.dto.employee.EmployeeRequest;
+import edu.icet.demo.dto.employee.EmployeeCreateRequest;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -19,5 +19,5 @@ public class AttendanceResponse {
     private LocalTime checkOutTime;
     private Integer hoursWorked;
     private String shift;
-    private EmployeeRequest employeeRequest;
+    private EmployeeCreateRequest employeeCreateRequest;
 }

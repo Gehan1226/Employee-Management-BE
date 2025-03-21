@@ -47,7 +47,7 @@ public class TaskServiceImpl implements TaskService {
 
         List<EmployeeEntity> employeeList = new ArrayList<>();
 
-        task.getEmployeeRequestList().forEach(employee ->
+        task.getEmployeeCreateRequestList().forEach(employee ->
                 employeeList.add(mapper.convertValue(employee, EmployeeEntity.class)));
         try {
             taskEntity.setTaskDescription(task.getTaskDescription());

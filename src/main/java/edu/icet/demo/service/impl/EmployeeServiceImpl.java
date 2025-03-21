@@ -1,7 +1,8 @@
 package edu.icet.demo.service.impl;
 
-import edu.icet.demo.dto.employee.EmployeeRequest;
+import edu.icet.demo.dto.employee.EmployeeCreateRequest;
 import edu.icet.demo.dto.employee.EmployeeResponse;
+import edu.icet.demo.dto.employee.EmployeeUpdateRequest;
 import edu.icet.demo.dto.response.PaginatedResponse;
 import edu.icet.demo.entity.DepartmentEntity;
 import edu.icet.demo.entity.EmployeeEntity;
@@ -13,7 +14,6 @@ import edu.icet.demo.repository.RoleRepository;
 import edu.icet.demo.service.EmployeeService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.modelmapper.Conditions;
 import org.modelmapper.ModelMapper;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
@@ -35,25 +35,26 @@ public class EmployeeServiceImpl implements EmployeeService {
     private final DepartmentRepository departmentRepository;
     private final ModelMapper mapper;
     private static final String ERROR_MESSAGE = "An unexpected error occurred while fetching employees.";
+    private static final String DEPARTMENT_NOT_FOUND = "Department with ID %d not found.";
 
     @Override
-    public void addEmployee(EmployeeRequest employeeRequest) {
-        if (employeeRepository.existsByEmail(employeeRequest.getEmail())) {
+    public void addEmployee(EmployeeCreateRequest employeeCreateRequest) {
+        if (employeeRepository.existsByEmail(employeeCreateRequest.getEmail())) {
             throw new DataDuplicateException(
-                    "An employee with the email '" + employeeRequest.getEmail() + "' already exists.");
+                    "An employee with the email '" + employeeCreateRequest.getEmail() + "' already exists.");
         }
-        if (!departmentRepository.existsById(employeeRequest.getDepartmentId())) {
-            throw new DataNotFoundException("Department with ID %d not found."
-                    .formatted(employeeRequest.getDepartmentId()));
+        if (!departmentRepository.existsById(employeeCreateRequest.getDepartmentId())) {
+            throw new DataNotFoundException(DEPARTMENT_NOT_FOUND
+                    .formatted(employeeCreateRequest.getDepartmentId()));
         }
-        if (!roleRepository.existsById(employeeRequest.getRoleId())) {
+        if (!roleRepository.existsById(employeeCreateRequest.getRoleId())) {
             throw new DataNotFoundException("Role with ID %d not found."
-                    .formatted(employeeRequest.getRoleId()));
+                    .formatted(employeeCreateRequest.getRoleId()));
         }
         try {
-            EmployeeEntity employeeEntity = mapper.map(employeeRequest, EmployeeEntity.class);
-            employeeEntity.setDepartment(DepartmentEntity.builder().id(employeeRequest.getDepartmentId()).build());
-            employeeEntity.setRole(RoleEntity.builder().id(employeeRequest.getRoleId()).build());
+            EmployeeEntity employeeEntity = mapper.map(employeeCreateRequest, EmployeeEntity.class);
+            employeeEntity.setDepartment(DepartmentEntity.builder().id(employeeCreateRequest.getDepartmentId()).build());
+            employeeEntity.setRole(RoleEntity.builder().id(employeeCreateRequest.getRoleId()).build());
             employeeRepository.save(employeeEntity);
         } catch (DataIntegrityViolationException ex) {
             log.error(ex.getMessage());
@@ -82,27 +83,29 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     @Transactional
-    public void deleteEmployee(String email) {
-        if (!employeeRepository.existsByEmail(email)) {
-            throw new DataNotFoundException("Employee with email '%s' not found".formatted(email));
+    public void deleteEmployeeBYId(Long id) {
+        if (!employeeRepository.existsById(id)) {
+            throw new DataNotFoundException("Employee with id '%s' not found".formatted(id));
         }
+
         try {
-            employeeRepository.deleteByEmail(email);
+            departmentRepository.removeManagerByEmployeeId(id);
+            employeeRepository.deleteById(id);
         } catch (Exception e) {
             log.error(e.getMessage());
-            throw new DeletionException("Failed to delete employee with email '%s'.".formatted(email));
+            throw new DeletionException("Failed to delete employee with email '%s'.".formatted(id));
         }
     }
 
     @Override
-    public void updateEmployee(Long id, EmployeeRequest employeeRequest) {
+    public void updateEmployee(Long id, EmployeeUpdateRequest employeeRequest) {
         EmployeeEntity employeeEntity = employeeRepository.findById(id).orElseThrow(() -> new DataNotFoundException(
                 "Employee with ID %d not found.".formatted(id)
         ));
 
         if (employeeRequest.getDepartmentId() != null) {
             if (!departmentRepository.existsById(employeeRequest.getDepartmentId())) {
-                throw new DataNotFoundException("Department with ID %d not found."
+                throw new DataNotFoundException(DEPARTMENT_NOT_FOUND
                         .formatted(employeeRequest.getDepartmentId()));
             }
             employeeEntity.setDepartment(DepartmentEntity.builder().id(employeeRequest.getDepartmentId()).build());
@@ -130,19 +133,19 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public EmployeeRequest findById(Long id) {
+    public EmployeeCreateRequest findById(Long id) {
         EmployeeEntity employeeEntity = employeeRepository.findById(id)
                 .orElseThrow(() -> new DataNotFoundException("Employee with ID %d not found.".formatted(id)));
-        return mapper.map(employeeEntity, EmployeeRequest.class);
+        return mapper.map(employeeEntity, EmployeeCreateRequest.class);
     }
 
     @Override
-    public EmployeeRequest findByFirstName(String firstName) {
+    public EmployeeCreateRequest findByFirstName(String firstName) {
         EmployeeEntity employeeEntity = employeeRepository.findByFirstName(firstName);
         if (employeeEntity == null) {
             throw new DataNotFoundException("Employee with first name '%s' not found.".formatted(firstName));
         }
-        return mapper.map(employeeEntity, EmployeeRequest.class);
+        return mapper.map(employeeEntity, EmployeeCreateRequest.class);
     }
 
     @Override
@@ -176,7 +179,7 @@ public class EmployeeServiceImpl implements EmployeeService {
             return employeeList;
         } catch (Exception e) {
             log.error(e.getMessage());
-            throw new UnexpectedException("An unexpected error occurred while fetching non-managers.");
+            throw new UnexpectedException("An unexpected error occurred while fetching non-manager employees.");
         }
     }
 
@@ -193,7 +196,7 @@ public class EmployeeServiceImpl implements EmployeeService {
             log.error(e.getMessage());
             throw new UnexpectedException(ERROR_MESSAGE);
         }
-        throw new DataNotFoundException("Department with ID %d not found.".formatted(id));
+        throw new DataNotFoundException(DEPARTMENT_NOT_FOUND.formatted(id));
     }
 
 }

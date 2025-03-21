@@ -1,7 +1,8 @@
 package edu.icet.demo.controller;
 
-import edu.icet.demo.dto.employee.EmployeeRequest;
+import edu.icet.demo.dto.employee.EmployeeCreateRequest;
 import edu.icet.demo.dto.employee.EmployeeResponse;
+import edu.icet.demo.dto.employee.EmployeeUpdateRequest;
 import edu.icet.demo.dto.response.PaginatedResponse;
 import edu.icet.demo.dto.response.SuccessResponse;
 import edu.icet.demo.dto.response.SuccessResponseWithData;
@@ -28,8 +29,8 @@ public class EmployeeController {
 
     @PostMapping()
     public SuccessResponse addEmployee(
-            @Valid @RequestBody EmployeeRequest employeeRequest, BindingResult result) {
-        employeeService.addEmployee(employeeRequest);
+            @Valid @RequestBody EmployeeCreateRequest employeeCreateRequest, BindingResult result) {
+        employeeService.addEmployee(employeeCreateRequest);
         return SuccessResponse.builder()
                 .status(HttpStatus.CREATED.value())
                 .message("Employee created successfully.").build();
@@ -37,7 +38,7 @@ public class EmployeeController {
 
     @PatchMapping("/{id}")
     public SuccessResponse updateEmployee(
-            @PathVariable Long id, @RequestBody EmployeeRequest employeeRequest) {
+            @PathVariable Long id, @Valid @RequestBody EmployeeUpdateRequest employeeRequest, BindingResult result) {
 
         employeeService.updateEmployee(id, employeeRequest);
         return SuccessResponse.builder()
@@ -67,9 +68,9 @@ public class EmployeeController {
         return employeeService.getAllWithPaginated(searchTerm, pageable);
     }
 
-    @DeleteMapping()
-    public SuccessResponse deleteEmployees(@RequestParam String email) {
-        employeeService.deleteEmployee(email);
+    @DeleteMapping("/{id}")
+    public SuccessResponse deleteEmployees(@PathVariable Long id) {
+        employeeService.deleteEmployeeBYId(id);
         return SuccessResponse.builder()
                 .status(HttpStatus.OK.value())
                 .message("Employee deleted!")
@@ -90,7 +91,8 @@ public class EmployeeController {
     @GetMapping("/department/{id}")
     public SuccessResponseWithData<List<EmployeeResponse>> getEmployeesByDepartmentId(@PathVariable Long id) {
         List<EmployeeResponse> employeeRequestList = employeeService.getEmployeesByDepartmentId(id);
-        String message = employeeRequestList.isEmpty() ? "No employees found for this department!" : "Employees retrieved.";
+        String message =
+                employeeRequestList.isEmpty() ? "No employees found for this department!" : "Employees retrieved.";
         return SuccessResponseWithData.<List<EmployeeResponse>>builder()
                 .status(HttpStatus.OK.value())
                 .message(message)

@@ -1,6 +1,5 @@
 package edu.icet.demo.service.impl;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.icet.demo.dto.employee.EmployeeRequest;
 import edu.icet.demo.dto.employee.EmployeeResponse;
 import edu.icet.demo.dto.response.PaginatedResponse;
@@ -14,6 +13,8 @@ import edu.icet.demo.repository.RoleRepository;
 import edu.icet.demo.service.EmployeeService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.Conditions;
+import org.modelmapper.ModelMapper;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -32,8 +33,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     private final EmployeeRepository employeeRepository;
     private final RoleRepository roleRepository;
     private final DepartmentRepository departmentRepository;
-    private final ObjectMapper mapper;
-
+    private final ModelMapper mapper;
     private static final String ERROR_MESSAGE = "An unexpected error occurred while fetching employees.";
 
     @Override
@@ -51,7 +51,7 @@ public class EmployeeServiceImpl implements EmployeeService {
                     .formatted(employeeRequest.getRoleId()));
         }
         try {
-            EmployeeEntity employeeEntity = mapper.convertValue(employeeRequest, EmployeeEntity.class);
+            EmployeeEntity employeeEntity = mapper.map(employeeRequest, EmployeeEntity.class);
             employeeEntity.setDepartment(DepartmentEntity.builder().id(employeeRequest.getDepartmentId()).build());
             employeeEntity.setRole(RoleEntity.builder().id(employeeRequest.getRoleId()).build());
             employeeRepository.save(employeeEntity);
@@ -71,7 +71,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         try {
             employeeRepository.findAll().forEach(employeeEntity ->
-                    employeeRequestList.add(mapper.convertValue(employeeEntity, EmployeeResponse.class)
+                    employeeRequestList.add(mapper.map(employeeEntity, EmployeeResponse.class)
                     ));
         } catch (Exception e) {
             log.error(e.getMessage());
@@ -95,18 +95,20 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public EmployeeRequest updateEmployee(EmployeeRequest employeeRequest) {
-        if (!employeeRepository.existsByEmail(employeeRequest.getEmail())) {
-            throw new DataNotFoundException("Employee with email '%s' not found".formatted(employeeRequest.getEmail()));
-        }
-        if (employeeRequest.getAddress().getId() == null) {
-            throw new MissingAttributeException("Address ID is missing.");
-        }
+    public void updateEmployee(Long id, EmployeeRequest employeeRequest) {
+        EmployeeEntity employeeEntity = employeeRepository.findById(id).orElseThrow(() -> new DataNotFoundException(
+                "Employee with ID %d not found.".formatted(id)
+        ));
         try {
-            return mapper.convertValue(
-                    employeeRepository.save(mapper.convertValue(employeeRequest, EmployeeEntity.class)), EmployeeRequest.class);
+            mapper.map(employeeRequest, employeeEntity);
+            employeeRepository.save(employeeEntity);
         } catch (DataIntegrityViolationException e) {
-            throw new DataIntegrityException("The current address id is already used!");
+            throw new DataIntegrityException(
+                    "Database constraint violation while updating employee. Please check the provided data.");
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            throw new UnexpectedException("An unexpected error occurred while updating the employee with ID "
+                    + id + ". Please try again later.");
         }
     }
 
@@ -114,7 +116,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     public EmployeeRequest findById(Long id) {
         EmployeeEntity employeeEntity = employeeRepository.findById(id)
                 .orElseThrow(() -> new DataNotFoundException("Employee with ID %d not found.".formatted(id)));
-        return mapper.convertValue(employeeEntity, EmployeeRequest.class);
+        return mapper.map(employeeEntity, EmployeeRequest.class);
     }
 
     @Override
@@ -123,7 +125,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         if (employeeEntity == null) {
             throw new DataNotFoundException("Employee with first name '%s' not found.".formatted(firstName));
         }
-        return mapper.convertValue(employeeEntity, EmployeeRequest.class);
+        return mapper.map(employeeEntity, EmployeeRequest.class);
     }
 
     @Override
@@ -132,7 +134,7 @@ public class EmployeeServiceImpl implements EmployeeService {
             List<EmployeeResponse> employeeRequestList = new ArrayList<>();
             Page<EmployeeEntity> response = employeeRepository.findAllWithSearch(searchTerm, pageable);
             response.forEach(employeeEntity ->
-                    employeeRequestList.add(mapper.convertValue(employeeEntity, EmployeeResponse.class)));
+                    employeeRequestList.add(mapper.map(employeeEntity, EmployeeResponse.class)));
 
             return new PaginatedResponse<>(
                     HttpStatus.OK.value(),
@@ -153,7 +155,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         try {
             List<EmployeeResponse> employeeList = new ArrayList<>();
             employeeRepository.findNonManagerEmployees().forEach(employeeEntity ->
-                    employeeList.add(mapper.convertValue(employeeEntity, EmployeeResponse.class)));
+                    employeeList.add(mapper.map(employeeEntity, EmployeeResponse.class)));
             return employeeList;
         } catch (Exception e) {
             log.error(e.getMessage());
@@ -167,7 +169,7 @@ public class EmployeeServiceImpl implements EmployeeService {
             if (departmentRepository.existsById(id)) {
                 List<EmployeeResponse> employeeRequestList = new ArrayList<>();
                 employeeRepository.findByDepartmentId(id).forEach(employeeEntity ->
-                        employeeRequestList.add(mapper.convertValue(employeeEntity, EmployeeResponse.class)));
+                        employeeRequestList.add(mapper.map(employeeEntity, EmployeeResponse.class)));
                 return employeeRequestList;
             }
         } catch (Exception e) {
@@ -176,4 +178,5 @@ public class EmployeeServiceImpl implements EmployeeService {
         }
         throw new DataNotFoundException("Department with ID %d not found.".formatted(id));
     }
+
 }

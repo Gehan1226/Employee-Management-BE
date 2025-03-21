@@ -2,7 +2,8 @@ package edu.icet.demo.dto.department;
 
 import lombok.*;
 
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class DepartmentResponse {

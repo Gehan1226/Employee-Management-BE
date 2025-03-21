@@ -1,10 +1,12 @@
 package edu.icet.demo.dto.department;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 @AllArgsConstructor
-@Data
+@Getter
+@Setter
 public class ManagerResponse {
     private Long id;
     private ManagerEmployeeResponse employee;

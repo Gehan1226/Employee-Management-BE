@@ -1,8 +1,6 @@
 package edu.icet.demo.dto.employee;
 
 import edu.icet.demo.dto.address.Address;
-import edu.icet.demo.dto.role.RoleResponse;
-import edu.icet.demo.dto.department.DepartmentResponse;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -20,7 +18,7 @@ public class EmployeeResponse {
     private LocalDate dob;
     private String phoneNumber;
     private String gender;
-    private DepartmentResponse department;
-    private RoleResponse role;
+    private EmployeeDepartmentResponse department;
+    private EmployeeRoleResponse role;
     private Address address;
 }

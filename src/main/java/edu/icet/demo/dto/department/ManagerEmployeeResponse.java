@@ -1,12 +1,14 @@
 package edu.icet.demo.dto.department;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDate;
 
 @AllArgsConstructor
-@Data
+@Getter
+@Setter
 public class ManagerEmployeeResponse {
     private Long id;
     private String firstName;

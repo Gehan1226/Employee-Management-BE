@@ -28,26 +28,26 @@ public class EmployeeController {
 
     @PostMapping()
     public SuccessResponse addEmployee(
-            @Valid @RequestBody EmployeeRequest employeeRequest, BindingResult result){
+            @Valid @RequestBody EmployeeRequest employeeRequest, BindingResult result) {
         employeeService.addEmployee(employeeRequest);
         return SuccessResponse.builder()
                 .status(HttpStatus.CREATED.value())
                 .message("Employee created successfully.").build();
     }
 
-    @PatchMapping()
-    public SuccessResponseWithData<EmployeeRequest> updateEmployee(
-            @RequestBody EmployeeRequest employeeRequest, BindingResult result){
-        EmployeeRequest updatedEmployeeRequest = employeeService.updateEmployee(employeeRequest);
-        return SuccessResponseWithData.<EmployeeRequest>builder()
+    @PatchMapping("/{id}")
+    public SuccessResponse updateEmployee(
+            @PathVariable Long id, @RequestBody EmployeeRequest employeeRequest) {
+
+        employeeService.updateEmployee(id, employeeRequest);
+        return SuccessResponse.builder()
                 .status(HttpStatus.OK.value())
                 .message("Employee updated successfully.")
-                .data(updatedEmployeeRequest)
                 .build();
     }
 
     @GetMapping()
-    public SuccessResponseWithData<List<EmployeeResponse>> getEmployees(){
+    public SuccessResponseWithData<List<EmployeeResponse>> getEmployees() {
         List<EmployeeResponse> employeeRequestList = employeeService.getAll();
         String message = employeeRequestList.isEmpty() ? "Employee List is empty!" : "Employee list retrieved.";
         return SuccessResponseWithData.<List<EmployeeResponse>>builder()
@@ -61,14 +61,14 @@ public class EmployeeController {
     public PaginatedResponse<EmployeeResponse> getEmployeesPaginated(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
-            @RequestParam(required = false) String searchTerm){
+            @RequestParam(required = false) String searchTerm) {
 
         Pageable pageable = PageRequest.of(page, size);
         return employeeService.getAllWithPaginated(searchTerm, pageable);
     }
 
     @DeleteMapping()
-    public SuccessResponse deleteEmployees(@RequestParam String email){
+    public SuccessResponse deleteEmployees(@RequestParam String email) {
         employeeService.deleteEmployee(email);
         return SuccessResponse.builder()
                 .status(HttpStatus.OK.value())
@@ -77,7 +77,7 @@ public class EmployeeController {
     }
 
     @GetMapping("/non-managers")
-    public SuccessResponseWithData<List<EmployeeResponse>> getNonManagers(){
+    public SuccessResponseWithData<List<EmployeeResponse>> getNonManagers() {
         List<EmployeeResponse> employeeRequestList = employeeService.getNonManagers();
         String message = employeeRequestList.isEmpty() ? "No non-managers found!" : "Non-managers retrieved.";
         return SuccessResponseWithData.<List<EmployeeResponse>>builder()
@@ -88,7 +88,7 @@ public class EmployeeController {
     }
 
     @GetMapping("/department/{id}")
-    public SuccessResponseWithData<List<EmployeeResponse>> getEmployeesByDepartmentId(@PathVariable Long id){
+    public SuccessResponseWithData<List<EmployeeResponse>> getEmployeesByDepartmentId(@PathVariable Long id) {
         List<EmployeeResponse> employeeRequestList = employeeService.getEmployeesByDepartmentId(id);
         String message = employeeRequestList.isEmpty() ? "No employees found for this department!" : "Employees retrieved.";
         return SuccessResponseWithData.<List<EmployeeResponse>>builder()

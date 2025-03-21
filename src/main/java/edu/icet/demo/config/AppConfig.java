@@ -1,5 +1,7 @@
 package edu.icet.demo.config;
 
+import org.modelmapper.Conditions;
+import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.cors.CorsConfiguration;
@@ -9,7 +11,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import java.util.List;
 
 @Configuration
-public class CorsConfig {
+public class AppConfig {
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
@@ -22,5 +24,14 @@ public class CorsConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
+    }
+
+    @Bean
+    public ModelMapper modelMapper() {
+        ModelMapper modelMapper = new ModelMapper();
+        modelMapper.getConfiguration()
+                .setFieldMatchingEnabled(true)
+                .setPropertyCondition(Conditions.isNotNull());
+        return modelMapper;
     }
 }

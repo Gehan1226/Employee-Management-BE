@@ -14,7 +14,7 @@ public interface EmployeeService {
 
     void deleteEmployee(String email);
 
-    EmployeeRequest updateEmployee(EmployeeRequest employeeRequest);
+    void updateEmployee(Long id, EmployeeRequest employeeRequest);
 
     EmployeeRequest findById(Long id);
 

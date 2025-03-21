@@ -99,6 +99,23 @@ public class EmployeeServiceImpl implements EmployeeService {
         EmployeeEntity employeeEntity = employeeRepository.findById(id).orElseThrow(() -> new DataNotFoundException(
                 "Employee with ID %d not found.".formatted(id)
         ));
+
+        if (employeeRequest.getDepartmentId() != null) {
+            if (!departmentRepository.existsById(employeeRequest.getDepartmentId())) {
+                throw new DataNotFoundException("Department with ID %d not found."
+                        .formatted(employeeRequest.getDepartmentId()));
+            }
+            employeeEntity.setDepartment(DepartmentEntity.builder().id(employeeRequest.getDepartmentId()).build());
+        }
+
+        if (employeeRequest.getRoleId() != null) {
+            if (!roleRepository.existsById(employeeRequest.getRoleId())) {
+                throw new DataNotFoundException("Role with ID %d not found."
+                        .formatted(employeeRequest.getRoleId()));
+            }
+            employeeEntity.setRole(RoleEntity.builder().id(employeeRequest.getRoleId()).build());
+        }
+
         try {
             mapper.map(employeeRequest, employeeEntity);
             employeeRepository.save(employeeEntity);

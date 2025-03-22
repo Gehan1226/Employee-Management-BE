@@ -37,7 +37,7 @@ public class RoleServiceImpl implements RoleService {
         }
         try {
             RoleEntity roleEntity = mapper.convertValue(role, RoleEntity.class);
-            roleEntity.setDepartment(new DepartmentEntity(role.getDepartment().id()));
+//            roleEntity.setDepartment(new DepartmentEntity(role.getDepartment().id()));
             repository.save(roleEntity);
         } catch (DataIntegrityViolationException ex) {
             throw new DataIntegrityException(

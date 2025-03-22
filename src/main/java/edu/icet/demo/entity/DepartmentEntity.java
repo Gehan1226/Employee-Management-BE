@@ -40,8 +40,4 @@ public class DepartmentEntity {
 
     @OneToMany(mappedBy = "department", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<EmployeeEntity> employeeList = new ArrayList<>();
-
-    public DepartmentEntity(Long id) {
-        this.id = id;
-    }
 }

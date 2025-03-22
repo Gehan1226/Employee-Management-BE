@@ -1,6 +1,5 @@
 package edu.icet.demo.service.impl;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.icet.demo.dto.department.DepartmentCreateRequest;
 import edu.icet.demo.dto.department.DepartmentResponse;
 import edu.icet.demo.dto.department.DepartmentNameAndEmployeeCount;
@@ -25,10 +24,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -135,26 +137,55 @@ public class DepartmentServiceImpl implements DepartmentService {
     }
 
     @Override
-    public void updateDepartment(Long id, DepartmentCreateRequest department) {
-//        DepartmentEntity departmentEntity = departmentRepository.findById(id)
-//                .orElseThrow(() -> new DataIntegrityException(
-//                        String.format("Department with ID %d does not exist in the system.", id)));
-//        EmployeeEntity employeeEntity = employeeRepository.findById(department.getManager().id())
-//                .orElseThrow(() -> new DataIntegrityException(
-//                        String.format("Manager with ID %d does not exist in the system.", department.getManager().id())
-//                ));
-//        try {
-//            departmentEntity.setName(department.getName());
-//            departmentEntity.setResponsibility(department.getResponsibility());
-////            departmentEntity.setManager(employeeEntity);
-//            departmentRepository.save(departmentEntity);
-//            return department;
-//        } catch (DataIntegrityViolationException ex) {
-//            throw new DataIntegrityException(
-//                    "Database constraint violation. Please check that all provided values are valid and unique.");
-//        } catch (Exception ex) {
-//            throw new UnexpectedException("An unexpected error occurred while updating the department");
-//        }
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void updateDepartment(Long id, DepartmentCreateRequest departmentCreateRequest) {
+        DepartmentEntity departmentEntity = departmentRepository.findById(id)
+                .orElseThrow(() -> new DataIntegrityException(
+                        String.format("Department with ID %d not found.", id)));
+
+        if (departmentRepository.existsByNameAndIdNot(departmentCreateRequest.getName(), id)) {
+            throw new DataIntegrityException("A department with this name already exists.");
+        }
+
+        ManagerEntity managerEntity = null;
+        if (departmentCreateRequest.getEmployeeId() != null) {
+            Optional<ManagerEntity> existingManager =
+                    managerRepository.findByEmployeeId(departmentCreateRequest.getEmployeeId());
+
+            if (existingManager.isEmpty()) {
+                EmployeeEntity employeeEntity = employeeRepository.findById(departmentCreateRequest.getEmployeeId())
+                        .orElseThrow(() -> new DataNotFoundException(
+                                "Employee not found with ID " + departmentCreateRequest.getEmployeeId()
+                        ));
+                managerEntity = new ManagerEntity();
+                managerEntity.setEmployee(employeeEntity);
+                try {
+                    departmentEntity.setManager(managerEntity);
+                    managerRepository.save(managerEntity);
+                } catch (Exception ex) {
+                    throw new UnexpectedException("An unexpected error occurred while creating the manager.");
+                }
+            } else {
+                if (Objects.equals(existingManager.get().getEmployee().getId(),
+                        departmentCreateRequest.getEmployeeId()) && !Objects.equals(existingManager.get().getId(), departmentEntity.getManager().getId())) {
+                    throw new DataIntegrityException(
+                            String.format("The employee with %d is already a manager of another department.",
+                                    departmentCreateRequest.getEmployeeId()));
+                }
+            }
+        }
+
+        try {
+            mapper.map(departmentCreateRequest, departmentEntity);
+            departmentEntity.setId(id);
+            departmentRepository.save(departmentEntity);
+        } catch (DataIntegrityViolationException ex) {
+            throw new DataIntegrityException(
+                    "Database constraint violation. Please check that all provided values are valid and unique.");
+        } catch (Exception ex) {
+            log.error(ex.getMessage());
+            throw new UnexpectedException("An unexpected error occurred while updating the department");
+        }
     }
 
     @Override

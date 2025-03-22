@@ -29,4 +29,6 @@ public interface DepartmentRepository extends JpaRepository<DepartmentEntity, Lo
     @Query("UPDATE DepartmentEntity d SET d.manager = NULL WHERE d.manager.id " +
             "IN (SELECT m.id FROM ManagerEntity m WHERE m.employee.id = :employeeId)")
     void removeManagerByEmployeeId(@Param("employeeId") Long employeeId);
+
+    boolean existsByNameAndIdNot(String name, Long id);
 }

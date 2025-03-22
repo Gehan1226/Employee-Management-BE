@@ -83,7 +83,7 @@ public class DepartmentController {
                 .build();
     }
 
-    @GetMapping("/get-all")
+    @GetMapping()
     public SuccessResponseWithData<List<DepartmentResponse>> getAll() {
         return SuccessResponseWithData.<List<DepartmentResponse>>builder()
                 .status(HttpStatus.OK.value())

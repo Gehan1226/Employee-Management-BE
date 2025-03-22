@@ -196,6 +196,7 @@ public class DepartmentServiceImpl implements DepartmentService {
                     departmentList.add(mapper.map(departmentEntity, DepartmentResponse.class)));
             return departmentList;
         } catch (Exception e) {
+            log.error(e.getMessage());
             throw new UnexpectedException("An unexpected error occurred while retrieving departments");
         }
     }

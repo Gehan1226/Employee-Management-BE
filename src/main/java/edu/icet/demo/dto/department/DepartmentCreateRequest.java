@@ -7,7 +7,7 @@ import lombok.*;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class DepartmentRequest {
+public class DepartmentCreateRequest {
 
     @NotBlank(message = "Department name is required.")
     private String name;

@@ -1,6 +1,6 @@
 package edu.icet.demo.service;
 
-import edu.icet.demo.dto.department.DepartmentRequest;
+import edu.icet.demo.dto.department.DepartmentCreateRequest;
 import edu.icet.demo.dto.department.DepartmentResponse;
 import edu.icet.demo.dto.department.DepartmentNameAndEmployeeCount;
 import edu.icet.demo.dto.response.PaginatedResponse;
@@ -9,7 +9,7 @@ import org.springframework.data.domain.Pageable;
 import java.util.List;
 
 public interface DepartmentService {
-    void addDepartment(DepartmentRequest department);
+    void addDepartment(DepartmentCreateRequest department);
 
     PaginatedResponse<DepartmentResponse> getAllWithPagination(Pageable pageable, String searchTerm);
 
@@ -17,7 +17,7 @@ public interface DepartmentService {
 
     List<DepartmentNameAndEmployeeCount> getDepartmentNameWithEmployeeCount();
 
-    DepartmentRequest updateDepartment(Long id, DepartmentRequest department);
+    void updateDepartment(Long id, DepartmentCreateRequest department);
 
     List<DepartmentResponse> getAll();
 }

@@ -1,7 +1,7 @@
 package edu.icet.demo.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import edu.icet.demo.dto.department.DepartmentRequest;
+import edu.icet.demo.dto.department.DepartmentCreateRequest;
 import edu.icet.demo.dto.department.DepartmentResponse;
 import edu.icet.demo.dto.department.DepartmentNameAndEmployeeCount;
 import edu.icet.demo.dto.response.PaginatedResponse;
@@ -19,6 +19,7 @@ import edu.icet.demo.repository.RoleRepository;
 import edu.icet.demo.service.DepartmentService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.ModelMapper;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -38,11 +39,11 @@ public class DepartmentServiceImpl implements DepartmentService {
     private final EmployeeRepository employeeRepository;
     private final ManagerRepository managerRepository;
     private final RoleRepository roleRepository;
-    private final ObjectMapper mapper;
+    private final ModelMapper mapper;
 
     @Override
     @Transactional
-    public void addDepartment(DepartmentRequest department) {
+    public void addDepartment(DepartmentCreateRequest department) {
         if (departmentRepository.existsByName(department.getName())) {
             throw new DataDuplicateException(
                     String.format("A department with the name '%s' already exists.", department.getName())
@@ -68,7 +69,7 @@ public class DepartmentServiceImpl implements DepartmentService {
         }
 
         try {
-            DepartmentEntity departmentEntity = mapper.convertValue(department, DepartmentEntity.class);
+            DepartmentEntity departmentEntity = mapper.map(department, DepartmentEntity.class);
             if (managerEntity != null) {
                 departmentEntity.setManager(managerEntity);
             }
@@ -87,7 +88,7 @@ public class DepartmentServiceImpl implements DepartmentService {
             List<DepartmentResponse> depList = new ArrayList<>();
             Page<DepartmentEntity> response = departmentRepository.findAllWithSearch(searchTerm, pageable);
             response.forEach(departmentEntity -> {
-                DepartmentResponse departmentResponse = mapper.convertValue(departmentEntity, DepartmentResponse.class);
+                DepartmentResponse departmentResponse = mapper.map(departmentEntity, DepartmentResponse.class);
                 depList.add(departmentResponse);
             });
 
@@ -134,7 +135,7 @@ public class DepartmentServiceImpl implements DepartmentService {
     }
 
     @Override
-    public DepartmentRequest updateDepartment(Long id, DepartmentRequest department) {
+    public void updateDepartment(Long id, DepartmentCreateRequest department) {
 //        DepartmentEntity departmentEntity = departmentRepository.findById(id)
 //                .orElseThrow(() -> new DataIntegrityException(
 //                        String.format("Department with ID %d does not exist in the system.", id)));
@@ -154,7 +155,6 @@ public class DepartmentServiceImpl implements DepartmentService {
 //        } catch (Exception ex) {
 //            throw new UnexpectedException("An unexpected error occurred while updating the department");
 //        }
-        return null;
     }
 
     @Override
@@ -162,7 +162,7 @@ public class DepartmentServiceImpl implements DepartmentService {
         List<DepartmentResponse> departmentList = new ArrayList<>();
         try {
             departmentRepository.findAll().forEach(departmentEntity ->
-                    departmentList.add(mapper.convertValue(departmentEntity, DepartmentResponse.class)));
+                    departmentList.add(mapper.map(departmentEntity, DepartmentResponse.class)));
             return departmentList;
         } catch (Exception e) {
             throw new UnexpectedException("An unexpected error occurred while retrieving departments");

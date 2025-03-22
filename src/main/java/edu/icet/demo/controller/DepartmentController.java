@@ -1,6 +1,6 @@
 package edu.icet.demo.controller;
 
-import edu.icet.demo.dto.department.DepartmentRequest;
+import edu.icet.demo.dto.department.DepartmentCreateRequest;
 import edu.icet.demo.dto.department.DepartmentResponse;
 import edu.icet.demo.dto.department.DepartmentNameAndEmployeeCount;
 import edu.icet.demo.dto.response.PaginatedResponse;
@@ -30,7 +30,7 @@ public class DepartmentController {
 
     @PostMapping()
     public SuccessResponse addDepartment(
-            @Valid @RequestBody DepartmentRequest department,
+            @Valid @RequestBody DepartmentCreateRequest department,
             BindingResult result) {
         departmentService.addDepartment(department);
         return SuccessResponse.builder()
@@ -70,17 +70,16 @@ public class DepartmentController {
                 .build();
     }
 
-    @PutMapping("/update/{id}")
-    public SuccessResponseWithData<DepartmentRequest> updateDepartment(
+    @PatchMapping("/{id}")
+    public SuccessResponse updateDepartment(
             @PathVariable Long id,
-            @Valid @RequestBody DepartmentRequest department,
+            @RequestBody DepartmentCreateRequest department,
             BindingResult result) {
 
-        DepartmentRequest updatedDepartment = departmentService.updateDepartment(id, department);
-        return SuccessResponseWithData.<DepartmentRequest>builder()
+        departmentService.updateDepartment(id, department);
+        return SuccessResponse.builder()
                 .status(HttpStatus.OK.value())
                 .message("Department updated successfully.")
-                .data(updatedDepartment)
                 .build();
     }
 

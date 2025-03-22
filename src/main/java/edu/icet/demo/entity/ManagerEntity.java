@@ -17,7 +17,7 @@ public class ManagerEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne
     @JoinColumn(name = "employee_id", referencedColumnName = "id")
     private EmployeeEntity employee;
 }

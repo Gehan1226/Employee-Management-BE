@@ -2,7 +2,7 @@ package edu.icet.demo.service;
 
 import edu.icet.demo.dto.department.DepartmentRequest;
 import edu.icet.demo.dto.department.DepartmentResponse;
-import edu.icet.demo.dto.DepartmentNameAndEmployeeCountDTO;
+import edu.icet.demo.dto.department.DepartmentNameAndEmployeeCount;
 import edu.icet.demo.dto.response.PaginatedResponse;
 import org.springframework.data.domain.Pageable;
 
@@ -15,7 +15,7 @@ public interface DepartmentService {
 
     void deleteById(Long id);
 
-    List<DepartmentNameAndEmployeeCountDTO> getDepartmentNameWithEmployeeCount();
+    List<DepartmentNameAndEmployeeCount> getDepartmentNameWithEmployeeCount();
 
     DepartmentRequest updateDepartment(Long id, DepartmentRequest department);
 

@@ -1,7 +1,6 @@
 package edu.icet.demo.dto.department;
 
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 @Getter
@@ -16,6 +15,5 @@ public class DepartmentRequest {
     @NotBlank(message = "Department responsibility is required.")
     private String responsibility;
 
-    @NotNull(message = "employee id is required.")
     private Long employeeId;
 }

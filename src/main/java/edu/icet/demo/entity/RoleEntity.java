@@ -21,6 +21,6 @@ public class RoleEntity {
 
     @JsonIgnore
     @ManyToOne
-    @JoinColumn(name = "department_id")
+    @JoinColumn(name = "department_id", nullable = true) // Allow null values
     private DepartmentEntity department;
 }

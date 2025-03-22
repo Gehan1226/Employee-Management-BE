@@ -3,7 +3,7 @@ package edu.icet.demo.service.impl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.icet.demo.dto.department.DepartmentRequest;
 import edu.icet.demo.dto.department.DepartmentResponse;
-import edu.icet.demo.dto.DepartmentNameAndEmployeeCountDTO;
+import edu.icet.demo.dto.department.DepartmentNameAndEmployeeCount;
 import edu.icet.demo.dto.response.PaginatedResponse;
 import edu.icet.demo.entity.DepartmentEntity;
 import edu.icet.demo.entity.EmployeeEntity;
@@ -15,8 +15,8 @@ import edu.icet.demo.exception.UnexpectedException;
 import edu.icet.demo.repository.DepartmentRepository;
 import edu.icet.demo.repository.EmployeeRepository;
 import edu.icet.demo.repository.ManagerRepository;
+import edu.icet.demo.repository.RoleRepository;
 import edu.icet.demo.service.DepartmentService;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -24,6 +24,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,6 +37,7 @@ public class DepartmentServiceImpl implements DepartmentService {
     private final DepartmentRepository departmentRepository;
     private final EmployeeRepository employeeRepository;
     private final ManagerRepository managerRepository;
+    private final RoleRepository roleRepository;
     private final ObjectMapper mapper;
 
     @Override
@@ -46,24 +48,30 @@ public class DepartmentServiceImpl implements DepartmentService {
                     String.format("A department with the name '%s' already exists.", department.getName())
             );
         }
-        EmployeeEntity employeeEntity = employeeRepository.findById(department.getEmployeeId())
-                .orElseThrow(() ->
-                        new DataNotFoundException("Employee not found with ID " + department.getEmployeeId()));
+        ManagerEntity managerEntity = null;
 
-        ManagerEntity managerEntity = new ManagerEntity();
-        managerEntity.setEmployee(employeeEntity);
-        try {
-            managerEntity = managerRepository.save(managerEntity);
-        } catch (DataIntegrityViolationException ex) {
-            throw new DataIntegrityException("Failed to create a manager for the department." +
-                    "Please check that all provided values are valid and unique.");
-        } catch (Exception ex) {
-            throw new UnexpectedException("An unexpected error occurred while creating the manager.");
+        if (department.getEmployeeId() != null) {
+            EmployeeEntity employeeEntity = employeeRepository.findById(department.getEmployeeId())
+                    .orElseThrow(() -> new DataNotFoundException(
+                            "Employee not found with ID " + department.getEmployeeId()
+                    ));
+            managerEntity = new ManagerEntity();
+            managerEntity.setEmployee(employeeEntity);
+            try {
+                managerEntity = managerRepository.save(managerEntity);
+            } catch (DataIntegrityViolationException ex) {
+                throw new DataIntegrityException("Failed to create a manager for the department." +
+                        " Please check that all provided values are valid and unique.");
+            } catch (Exception ex) {
+                throw new UnexpectedException("An unexpected error occurred while creating the manager.");
+            }
         }
 
         try {
             DepartmentEntity departmentEntity = mapper.convertValue(department, DepartmentEntity.class);
-            departmentEntity.setManager(managerEntity);
+            if (managerEntity != null) {
+                departmentEntity.setManager(managerEntity);
+            }
             departmentRepository.save(departmentEntity);
         } catch (DataIntegrityViolationException ex) {
             throw new DataIntegrityException(
@@ -99,19 +107,23 @@ public class DepartmentServiceImpl implements DepartmentService {
 
     @Override
     public void deleteById(Long id) {
+        DepartmentEntity department = departmentRepository.findById(id)
+                .orElseThrow(() -> new DataNotFoundException(
+                        String.format("Department with ID %d does not exist in the system.", id)));
         try {
-            if (departmentRepository.existsById(id)) {
-                departmentRepository.deleteById(id);
-                return;
-            }
+            department.getRoleList().forEach(roleEntity ->
+                    roleEntity.setDepartment(null));
+            department.getEmployeeList().forEach(employeeEntity ->
+                    employeeEntity.setDepartment(null));
+            departmentRepository.delete(department);
         } catch (Exception e) {
+            log.error(e.getMessage());
             throw new UnexpectedException("An unexpected error occurred while deleting the department");
         }
-        throw new DataIntegrityException(String.format("Department with ID %d does not exist in the system.", id));
     }
 
     @Override
-    public List<DepartmentNameAndEmployeeCountDTO> getDepartmentNameWithEmployeeCount() {
+    public List<DepartmentNameAndEmployeeCount> getDepartmentNameWithEmployeeCount() {
         try {
             return departmentRepository.findAllDepartmentNamesAndEmployeeCounts();
         } catch (Exception e) {

@@ -2,7 +2,7 @@ package edu.icet.demo.controller;
 
 import edu.icet.demo.dto.department.DepartmentRequest;
 import edu.icet.demo.dto.department.DepartmentResponse;
-import edu.icet.demo.dto.DepartmentNameAndEmployeeCountDTO;
+import edu.icet.demo.dto.department.DepartmentNameAndEmployeeCount;
 import edu.icet.demo.dto.response.PaginatedResponse;
 import edu.icet.demo.dto.response.SuccessResponse;
 import edu.icet.demo.dto.response.SuccessResponseWithData;
@@ -53,18 +53,18 @@ public class DepartmentController {
     }
 
     @GetMapping("/names-and-employee-counts")
-    public SuccessResponseWithData<List<DepartmentNameAndEmployeeCountDTO>> getDepartmentNameWithEmployeeCount() {
-        return SuccessResponseWithData.<List<DepartmentNameAndEmployeeCountDTO>>builder()
+    public SuccessResponseWithData<List<DepartmentNameAndEmployeeCount>> getDepartmentNameWithEmployeeCount() {
+        return SuccessResponseWithData.<List<DepartmentNameAndEmployeeCount>>builder()
                 .status(HttpStatus.OK.value())
                 .message("Department name and employee count retrieved.")
                 .data(departmentService.getDepartmentNameWithEmployeeCount())
                 .build();
     }
 
-    @DeleteMapping("/delete")
-    public SuccessResponseWithData<String> deleteDepartment(@RequestParam Long id) {
+    @DeleteMapping("/{id}")
+    public SuccessResponse deleteDepartment(@PathVariable Long id) {
         departmentService.deleteById(id);
-        return SuccessResponseWithData.<String>builder()
+        return SuccessResponse.builder()
                 .status(HttpStatus.OK.value())
                 .message("Department deleted.")
                 .build();

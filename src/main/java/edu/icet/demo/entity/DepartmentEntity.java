@@ -7,6 +7,9 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
@@ -31,6 +34,12 @@ public class DepartmentEntity {
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "manager_id", referencedColumnName = "id")
     private ManagerEntity manager;
+
+    @OneToMany(mappedBy = "department", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    private List<RoleEntity> roleList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "department", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    private List<EmployeeEntity> employeeList = new ArrayList<>();
 
     public DepartmentEntity(Long id) {
         this.id = id;

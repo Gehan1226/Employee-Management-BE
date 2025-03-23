@@ -10,6 +10,7 @@ import lombok.*;
 @Entity
 @Getter
 @Setter
+@ToString
 @Table(name = "manger")
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class ManagerEntity {

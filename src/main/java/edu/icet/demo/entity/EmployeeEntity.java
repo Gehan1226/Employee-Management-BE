@@ -11,6 +11,7 @@ import java.time.LocalDate;
 @Getter
 @Setter
 @ToString
+@Builder
 @Table(name = "employee")
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class EmployeeEntity {

@@ -1,16 +1,18 @@
 package edu.icet.demo.service.impl;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import edu.icet.demo.dto.Task;
+import edu.icet.demo.dto.task.TaskCreateRequest;
 import edu.icet.demo.dto.response.PaginatedResponse;
 import edu.icet.demo.entity.EmployeeEntity;
 import edu.icet.demo.entity.TaskEntity;
 import edu.icet.demo.exception.DataIntegrityException;
 import edu.icet.demo.exception.DataNotFoundException;
 import edu.icet.demo.exception.UnexpectedException;
+import edu.icet.demo.repository.ManagerRepository;
 import edu.icet.demo.repository.TaskRepository;
 import edu.icet.demo.service.TaskService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.ModelMapper;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,37 +24,53 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class TaskServiceImpl implements TaskService {
 
     private final TaskRepository taskRepository;
-    private final ObjectMapper mapper;
+    private final ManagerRepository managerRepository;
+    private final ModelMapper mapper;
 
     @Override
-    public void addTask(Task task) {
+    public void addTask(TaskCreateRequest taskCreateRequest) {
+        if (!managerRepository.existsById(taskCreateRequest.getManagerId())) {
+            throw new DataNotFoundException(
+                    String.format("Manager with ID %d does not exist in the system.", taskCreateRequest.getManagerId()));
+        }
         try {
-            taskRepository.save(mapper.convertValue(task, TaskEntity.class));
-        }catch (DataIntegrityViolationException ex) {
+            TaskEntity taskEntity = mapper.map(taskCreateRequest, TaskEntity.class);
+
+            List<EmployeeEntity> employeeList = new ArrayList<>();
+            taskCreateRequest.getEmployeeIdList().forEach(employeeId ->
+                    employeeList.add(EmployeeEntity.builder().id(employeeId).build()));
+
+            taskEntity.setEmployeeList(employeeList);
+            taskRepository.save(taskEntity);
+        } catch (DataIntegrityViolationException ex) {
             throw new DataIntegrityException(
                     "Database constraint violation. Please check that all provided values are valid and unique.");
         } catch (Exception ex) {
-            throw new UnexpectedException("An unexpected error occurred while saving the task");
+            log.error(ex.getMessage());
+            throw new UnexpectedException(
+                    "An unexpected error occurred while saving the task. Please check the provided values."
+            );
         }
     }
 
     @Override
-    public void updateById(Long id, Task task) {
-         TaskEntity taskEntity = taskRepository.findById(id)
+    public void updateById(Long id, TaskCreateRequest taskCreateRequest) {
+        TaskEntity taskEntity = taskRepository.findById(id)
                 .orElseThrow(() -> new DataNotFoundException(
                         String.format("Task with ID %d does not exist in the system.", id)));
 
         List<EmployeeEntity> employeeList = new ArrayList<>();
 
-        task.getEmployeeCreateRequestList().forEach(employee ->
-                employeeList.add(mapper.convertValue(employee, EmployeeEntity.class)));
+        taskCreateRequest.getEmployeeIdList().forEach(employee ->
+                employeeList.add(mapper.map(employee, EmployeeEntity.class)));
         try {
-            taskEntity.setTaskDescription(task.getTaskDescription());
-            taskEntity.setAssignedTime(task.getAssignedTime());
-            taskEntity.setAssignedDate(task.getDueDate());
+            taskEntity.setTaskDescription(taskCreateRequest.getTaskDescription());
+            taskEntity.setAssignedTime(taskCreateRequest.getAssignedTime());
+            taskEntity.setAssignedDate(taskCreateRequest.getDueDate());
             taskEntity.setEmployeeList(employeeList);
             taskRepository.save(taskEntity);
         } catch (DataIntegrityViolationException ex) {
@@ -77,16 +95,16 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public PaginatedResponse<Task> getAllWithPagination(Pageable pageable, String searchTerm) {
+    public PaginatedResponse<TaskCreateRequest> getAllWithPagination(Pageable pageable, String searchTerm) {
         try {
-            List<Task> taskList = new ArrayList<>();
+            List<TaskCreateRequest> taskCreateRequestList = new ArrayList<>();
             Page<TaskEntity> response = taskRepository.findAllWithSearch(searchTerm, pageable);
             response.forEach(taskEntity ->
-                    taskList.add(mapper.convertValue(taskEntity, Task.class)));
+                    taskCreateRequestList.add(mapper.map(taskEntity, TaskCreateRequest.class)));
             return new PaginatedResponse<>(
                     HttpStatus.OK.value(),
-                    taskList.isEmpty() ? "No departments found!" : "Departments retrieved.",
-                    taskList,
+                    taskCreateRequestList.isEmpty() ? "No departments found!" : "Departments retrieved.",
+                    taskCreateRequestList,
                     response.getTotalPages(),
                     response.getTotalElements(),
                     response.getNumber()

@@ -1,6 +1,6 @@
 package edu.icet.demo.controller;
 
-import edu.icet.demo.dto.Task;
+import edu.icet.demo.dto.task.TaskCreateRequest;
 import edu.icet.demo.dto.response.PaginatedResponse;
 import edu.icet.demo.dto.response.SuccessResponse;
 import edu.icet.demo.service.TaskService;
@@ -21,14 +21,14 @@ public class TaskController {
     private final TaskService taskService;
 
     @PostMapping()
-    public SuccessResponse addTask(@RequestBody Task task) {
-        taskService.addTask(task);
+    public SuccessResponse addTask(@RequestBody TaskCreateRequest taskCreateRequest) {
+        taskService.addTask(taskCreateRequest);
         return SuccessResponse.builder().status(HttpStatus.OK.value()).message("Task added successfully!").build();
     }
 
     @PatchMapping("/{id}")
-    public SuccessResponse updateById(@PathVariable Long id, @RequestBody Task task) {
-        taskService.updateById(id, task);
+    public SuccessResponse updateById(@PathVariable Long id, @RequestBody TaskCreateRequest taskCreateRequest) {
+        taskService.updateById(id, taskCreateRequest);
         return SuccessResponse.builder().status(HttpStatus.OK.value()).message("Task updated successfully!").build();
     }
 
@@ -39,7 +39,7 @@ public class TaskController {
     }
 
     @GetMapping("/get-all-paginated")
-    public PaginatedResponse<Task> getAll(
+    public PaginatedResponse<TaskCreateRequest> getAll(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) String searchTerm) {

@@ -3,6 +3,7 @@ package edu.icet.demo.controller;
 import edu.icet.demo.dto.task.TaskCreateRequest;
 import edu.icet.demo.dto.response.PaginatedResponse;
 import edu.icet.demo.dto.response.SuccessResponse;
+import edu.icet.demo.dto.task.TaskUpdateRequest;
 import edu.icet.demo.service.TaskService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -27,7 +28,7 @@ public class TaskController {
     }
 
     @PatchMapping("/{id}")
-    public SuccessResponse updateById(@PathVariable Long id, @RequestBody TaskCreateRequest taskCreateRequest) {
+    public SuccessResponse updateById(@PathVariable Long id, @RequestBody TaskUpdateRequest taskCreateRequest) {
         taskService.updateById(id, taskCreateRequest);
         return SuccessResponse.builder().status(HttpStatus.OK.value()).message("Task updated successfully!").build();
     }

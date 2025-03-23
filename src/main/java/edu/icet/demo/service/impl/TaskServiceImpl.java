@@ -2,7 +2,9 @@ package edu.icet.demo.service.impl;
 
 import edu.icet.demo.dto.task.TaskCreateRequest;
 import edu.icet.demo.dto.response.PaginatedResponse;
+import edu.icet.demo.dto.task.TaskUpdateRequest;
 import edu.icet.demo.entity.EmployeeEntity;
+import edu.icet.demo.entity.ManagerEntity;
 import edu.icet.demo.entity.TaskEntity;
 import edu.icet.demo.exception.DataIntegrityException;
 import edu.icet.demo.exception.DataNotFoundException;
@@ -58,25 +60,27 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public void updateById(Long id, TaskCreateRequest taskCreateRequest) {
+    public void updateById(Long id, TaskUpdateRequest taskUpdateRequest) {
         TaskEntity taskEntity = taskRepository.findById(id)
                 .orElseThrow(() -> new DataNotFoundException(
                         String.format("Task with ID %d does not exist in the system.", id)));
 
-        List<EmployeeEntity> employeeList = new ArrayList<>();
-
-        taskCreateRequest.getEmployeeIdList().forEach(employee ->
-                employeeList.add(mapper.map(employee, EmployeeEntity.class)));
         try {
-            taskEntity.setTaskDescription(taskCreateRequest.getTaskDescription());
-            taskEntity.setAssignedTime(taskCreateRequest.getAssignedTime());
-            taskEntity.setAssignedDate(taskCreateRequest.getDueDate());
-            taskEntity.setEmployeeList(employeeList);
+            List<EmployeeEntity> employeeList = new ArrayList<>();
+            if (taskUpdateRequest.getEmployeeIdList() != null) {
+                taskUpdateRequest.getEmployeeIdList().forEach(employeeId ->
+                        employeeList.add(EmployeeEntity.builder().id(employeeId).build()));
+
+                taskEntity.setEmployeeList(employeeList);
+            }
+            taskUpdateRequest.setEmployeeIdList(null);
+            mapper.map(taskUpdateRequest, taskEntity);
             taskRepository.save(taskEntity);
         } catch (DataIntegrityViolationException ex) {
             throw new DataIntegrityException(
                     "Database constraint violation. Please check that all provided values are valid and unique.");
         } catch (Exception ex) {
+            log.error(ex.getMessage());
             throw new UnexpectedException("An unexpected error occurred while updating the task");
         }
     }

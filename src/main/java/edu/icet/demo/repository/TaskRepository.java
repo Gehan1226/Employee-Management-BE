@@ -10,8 +10,13 @@ import org.springframework.data.repository.query.Param;
 public interface TaskRepository extends JpaRepository<TaskEntity, Long> {
 
     @Query("SELECT t FROM TaskEntity t WHERE " +
+            "t.manager.id = :managerId AND " +
             "(:searchTerm IS NULL OR " +
             "LOWER(t.taskDescription) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR " +
             "LOWER(t.status) LIKE LOWER(CONCAT('%', :searchTerm, '%')))")
-    Page<TaskEntity> findAllWithSearch(@Param("searchTerm") String searchTerm, Pageable pageable);
+    Page<TaskEntity> findAllByManagerWithSearch(
+            @Param("managerId") Long managerId,
+            @Param("searchTerm") String searchTerm,
+            Pageable pageable);
+
 }

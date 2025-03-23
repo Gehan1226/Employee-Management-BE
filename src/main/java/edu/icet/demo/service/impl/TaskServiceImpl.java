@@ -2,6 +2,7 @@ package edu.icet.demo.service.impl;
 
 import edu.icet.demo.dto.task.TaskCreateRequest;
 import edu.icet.demo.dto.response.PaginatedResponse;
+import edu.icet.demo.dto.task.TaskResponse;
 import edu.icet.demo.dto.task.TaskUpdateRequest;
 import edu.icet.demo.entity.EmployeeEntity;
 import edu.icet.demo.entity.ManagerEntity;
@@ -87,28 +88,34 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public void deleteById(Long id) {
+        if (!taskRepository.existsById(id)) {
+            throw new DataIntegrityException(String.format("Task with ID %d does not exist in the system.", id));
+        }
         try {
-            if (taskRepository.existsById(id)) {
-                taskRepository.deleteById(id);
-                return;
-            }
+            taskRepository.deleteById(id);
         } catch (Exception e) {
             throw new UnexpectedException("An unexpected error occurred while deleting the task");
         }
-        throw new DataIntegrityException(String.format("Task with ID %d does not exist in the system.", id));
     }
 
     @Override
-    public PaginatedResponse<TaskCreateRequest> getAllWithPagination(Pageable pageable, String searchTerm) {
+    public PaginatedResponse<TaskResponse> getAllByManagerIdWithPagination(
+            Long managerId, Pageable pageable, String searchTerm) {
+
+        if (!managerRepository.existsById(managerId)) {
+            throw new DataNotFoundException(
+                    String.format("Manager with ID %d does not exist in the system.", managerId));
+        }
+
         try {
-            List<TaskCreateRequest> taskCreateRequestList = new ArrayList<>();
-            Page<TaskEntity> response = taskRepository.findAllWithSearch(searchTerm, pageable);
+            List<TaskResponse> taskResponses = new ArrayList<>();
+            Page<TaskEntity> response = taskRepository.findAllByManagerWithSearch(managerId,searchTerm, pageable);
             response.forEach(taskEntity ->
-                    taskCreateRequestList.add(mapper.map(taskEntity, TaskCreateRequest.class)));
+                    taskResponses.add(mapper.map(taskEntity, TaskResponse.class)));
             return new PaginatedResponse<>(
                     HttpStatus.OK.value(),
-                    taskCreateRequestList.isEmpty() ? "No departments found!" : "Departments retrieved.",
-                    taskCreateRequestList,
+                    taskResponses.isEmpty() ? "No tasks found!" : "Tasks retrieved.",
+                    taskResponses,
                     response.getTotalPages(),
                     response.getTotalElements(),
                     response.getNumber()

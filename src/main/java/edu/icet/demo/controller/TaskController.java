@@ -3,6 +3,7 @@ package edu.icet.demo.controller;
 import edu.icet.demo.dto.task.TaskCreateRequest;
 import edu.icet.demo.dto.response.PaginatedResponse;
 import edu.icet.demo.dto.response.SuccessResponse;
+import edu.icet.demo.dto.task.TaskResponse;
 import edu.icet.demo.dto.task.TaskUpdateRequest;
 import edu.icet.demo.service.TaskService;
 import lombok.RequiredArgsConstructor;
@@ -39,14 +40,15 @@ public class TaskController {
         return SuccessResponse.builder().status(HttpStatus.OK.value()).message("Task deleted successfully!").build();
     }
 
-    @GetMapping("/get-all-paginated")
-    public PaginatedResponse<TaskCreateRequest> getAll(
+    @GetMapping("/all-by-manager/{managerId}")
+    public PaginatedResponse<TaskResponse> getAll(
+            @PathVariable Long managerId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) String searchTerm) {
 
         Pageable pageable = PageRequest.of(page, size);
-        return taskService.getAllWithPagination(pageable, searchTerm);
+        return taskService.getAllByManagerIdWithPagination(managerId, pageable, searchTerm);
     }
 
 }

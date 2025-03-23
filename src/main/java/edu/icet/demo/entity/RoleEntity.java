@@ -4,6 +4,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -21,6 +24,9 @@ public class RoleEntity {
 
     @JsonIgnore
     @ManyToOne
-    @JoinColumn(name = "department_id", nullable = true) // Allow null values
+    @JoinColumn(name = "department_id", nullable = true)
     private DepartmentEntity department;
+
+    @OneToMany(mappedBy = "role", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    private List<EmployeeEntity> employeeList = new ArrayList<>();
 }

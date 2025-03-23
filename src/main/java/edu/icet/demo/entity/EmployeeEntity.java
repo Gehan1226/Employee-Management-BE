@@ -29,7 +29,7 @@ public class EmployeeEntity {
     private DepartmentEntity department;
 
     @ManyToOne
-    @JoinColumn(name = "role_id")
+    @JoinColumn(name = "role_id", nullable = true)
     private RoleEntity role;
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)

@@ -12,7 +12,7 @@ public interface RoleService {
 
     List<RoleResponse> getAll();
 
-    boolean deleteRoleById(Long id);
+    void deleteRoleById(Long id);
 
     List<RoleResponse> getRolesByDepartmentId(Long id);
 

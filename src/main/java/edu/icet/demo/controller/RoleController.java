@@ -27,7 +27,7 @@ public class RoleController {
     private final RoleService service;
 
     @PostMapping()
-    public SuccessResponse addRole(@Valid @RequestBody RoleRequest role, BindingResult result){
+    public SuccessResponse addRole(@Valid @RequestBody RoleRequest role, BindingResult result) {
         service.addRole(role);
         return SuccessResponse.builder()
                 .status(HttpStatus.CREATED.value())
@@ -35,9 +35,14 @@ public class RoleController {
                 .build();
     }
 
-    @GetMapping("/get-all")
-    public List<RoleResponse> getRoles(){
-        return service.getAll();
+    @GetMapping()
+    public SuccessResponseWithData<List<RoleResponse>> getRoles() {
+        List<RoleResponse> roles = service.getAll();
+        return SuccessResponseWithData.<List<RoleResponse>>builder()
+                .status(HttpStatus.OK.value())
+                .message("Roles retrieved.")
+                .data(roles)
+                .build();
     }
 
     @GetMapping("/get-all-paginated")
@@ -50,8 +55,8 @@ public class RoleController {
         return service.getAllWithPagination(searchTerm, pageable);
     }
 
-    @GetMapping("/get-by-department/{id}")
-    public SuccessResponseWithData<List<RoleResponse>> getRolesByDepartmentId(@PathVariable Long id){
+    @GetMapping("/by-department/{id}")
+    public SuccessResponseWithData<List<RoleResponse>> getRolesByDepartmentId(@PathVariable Long id) {
         List<RoleResponse> rolesByDepartmentId = service.getRolesByDepartmentId(id);
         String message = rolesByDepartmentId.isEmpty() ? "Roles not found for this department!" : "Roles retrieved.";
         return SuccessResponseWithData.<List<RoleResponse>>builder()
@@ -61,8 +66,11 @@ public class RoleController {
                 .build();
     }
 
-    @DeleteMapping("/delete-by-id/{id}")
-    public boolean deleteRoleById(@PathVariable Long id){
-        return service.deleteRoleById(id);
+    @DeleteMapping("/{id}")
+    public SuccessResponse deleteRoleById(@PathVariable Long id) {
+        service.deleteRoleById(id);
+        return SuccessResponse.builder().status(HttpStatus.OK.value()).message("Role deleted successfully!").build();
     }
+
+
 }

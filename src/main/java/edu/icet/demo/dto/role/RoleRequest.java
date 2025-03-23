@@ -1,6 +1,5 @@
 package edu.icet.demo.dto.role;
 
-import edu.icet.demo.dto.records.DepartmentID;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -18,5 +17,5 @@ public class RoleRequest {
     private String description;
 
     @NotNull(message = "department id is required.")
-    private DepartmentID department;
+    private Long departmentId;
 }

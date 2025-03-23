@@ -7,11 +7,13 @@ import edu.icet.demo.entity.DepartmentEntity;
 import edu.icet.demo.entity.RoleEntity;
 import edu.icet.demo.exception.DataDuplicateException;
 import edu.icet.demo.exception.DataIntegrityException;
+import edu.icet.demo.exception.DataNotFoundException;
 import edu.icet.demo.exception.UnexpectedException;
 import edu.icet.demo.repository.DepartmentRepository;
 import edu.icet.demo.repository.RoleRepository;
 import edu.icet.demo.service.RoleService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
@@ -24,6 +26,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class RoleServiceImpl implements RoleService {
 
     private final RoleRepository roleRepository;
@@ -38,7 +41,8 @@ public class RoleServiceImpl implements RoleService {
             );
         }
         if (!departmentRepository.existsById(role.getDepartmentId())) {
-            throw new DataIntegrityException("Department with id " + role.getDepartmentId() + " does not exist.");
+            throw new DataNotFoundException(
+                    String.format("Department with id %d does not exist.", role.getDepartmentId()));
         }
         try {
             RoleEntity roleEntity = mapper.map(role, RoleEntity.class);
@@ -66,7 +70,7 @@ public class RoleServiceImpl implements RoleService {
     @Override
     public void deleteRoleById(Long id) {
         RoleEntity roleEntity = roleRepository.findById(id)
-                .orElseThrow(() -> new DataIntegrityException("Role not found with ID " + id));
+                .orElseThrow(() -> new DataNotFoundException("Role not found with ID " + id));
         try {
             roleEntity.getEmployeeList().forEach(employeeEntity -> employeeEntity.setRole(null));
             roleRepository.deleteById(id);
@@ -78,7 +82,7 @@ public class RoleServiceImpl implements RoleService {
     @Override
     public List<RoleResponse> getRolesByDepartmentId(Long id) {
         if (!departmentRepository.existsById(id)) {
-            throw new DataIntegrityException("Department with id " + id + " does not exist.");
+            throw new DataNotFoundException("Department with id " + id + " does not exist.");
         }
         try{
             List<RoleResponse> roleResponseList = new ArrayList<>();
@@ -106,5 +110,35 @@ public class RoleServiceImpl implements RoleService {
                 response.getTotalElements(),
                 response.getNumber()
         );
+    }
+
+    @Override
+    public void updateRole(Long id, RoleRequest roleRequest) {
+        RoleEntity roleEntity = roleRepository.findById(id)
+                .orElseThrow(() -> new DataNotFoundException("Role not found with Id " + id));
+        if (roleRepository.existsByNameAndIdNot(roleRequest.getName(), id)) {
+            throw new DataDuplicateException(
+                    String.format("A role with the name '%s' already exists.", roleRequest.getName())
+            );
+        }
+        DepartmentEntity departmentEntity = null;
+        if (roleRequest.getDepartmentId() != null) {
+            departmentEntity = departmentRepository.findById(roleRequest.getDepartmentId())
+                    .orElseThrow(() -> new DataNotFoundException(
+                            String.format("Department with id %d does not exist.", roleRequest.getDepartmentId())
+                    ));
+            roleEntity.setDepartment(departmentEntity);
+        }
+        try {
+            mapper.map(roleRequest, roleEntity);
+            roleEntity.setId(id);
+            roleRepository.save(roleEntity);
+        } catch (DataIntegrityViolationException ex) {
+            throw new DataIntegrityException(
+                    "Database constraint violation. Please check that all provided values are valid and unique.");
+        } catch (Exception ex) {
+            log.error(ex.getMessage());
+            throw new UnexpectedException("An unexpected error occurred while updating the role");
+        }
     }
 }

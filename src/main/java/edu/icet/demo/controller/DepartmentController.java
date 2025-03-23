@@ -73,9 +73,7 @@ public class DepartmentController {
     @PatchMapping("/{id}")
     public SuccessResponse updateDepartment(
             @PathVariable Long id,
-            @RequestBody DepartmentCreateRequest department,
-            BindingResult result) {
-
+            @RequestBody DepartmentCreateRequest department) {
         departmentService.updateDepartment(id, department);
         return SuccessResponse.builder()
                 .status(HttpStatus.OK.value())

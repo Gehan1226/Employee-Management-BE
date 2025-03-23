@@ -17,4 +17,6 @@ public interface RoleService {
     List<RoleResponse> getRolesByDepartmentId(Long id);
 
     PaginatedResponse<RoleResponse> getAllWithPagination(String searchTerm, Pageable pageable);
+
+    void updateRole(Long id, RoleRequest role);
 }

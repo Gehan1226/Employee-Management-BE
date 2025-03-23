@@ -72,5 +72,12 @@ public class RoleController {
         return SuccessResponse.builder().status(HttpStatus.OK.value()).message("Role deleted successfully!").build();
     }
 
-
+    @PatchMapping("/{id}")
+    public SuccessResponse updateRole(@PathVariable Long id, @RequestBody RoleRequest roleRequest) {
+        service.updateRole(id, roleRequest);
+        return SuccessResponse.builder()
+                .status(HttpStatus.OK.value())
+                .message("Role updated successfully!")
+                .build();
+    }
 }

@@ -19,4 +19,6 @@ public interface RoleRepository  extends JpaRepository<RoleEntity,Long> {
     Page<RoleEntity> findAllWithSearch(@Param("searchTerm") String searchTerm, Pageable pageable);
 
     boolean existsByName(String name);
+
+    boolean existsByNameAndIdNot(String name, Long id);
 }

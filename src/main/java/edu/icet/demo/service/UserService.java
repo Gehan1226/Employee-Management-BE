@@ -9,9 +9,9 @@ import org.springframework.data.domain.Pageable;
 import java.time.LocalDate;
 
 public interface UserService {
-    UserDTO register(UserDTO userDTO);
+    UserDTO addUser(UserDTO userDTO);
 
-    AccessToken verify(UserLoginRequest userLoginRequest);
+    AccessToken authenticateAndGenerateToken(UserLoginRequest userLoginRequest);
 
     PaginatedResponse<UserDTO> getDisableUsersByOptionalDateRange(
             LocalDate startDate, LocalDate endDate, String searchTerm,Pageable pageable);

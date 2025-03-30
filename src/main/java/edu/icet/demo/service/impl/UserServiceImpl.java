@@ -31,11 +31,10 @@ public class UserServiceImpl implements UserService {
     private final AuthenticationManager authenticationManager;
     private final JWTService jwtService;
     private final ObjectMapper objectMapper;
-
     private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
 
     @Override
-    public UserDTO register(UserDTO userDTO) {
+    public UserDTO addUser(UserDTO userDTO) {
         userDTO.setPassword(encoder.encode(userDTO.getPassword()));
         userDTO.setEnabled(true);
         userDTO.setCreatedDate(LocalDate.now());
@@ -48,7 +47,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public AccessToken verify(UserLoginRequest userLoginRequest) {
+    public AccessToken authenticateAndGenerateToken(UserLoginRequest userLoginRequest) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         userLoginRequest.getUserName(), userLoginRequest.getPassword()));

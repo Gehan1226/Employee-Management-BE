@@ -20,7 +20,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/role")
 @RequiredArgsConstructor
-@CrossOrigin
 @Validated
 public class RoleController {
 

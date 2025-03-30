@@ -21,7 +21,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/employee")
 @RequiredArgsConstructor
-@CrossOrigin
 @Validated
 public class EmployeeController {
 

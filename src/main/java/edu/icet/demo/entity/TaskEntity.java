@@ -8,7 +8,7 @@ import java.time.LocalTime;
 import java.util.List;
 
 @Entity
-@Table(name = "tasks")
+@Table(name = "task")
 @Getter
 @Setter
 @ToString

@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/v1/task")
 @RequiredArgsConstructor
-@CrossOrigin
 @Validated
 public class TaskController {
 

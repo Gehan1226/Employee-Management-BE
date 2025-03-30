@@ -3,16 +3,21 @@ package edu.icet.demo.controller;
 
 import edu.icet.demo.dto.auth.AccessToken;
 import edu.icet.demo.dto.response.PaginatedResponse;
+import edu.icet.demo.dto.response.SuccessResponse;
 import edu.icet.demo.dto.response.SuccessResponseWithData;
 import edu.icet.demo.dto.auth.UserDTO;
 import edu.icet.demo.dto.auth.UserLoginRequest;
 import edu.icet.demo.service.UserService;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -22,16 +27,15 @@ import java.time.LocalDate;
 
 @RestController
 @RequiredArgsConstructor
-@CrossOrigin
 @Validated
 @RequestMapping("/api/v1/auth")
 public class UserController {
 
     private final UserService userService;
 
-    @PostMapping("/register")
-    public SuccessResponseWithData<UserDTO> register(@Valid @RequestBody UserDTO user, BindingResult result) {
-        UserDTO registeredUser = userService.register(user);
+    @PostMapping()
+    public SuccessResponseWithData<UserDTO> addUser(@Valid @RequestBody UserDTO user, BindingResult result) {
+        UserDTO registeredUser = userService.addUser(user);
         return SuccessResponseWithData.<UserDTO>builder()
                 .status(HttpStatus.CREATED.value())
                 .message("User register successfully !")
@@ -40,14 +44,22 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public SuccessResponseWithData<AccessToken> login(@Valid @RequestBody UserLoginRequest userLoginRequest,
-                                                      BindingResult result) {
-        AccessToken token = userService.verify(userLoginRequest);
-        return SuccessResponseWithData.<AccessToken>builder()
-                .status(HttpStatus.OK.value())
-                .message("User login successfully !")
-                .data(token)
+    public ResponseEntity<SuccessResponse> login(@Valid @RequestBody UserLoginRequest userLoginRequest,
+                                                 BindingResult result, HttpServletResponse response) {
+        AccessToken token = userService.authenticateAndGenerateToken(userLoginRequest);
+
+        ResponseCookie cookie = ResponseCookie.from("authToken", token.getToken())
+                .httpOnly(true)
+                .secure(true)
+                .path("/")
+                .maxAge(7 * 24 * 60 * 60)
+                .sameSite("Strict")
                 .build();
+
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, cookie.toString())
+                .body(SuccessResponse.builder().message("Login successful!").status(HttpStatus.OK.value()).build());
     }
 
     @GetMapping("/disable-users")

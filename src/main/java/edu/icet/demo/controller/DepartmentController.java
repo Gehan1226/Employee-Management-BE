@@ -22,7 +22,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/department")
 @RequiredArgsConstructor
-@CrossOrigin
 @Validated
 public class DepartmentController {
 

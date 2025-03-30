@@ -2,7 +2,7 @@ package edu.icet.demo.dto.enums;
 
 public enum SecurityAuthorities {
     ADMIN,
-    USER,
+    EMPLOYEE,
     MANAGER,
     SUPER_ADMIN;
 }

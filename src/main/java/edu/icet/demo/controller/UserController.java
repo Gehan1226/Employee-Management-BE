@@ -4,7 +4,7 @@ import edu.icet.demo.dto.auth.AccessToken;
 import edu.icet.demo.dto.response.PaginatedResponse;
 import edu.icet.demo.dto.response.SuccessResponse;
 import edu.icet.demo.dto.response.SuccessResponseWithData;
-import edu.icet.demo.dto.auth.UserDTO;
+import edu.icet.demo.dto.auth.UserCreateRequest;
 import edu.icet.demo.dto.auth.UserLoginRequest;
 import edu.icet.demo.service.UserService;
 import jakarta.servlet.http.HttpServletResponse;
@@ -31,7 +31,7 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping()
-    public SuccessResponse addUser(@Valid @RequestBody UserDTO user, BindingResult result) {
+    public SuccessResponse addUser(@Valid @RequestBody UserCreateRequest user, BindingResult result) {
         userService.addUser(user);
         return SuccessResponse.builder()
                 .status(HttpStatus.CREATED.value())
@@ -58,7 +58,7 @@ public class UserController {
     }
 
     @GetMapping("/disable-users")
-    public PaginatedResponse<UserDTO> getDisableUsersByOptionalDateRange(
+    public PaginatedResponse<UserCreateRequest> getDisableUsersByOptionalDateRange(
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
             @RequestParam(required = false) String searchTerm,
@@ -71,8 +71,8 @@ public class UserController {
 
 
     @PatchMapping("/update-role-and-enabled")
-    public SuccessResponseWithData<String> updateRoleAndEnabled(@RequestBody UserDTO userDTO) {
-        userService.updateRoleAndEnabled(userDTO);
+    public SuccessResponseWithData<String> updateRoleAndEnabled(@RequestBody UserCreateRequest userCreateRequest) {
+        userService.updateRoleAndEnabled(userCreateRequest);
         return SuccessResponseWithData.<String>builder()
                 .status(HttpStatus.OK.value())
                 .message("User updated successfully !")

@@ -1,7 +1,7 @@
 package edu.icet.demo.service.impl;
 
 import edu.icet.demo.dto.auth.AccessToken;
-import edu.icet.demo.dto.auth.UserDTO;
+import edu.icet.demo.dto.auth.UserCreateRequest;
 import edu.icet.demo.dto.auth.UserLoginRequest;
 import edu.icet.demo.dto.response.PaginatedResponse;
 import edu.icet.demo.entity.UserEntity;
@@ -39,30 +39,30 @@ public class UserServiceImpl implements UserService {
     private final EmployeeRepository employeeRepository;
 
     @Override
-    public void addUser(UserDTO userDTO) {
+    public void addUser(UserCreateRequest userCreateRequest) {
 
-        if (!employeeRepository.existsByEmail(userDTO.getEmail())) {
-            throw new DataNotFoundException("Employee with email '%s' not found".formatted(userDTO.getEmail()));
+        if (!employeeRepository.existsByEmail(userCreateRequest.getEmail())) {
+            throw new DataNotFoundException("Employee with email '%s' not found".formatted(userCreateRequest.getEmail()));
         }
-        if (userRepository.existsByUserNameOrEmail(userDTO.getUserName(), userDTO.getEmail())) {
+        if (userRepository.existsByUserNameOrEmail(userCreateRequest.getUserName(), userCreateRequest.getEmail())) {
             throw new DataDuplicateException(
                     String.format(
                             "A user with the username '%s' or email '%s' already exists.",
-                            userDTO.getUserName(),
-                            userDTO.getEmail()
+                            userCreateRequest.getUserName(),
+                            userCreateRequest.getEmail()
                     )
             );
         }
-        List<UserRoleEntity> userRoleEntities = userRoleRepository.findByNameIn(userDTO.getRoleList());
+        List<UserRoleEntity> userRoleEntities = userRoleRepository.findByNameIn(userCreateRequest.getRoleList());
         if (userRoleEntities.isEmpty()) {
-            throw new DataNotFoundException("user role's '%s' not found".formatted(userDTO.getRoleList()));
+            throw new DataNotFoundException("user role's '%s' not found".formatted(userCreateRequest.getRoleList()));
         }
-        userDTO.setPassword(encoder.encode(userDTO.getPassword()));
-        userDTO.setEnabled(true);
-        userDTO.setCreatedDate(LocalDate.now());
+        userCreateRequest.setPassword(encoder.encode(userCreateRequest.getPassword()));
+        userCreateRequest.setEnabled(true);
+        userCreateRequest.setCreatedDate(LocalDate.now());
 
         try {
-            UserEntity userEntity = modelMapper.map(userDTO, UserEntity.class);
+            UserEntity userEntity = modelMapper.map(userCreateRequest, UserEntity.class);
             userEntity.setRoleList(userRoleEntities);
             userRepository.save(userEntity);
         } catch (DataIntegrityViolationException exception) {
@@ -79,27 +79,27 @@ public class UserServiceImpl implements UserService {
                 new UsernamePasswordAuthenticationToken(
                         userLoginRequest.getUserName(), userLoginRequest.getPassword()));
 
-        return new AccessToken(jwtService.genarateToken(userLoginRequest.getUserName()));
+        return new AccessToken(jwtService.generateToken(userLoginRequest.getUserName()));
     }
 
     @Override
-    public PaginatedResponse<UserDTO> getDisableUsersByOptionalDateRange(
+    public PaginatedResponse<UserCreateRequest> getDisableUsersByOptionalDateRange(
             LocalDate startDate, LocalDate endDate, String searchTerm, Pageable pageable) {
 
-        List<UserDTO> userDTOList = new ArrayList<>();
+        List<UserCreateRequest> userCreateRequestList = new ArrayList<>();
         Page<UserEntity> userEntityPage =
                 userRepository.findByOptionalDateRangeAndEnabledFalseAndSearchTerm(
                         startDate, endDate, searchTerm, pageable
                 );
 
         userEntityPage.forEach(userEntity ->
-                userDTOList.add(modelMapper.map(userEntity, UserDTO.class))
+                userCreateRequestList.add(modelMapper.map(userEntity, UserCreateRequest.class))
         );
 
         return new PaginatedResponse<>(
                 HttpStatus.OK.value(),
-                userDTOList.isEmpty() ? "No disabled users found!" : "Disabled user list retrieved.",
-                userDTOList,
+                userCreateRequestList.isEmpty() ? "No disabled users found!" : "Disabled user list retrieved.",
+                userCreateRequestList,
                 userEntityPage.getTotalPages(),
                 userEntityPage.getTotalElements(),
                 userEntityPage.getNumber()
@@ -108,7 +108,7 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public void updateRoleAndEnabled(UserDTO userDTO) {
+    public void updateRoleAndEnabled(UserCreateRequest userCreateRequest) {
 //        int updatedRows = userRepository.updateUserRoleAndEnabled(
 //                userDTO.getEmail(),
 //                userDTO.getRole(),

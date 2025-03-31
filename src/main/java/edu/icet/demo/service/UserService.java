@@ -9,7 +9,7 @@ import org.springframework.data.domain.Pageable;
 import java.time.LocalDate;
 
 public interface UserService {
-    UserDTO addUser(UserDTO userDTO);
+    void addUser(UserDTO userDTO);
 
     AccessToken authenticateAndGenerateToken(UserLoginRequest userLoginRequest);
 

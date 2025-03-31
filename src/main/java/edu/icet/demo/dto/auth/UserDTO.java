@@ -4,8 +4,8 @@ package edu.icet.demo.dto.auth;
 import edu.icet.demo.dto.enums.SecurityAuthorities;
 import jakarta.validation.constraints.*;
 import lombok.Data;
-
 import java.time.LocalDate;
+import java.util.List;
 
 @Data
 public class UserDTO {
@@ -27,8 +27,8 @@ public class UserDTO {
     @Email(message = "Email should be valid")
     private String email;
 
-    @NotNull(message = "Role cannot be null")
-    private SecurityAuthorities role;
+    @NotNull(message = "Role list cannot be null")
+    private List<SecurityAuthorities> roleList;
 
     private boolean enabled;
 

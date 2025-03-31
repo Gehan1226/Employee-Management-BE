@@ -1,15 +1,18 @@
 package edu.icet.demo.service.impl;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.icet.demo.dto.auth.AccessToken;
 import edu.icet.demo.dto.auth.UserDTO;
 import edu.icet.demo.dto.auth.UserLoginRequest;
 import edu.icet.demo.dto.response.PaginatedResponse;
 import edu.icet.demo.entity.UserEntity;
+import edu.icet.demo.entity.UserRoleEntity;
 import edu.icet.demo.exception.*;
+import edu.icet.demo.repository.EmployeeRepository;
 import edu.icet.demo.repository.UserRepository;
+import edu.icet.demo.repository.UserRoleRepository;
 import edu.icet.demo.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -30,19 +33,43 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final AuthenticationManager authenticationManager;
     private final JWTService jwtService;
-    private final ObjectMapper objectMapper;
+    private final ModelMapper modelMapper;
     private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
+    private final UserRoleRepository userRoleRepository;
+    private final EmployeeRepository employeeRepository;
 
     @Override
-    public UserDTO addUser(UserDTO userDTO) {
+    public void addUser(UserDTO userDTO) {
+
+        if (!employeeRepository.existsByEmail(userDTO.getEmail())) {
+            throw new DataNotFoundException("Employee with email '%s' not found".formatted(userDTO.getEmail()));
+        }
+        if (userRepository.existsByUserNameOrEmail(userDTO.getUserName(), userDTO.getEmail())) {
+            throw new DataDuplicateException(
+                    String.format(
+                            "A user with the username '%s' or email '%s' already exists.",
+                            userDTO.getUserName(),
+                            userDTO.getEmail()
+                    )
+            );
+        }
+        List<UserRoleEntity> userRoleEntities = userRoleRepository.findByNameIn(userDTO.getRoleList());
+        if (userRoleEntities.isEmpty()) {
+            throw new DataNotFoundException("user role's '%s' not found".formatted(userDTO.getRoleList()));
+        }
         userDTO.setPassword(encoder.encode(userDTO.getPassword()));
         userDTO.setEnabled(true);
         userDTO.setCreatedDate(LocalDate.now());
+
         try {
-            UserEntity userEntity = userRepository.save(objectMapper.convertValue(userDTO, UserEntity.class));
-            return objectMapper.convertValue(userEntity, UserDTO.class);
+            UserEntity userEntity = modelMapper.map(userDTO, UserEntity.class);
+            userEntity.setRoleList(userRoleEntities);
+            userRepository.save(userEntity);
         } catch (DataIntegrityViolationException exception) {
-            throw new DataDuplicateException("User name already exist.Please try another user name!");
+            throw new DataDuplicateException(
+                    "Database constraint violation. Please check that all provided values are valid and unique!");
+        } catch (Exception exception) {
+            throw new UnexpectedException("An unexpected error occurred while saving the user");
         }
     }
 
@@ -66,7 +93,7 @@ public class UserServiceImpl implements UserService {
                 );
 
         userEntityPage.forEach(userEntity ->
-                userDTOList.add(objectMapper.convertValue(userEntity, UserDTO.class))
+                userDTOList.add(modelMapper.map(userEntity, UserDTO.class))
         );
 
         return new PaginatedResponse<>(
@@ -82,14 +109,14 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void updateRoleAndEnabled(UserDTO userDTO) {
-        int updatedRows = userRepository.updateUserRoleAndEnabled(
-                userDTO.getEmail(),
-                userDTO.getRole(),
-                userDTO.isEnabled()
-        );
-        if (updatedRows == 0) {
-            throw new DataNotFoundException("User with email '%s' not found".formatted(userDTO.getEmail()));
-        }
+//        int updatedRows = userRepository.updateUserRoleAndEnabled(
+//                userDTO.getEmail(),
+//                userDTO.getRole(),
+//                userDTO.isEnabled()
+//        );
+//        if (updatedRows == 0) {
+//            throw new DataNotFoundException("User with email '%s' not found".formatted(userDTO.getEmail()));
+//        }
     }
 
     @Override

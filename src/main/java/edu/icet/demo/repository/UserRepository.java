@@ -1,6 +1,5 @@
 package edu.icet.demo.repository;
 
-import edu.icet.demo.dto.enums.SecurityAuthorities;
 import edu.icet.demo.entity.UserEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -33,15 +32,17 @@ public interface UserRepository extends JpaRepository<UserEntity, Integer> {
             Pageable pageable);
 
 
-    @Modifying
-    @Transactional
-    @Query("UPDATE edu.icet.demo.entity.UserEntity u SET u.role = :role, u.enabled = :enabled WHERE u.email = :email")
-    int updateUserRoleAndEnabled(@Param("email") String email,
-                                 @Param("role") SecurityAuthorities role,
-                                 @Param("enabled") boolean enabled);
+//    @Modifying
+//    @Transactional
+//    @Query("UPDATE edu.icet.demo.entity.UserEntity u SET u.role = :role, u.enabled = :enabled WHERE u.email = :email")
+//    int updateUserRoleAndEnabled(@Param("email") String email,
+//                                 @Param("role") SecurityAuthorities role,
+//                                 @Param("enabled") boolean enabled);
 
     @Modifying
     @Transactional
     @Query("DELETE FROM edu.icet.demo.entity.UserEntity u WHERE u.email = :email")
     int deleteUserByEmail(@Param("email") String email);
+
+    boolean existsByUserNameOrEmail(String userName, String email);
 }

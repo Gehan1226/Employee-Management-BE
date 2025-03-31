@@ -1,5 +1,6 @@
 package edu.icet.demo.entity;
 
+import edu.icet.demo.dto.enums.SecurityAuthorities;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -10,9 +11,13 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserRoleEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private  Long id;
-    private String name;
+
+    @Enumerated(EnumType.STRING)
+    private SecurityAuthorities name;
+
     private String description;
 }

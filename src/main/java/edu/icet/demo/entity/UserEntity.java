@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -24,18 +25,23 @@ public class UserEntity {
     @Column(unique = true, nullable = false)
     private String email;
 
-    @Enumerated(EnumType.STRING)
-    private SecurityAuthorities role;
+    @ManyToMany
+    @JoinTable(
+            name = "user_role_association",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_role_id")
+    )
+    private List<UserRoleEntity> roleList;
 
     private boolean enabled;
 
     private LocalDate createdDate;
 
-    public UserEntity(int id, String userName, String email, SecurityAuthorities role, boolean enabled) {
+    public UserEntity(int id, String userName, String email, List<UserRoleEntity> roleList, boolean enabled) {
         this.id = id;
         this.userName = userName;
         this.email = email;
-        this.role = role;
+        this.roleList = roleList;
         this.enabled = enabled;
     }
 }

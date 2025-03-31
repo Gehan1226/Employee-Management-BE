@@ -1,6 +1,5 @@
 package edu.icet.demo.controller;
 
-
 import edu.icet.demo.dto.auth.AccessToken;
 import edu.icet.demo.dto.response.PaginatedResponse;
 import edu.icet.demo.dto.response.SuccessResponse;
@@ -17,13 +16,11 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
-import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-
 
 @RestController
 @RequiredArgsConstructor
@@ -34,32 +31,30 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping()
-    public SuccessResponseWithData<UserDTO> addUser(@Valid @RequestBody UserDTO user, BindingResult result) {
-        UserDTO registeredUser = userService.addUser(user);
-        return SuccessResponseWithData.<UserDTO>builder()
+    public SuccessResponse addUser(@Valid @RequestBody UserDTO user, BindingResult result) {
+        userService.addUser(user);
+        return SuccessResponse.builder()
                 .status(HttpStatus.CREATED.value())
                 .message("User register successfully !")
-                .data(registeredUser)
                 .build();
     }
 
     @PostMapping("/login")
-    public ResponseEntity<SuccessResponse> login(@Valid @RequestBody UserLoginRequest userLoginRequest,
-                                                 BindingResult result, HttpServletResponse response) {
+    public SuccessResponse login(@Valid @RequestBody UserLoginRequest userLoginRequest,
+                                 BindingResult result, HttpServletResponse response) {
         AccessToken token = userService.authenticateAndGenerateToken(userLoginRequest);
-
         ResponseCookie cookie = ResponseCookie.from("authToken", token.getToken())
                 .httpOnly(true)
                 .secure(true)
                 .path("/")
-                .maxAge(7 * 24 * 60 * 60)
+                .maxAge(604800)
                 .sameSite("Strict")
                 .build();
-
-
-        return ResponseEntity.ok()
-                .header(HttpHeaders.SET_COOKIE, cookie.toString())
-                .body(SuccessResponse.builder().message("Login successful!").status(HttpStatus.OK.value()).build());
+        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+        return SuccessResponse.builder()
+                .status(HttpStatus.OK.value())
+                .message("User logged in successfully !")
+                .build();
     }
 
     @GetMapping("/disable-users")

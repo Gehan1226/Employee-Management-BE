@@ -40,20 +40,13 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public SuccessResponse login(@Valid @RequestBody UserLoginRequest userLoginRequest,
+    public SuccessResponseWithData<AccessToken> login(@Valid @RequestBody UserLoginRequest userLoginRequest,
                                  BindingResult result, HttpServletResponse response) {
         AccessToken token = userService.authenticateAndGenerateToken(userLoginRequest);
-        ResponseCookie cookie = ResponseCookie.from("authToken", token.getToken())
-                .httpOnly(true)
-                .secure(true)
-                .path("/")
-                .maxAge(604800)
-                .sameSite("Strict")
-                .build();
-        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
-        return SuccessResponse.builder()
+        return SuccessResponseWithData.<AccessToken>builder()
                 .status(HttpStatus.OK.value())
                 .message("User logged in successfully !")
+                .data(token)
                 .build();
     }
 

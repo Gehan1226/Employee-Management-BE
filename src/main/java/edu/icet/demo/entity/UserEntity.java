@@ -1,6 +1,5 @@
 package edu.icet.demo.entity;
 
-import edu.icet.demo.dto.enums.SecurityAuthorities;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;

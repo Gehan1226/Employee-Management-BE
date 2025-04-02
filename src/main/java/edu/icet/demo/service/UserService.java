@@ -3,6 +3,7 @@ package edu.icet.demo.service;
 import edu.icet.demo.dto.auth.AccessToken;
 import edu.icet.demo.dto.auth.UserCreateRequest;
 import edu.icet.demo.dto.auth.UserLoginRequest;
+import edu.icet.demo.dto.auth.UserResponse;
 import edu.icet.demo.dto.response.PaginatedResponse;
 import org.springframework.data.domain.Pageable;
 
@@ -19,4 +20,6 @@ public interface UserService {
     void updateRoleAndEnabled(UserCreateRequest userCreateRequest);
 
     boolean deleteByEmail(String email);
+
+    UserResponse getUserByName(String name);
 }

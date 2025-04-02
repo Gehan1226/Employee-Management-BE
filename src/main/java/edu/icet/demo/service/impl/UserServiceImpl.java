@@ -3,6 +3,8 @@ package edu.icet.demo.service.impl;
 import edu.icet.demo.dto.auth.AccessToken;
 import edu.icet.demo.dto.auth.UserCreateRequest;
 import edu.icet.demo.dto.auth.UserLoginRequest;
+import edu.icet.demo.dto.auth.UserResponse;
+import edu.icet.demo.dto.enums.SecurityAuthorities;
 import edu.icet.demo.dto.response.PaginatedResponse;
 import edu.icet.demo.entity.UserEntity;
 import edu.icet.demo.entity.UserRoleEntity;
@@ -137,4 +139,18 @@ public class UserServiceImpl implements UserService {
         return true;
     }
 
+    @Override
+    public UserResponse getUserByName(String name) {
+        UserEntity userEntity = userRepository.findByUserName(name);
+        if (userEntity == null) {
+            throw new DataNotFoundException("User with name '%s' not found.".formatted(name));
+        }
+        UserResponse userResponse = modelMapper.map(userEntity, UserResponse.class);
+
+        List<SecurityAuthorities> roleList = new ArrayList<>();
+        userEntity.getRoleList().forEach(role -> roleList.add(role.getName()));
+        userResponse.setRoleList(roleList);
+
+        return userResponse;
+    }
 }

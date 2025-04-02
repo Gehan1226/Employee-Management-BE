@@ -1,6 +1,7 @@
 package edu.icet.demo.controller;
 
 import edu.icet.demo.dto.auth.AccessToken;
+import edu.icet.demo.dto.auth.UserResponse;
 import edu.icet.demo.dto.response.PaginatedResponse;
 import edu.icet.demo.dto.response.SuccessResponse;
 import edu.icet.demo.dto.response.SuccessResponseWithData;
@@ -47,6 +48,16 @@ public class UserController {
                 .status(HttpStatus.OK.value())
                 .message("User logged in successfully !")
                 .data(token)
+                .build();
+    }
+
+    @GetMapping("{name}")
+    public SuccessResponseWithData<UserResponse> getUser(@PathVariable String name) {
+        UserResponse user = userService.getUserByName(name);
+        return SuccessResponseWithData.<UserResponse>builder()
+                .status(HttpStatus.OK.value())
+                .message("User retrieved successfully !")
+                .data(user)
                 .build();
     }
 

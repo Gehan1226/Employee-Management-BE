@@ -6,6 +6,8 @@ import lombok.*;
 
 
 @ToString
+@Getter
+@Setter
 @Entity
 @Table(name = "user_role")
 @AllArgsConstructor

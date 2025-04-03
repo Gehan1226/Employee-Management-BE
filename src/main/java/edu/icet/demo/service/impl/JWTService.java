@@ -21,7 +21,7 @@ public class JWTService {
 
     private String secretKey = "";
 
-    public JWTService(){
+    public JWTService() {
         try {
             KeyGenerator keyGen = KeyGenerator.getInstance("HmacSHA256");
             SecretKey sk = keyGen.generateKey();
@@ -38,13 +38,13 @@ public class JWTService {
                 .add(claims)
                 .subject(userName)
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis()))
+                .expiration(new Date(System.currentTimeMillis() + 24 * 60 * 60 * 1000))
                 .and()
                 .signWith(getKey())
                 .compact();
     }
 
-    private SecretKey getKey(){
+    private SecretKey getKey() {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         return Keys.hmacShaKeyFor(keyBytes);
     }
@@ -59,11 +59,11 @@ public class JWTService {
     }
 
     private Claims extractAllClaims(String token) {
-            return Jwts.parser()
-                    .verifyWith(getKey())
-                    .build()
-                    .parseSignedClaims(token)
-                    .getPayload();
+        return Jwts.parser()
+                .verifyWith(getKey())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
     }
 
     public boolean validateToken(String token, UserDetails userDetails) {

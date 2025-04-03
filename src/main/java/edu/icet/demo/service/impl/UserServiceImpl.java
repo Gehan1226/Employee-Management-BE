@@ -44,7 +44,8 @@ public class UserServiceImpl implements UserService {
     public void addUser(UserCreateRequest userCreateRequest) {
 
         if (!employeeRepository.existsByEmail(userCreateRequest.getEmail())) {
-            throw new DataNotFoundException("Employee with email '%s' not found".formatted(userCreateRequest.getEmail()));
+            throw new DataNotFoundException(
+                    "Employee with email '%s' not found".formatted(userCreateRequest.getEmail()));
         }
         if (userRepository.existsByUserNameOrEmail(userCreateRequest.getUserName(), userCreateRequest.getEmail())) {
             throw new DataDuplicateException(

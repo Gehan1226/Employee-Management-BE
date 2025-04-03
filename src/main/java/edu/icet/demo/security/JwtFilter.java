@@ -31,6 +31,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
     private final JWTService jwtService;
     private final ApplicationContext applicationContext;
+    private final ObjectMapper objectMapper;
 
     @Override
     protected void doFilterInternal(
@@ -82,7 +83,6 @@ public class JwtFilter extends OncePerRequestFilter {
                 .build();
 
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-        ObjectMapper objectMapper = new ObjectMapper();
         response.setContentType("application/json");
         objectMapper.writeValue(response.getWriter(), errorResponse);
     }

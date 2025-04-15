@@ -36,6 +36,9 @@ public class UserEntity {
 
     private LocalDate createdDate;
 
+    @OneToOne(mappedBy = "user")
+    private EmployeeEntity employee;
+
     public UserEntity(int id, String userName, String email, List<UserRoleEntity> roleList, boolean enabled) {
         this.id = id;
         this.userName = userName;

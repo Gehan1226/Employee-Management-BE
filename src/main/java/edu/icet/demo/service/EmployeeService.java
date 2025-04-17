@@ -4,6 +4,7 @@ import edu.icet.demo.dto.employee.EmployeeCreateRequest;
 import edu.icet.demo.dto.employee.EmployeeResponse;
 import edu.icet.demo.dto.employee.EmployeeUpdateRequest;
 import edu.icet.demo.dto.response.PaginatedResponse;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
@@ -25,5 +26,5 @@ public interface EmployeeService {
 
     List<EmployeeResponse> getNonManagers();
 
-    List<EmployeeResponse> getEmployeesByDepartmentId(Long id);
+    Page<EmployeeResponse> getEmployeesByDepartmentId(Long departmentId, String searchTerm, Pageable pageable);
 }

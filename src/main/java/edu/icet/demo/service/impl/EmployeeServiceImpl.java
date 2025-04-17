@@ -184,19 +184,23 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public List<EmployeeResponse> getEmployeesByDepartmentId(Long id) {
+    public Page<EmployeeResponse> getEmployeesByDepartmentId(Long departmentId, String searchTerm, Pageable pageable) {
         try {
-            if (departmentRepository.existsById(id)) {
-                List<EmployeeResponse> employeeRequestList = new ArrayList<>();
-                employeeRepository.findByDepartmentId(id).forEach(employeeEntity ->
-                        employeeRequestList.add(mapper.map(employeeEntity, EmployeeResponse.class)));
-                return employeeRequestList;
+            if (!departmentRepository.existsById(departmentId)) {
+                throw new DataNotFoundException(DEPARTMENT_NOT_FOUND.formatted(departmentId));
             }
+
+            searchTerm = (searchTerm == null) ? "" : searchTerm;
+
+            Page<EmployeeEntity> employeePage = employeeRepository
+                    .searchByDepartmentAndTerm(departmentId, searchTerm, pageable);
+
+            return employeePage.map(entity -> mapper.map(entity, EmployeeResponse.class));
         } catch (Exception e) {
-            log.error(e.getMessage());
+            log.error(e.getMessage(), e);
             throw new UnexpectedException(ERROR_MESSAGE);
         }
-        throw new DataNotFoundException(DEPARTMENT_NOT_FOUND.formatted(id));
     }
+
 
 }

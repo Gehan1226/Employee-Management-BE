@@ -9,6 +9,7 @@ import edu.icet.demo.dto.response.SuccessResponseWithData;
 import edu.icet.demo.service.EmployeeService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -88,14 +89,27 @@ public class EmployeeController {
     }
 
     @GetMapping("/department/{id}")
-    public SuccessResponseWithData<List<EmployeeResponse>> getEmployeesByDepartmentId(@PathVariable Long id) {
-        List<EmployeeResponse> employeeRequestList = employeeService.getEmployeesByDepartmentId(id);
-        String message =
-                employeeRequestList.isEmpty() ? "No employees found for this department!" : "Employees retrieved.";
-        return SuccessResponseWithData.<List<EmployeeResponse>>builder()
+    public PaginatedResponse<EmployeeResponse> getEmployeesByDepartmentId(
+            @PathVariable Long id,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String searchTerm) {
+
+        Pageable pageable = PageRequest.of(page, size);
+        Page<EmployeeResponse> employeeResponsePage = employeeService.getEmployeesByDepartmentId(id, searchTerm, pageable);
+
+        String message = employeeResponsePage.isEmpty()
+                ? "No employees found for this department!"
+                : "Employees retrieved.";
+
+        return PaginatedResponse.<EmployeeResponse>builder()
                 .status(HttpStatus.OK.value())
                 .message(message)
-                .data(employeeRequestList)
+                .data(employeeResponsePage.getContent())
+                .totalPages(employeeResponsePage.getTotalPages())
+                .totalElements(employeeResponsePage.getTotalElements())
+                .currentPage(employeeResponsePage.getNumber())
                 .build();
     }
+
 }

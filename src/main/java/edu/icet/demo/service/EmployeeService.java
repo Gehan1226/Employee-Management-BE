@@ -27,4 +27,6 @@ public interface EmployeeService {
     List<EmployeeResponse> getNonManagers();
 
     Page<EmployeeResponse> getEmployeesByDepartmentId(Long departmentId, String searchTerm, Pageable pageable);
+
+    List<EmployeeResponse> getEmployeesByDepartmentId(Long departmentId);
 }

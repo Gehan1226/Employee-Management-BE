@@ -37,5 +37,6 @@ public interface EmployeeRepository extends JpaRepository<EmployeeEntity,Long> {
     @Query("SELECT e FROM EmployeeEntity e WHERE e.id NOT IN (SELECT m.employee.id FROM ManagerEntity m)")
     List<EmployeeEntity> findNonManagerEmployees();
 
+    List<EmployeeEntity> findByDepartmentId(Long departmentId);
 
 }

@@ -202,5 +202,20 @@ public class EmployeeServiceImpl implements EmployeeService {
         }
     }
 
+    @Override
+    public List<EmployeeResponse> getEmployeesByDepartmentId(Long departmentId) {
+        try {
+            if (!departmentRepository.existsById(departmentId)) {
+                throw new DataNotFoundException(DEPARTMENT_NOT_FOUND.formatted(departmentId));
+            }
+            List<EmployeeResponse> employeeList = new ArrayList<>();
+            employeeRepository.findByDepartmentId(departmentId).forEach(entity ->
+                    employeeList.add(mapper.map(entity, EmployeeResponse.class)));
+            return employeeList;
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            throw new UnexpectedException(ERROR_MESSAGE);
+        }
+    }
 
 }

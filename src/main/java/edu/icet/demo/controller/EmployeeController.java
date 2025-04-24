@@ -88,15 +88,16 @@ public class EmployeeController {
                 .build();
     }
 
-    @GetMapping("/department/{id}")
+    @GetMapping("/by-department/{departmentId}")
     public PaginatedResponse<EmployeeResponse> getEmployeesByDepartmentId(
-            @PathVariable Long id,
+            @PathVariable Long departmentId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) String searchTerm) {
 
         Pageable pageable = PageRequest.of(page, size);
-        Page<EmployeeResponse> employeeResponsePage = employeeService.getEmployeesByDepartmentId(id, searchTerm, pageable);
+        Page<EmployeeResponse> employeeResponsePage =
+                employeeService.getEmployeesByDepartmentId(departmentId, searchTerm, pageable);
 
         String message = employeeResponsePage.isEmpty()
                 ? "No employees found for this department!"
@@ -109,6 +110,18 @@ public class EmployeeController {
                 .totalPages(employeeResponsePage.getTotalPages())
                 .totalElements(employeeResponsePage.getTotalElements())
                 .currentPage(employeeResponsePage.getNumber())
+                .build();
+    }
+
+    @GetMapping("/by-department/{departmentId}/all")
+    public SuccessResponseWithData<List<EmployeeResponse>> getEmployeesByDepartmentId(@PathVariable Long departmentId) {
+        List<EmployeeResponse> employeesByDepartmentId = employeeService.getEmployeesByDepartmentId(departmentId);
+        String message = employeesByDepartmentId.isEmpty()
+                ? "Employees not found for this department!" : "Employees retrieved.";
+        return SuccessResponseWithData.<List<EmployeeResponse>>builder()
+                .status(HttpStatus.OK.value())
+                .message(message)
+                .data(employeesByDepartmentId)
                 .build();
     }
 

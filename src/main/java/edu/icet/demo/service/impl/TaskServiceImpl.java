@@ -42,12 +42,15 @@ public class TaskServiceImpl implements TaskService {
         }
         try {
             TaskEntity taskEntity = mapper.map(taskCreateRequest, TaskEntity.class);
+            taskEntity.setId(null);
 
             List<EmployeeEntity> employeeList = new ArrayList<>();
             taskCreateRequest.getEmployeeIdList().forEach(employeeId ->
                     employeeList.add(EmployeeEntity.builder().id(employeeId).build()));
 
             taskEntity.setEmployeeList(employeeList);
+            taskEntity.setManager(ManagerEntity.builder().id(taskCreateRequest.getManagerId()).build());
+
             taskRepository.save(taskEntity);
         } catch (DataIntegrityViolationException ex) {
             throw new DataIntegrityException(

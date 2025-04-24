@@ -12,6 +12,7 @@ import lombok.*;
 @Setter
 @ToString
 @Table(name = "manger")
+@Builder
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class ManagerEntity {
     @Id

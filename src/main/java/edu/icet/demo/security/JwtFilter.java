@@ -49,13 +49,13 @@ public class JwtFilter extends OncePerRequestFilter {
             try {
                 userName = jwtService.extractUserName(token);
             } catch (ExpiredJwtException e) {
-                handleJwtError(response, "JWT has expired.");
+                handleJwtError(response, "Unauthorized: JWT has expired.");
                 return;
             } catch (MalformedJwtException e) {
-                handleJwtError(response, "Malformed JWT.");
+                handleJwtError(response, "Unauthorized: Malformed JWT.");
                 return;
             } catch (Exception e) {
-                handleJwtError(response, "Invalid JWT token");
+                handleJwtError(response, "Unauthorized: Invalid JWT token");
                 return;
             }
         }

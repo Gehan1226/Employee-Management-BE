@@ -1,13 +1,11 @@
 package edu.icet.demo.controller;
 
-import edu.icet.demo.dto.auth.AccessToken;
-import edu.icet.demo.dto.auth.UserResponse;
+import edu.icet.demo.dto.auth.*;
 import edu.icet.demo.dto.response.PaginatedResponse;
 import edu.icet.demo.dto.response.SuccessResponse;
 import edu.icet.demo.dto.response.SuccessResponseWithData;
-import edu.icet.demo.dto.auth.UserCreateRequest;
-import edu.icet.demo.dto.auth.UserLoginRequest;
 import edu.icet.demo.service.UserService;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -29,7 +27,11 @@ public class UserController {
 
     private final UserService userService;
 
-    @PostMapping()
+    private static final  String REFRESH_TOKEN_COOKIE_NAME = "refreshToken";
+    private static final  String ACCESS_TOKEN_COOKIE_NAME = "accessToken";
+    private static final  String REFRESH_TOKEN_PATH = "/";
+
+    @PostMapping("/signup")
     public SuccessResponse addUser(@Valid @RequestBody UserCreateRequest user, BindingResult result) {
         userService.addUser(user);
         return SuccessResponse.builder()
@@ -39,13 +41,27 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public SuccessResponseWithData<AccessToken> login(@Valid @RequestBody UserLoginRequest userLoginRequest,
+    public SuccessResponse login(@Valid @RequestBody UserLoginRequest userLoginRequest,
                                  BindingResult result, HttpServletResponse response) {
-        AccessToken token = userService.authenticateAndGenerateToken(userLoginRequest);
-        return SuccessResponseWithData.<AccessToken>builder()
+        AuthResponse authResponse = userService.authenticateAndGenerateToken(userLoginRequest);
+        Cookie accessCookie = new Cookie(ACCESS_TOKEN_COOKIE_NAME, authResponse.getAccessToken());
+        accessCookie.setHttpOnly(true);
+        accessCookie.setSecure(true);
+        accessCookie.setPath("/");
+        accessCookie.setMaxAge(7 * 24 * 60 * 60);
+
+        Cookie refreshCookie = new Cookie(REFRESH_TOKEN_COOKIE_NAME, authResponse.getRefreshToken());
+        refreshCookie.setHttpOnly(true);
+        refreshCookie.setSecure(true);
+        refreshCookie.setPath(REFRESH_TOKEN_PATH);
+        refreshCookie.setMaxAge(7 * 24 * 60 * 60);
+
+        response.addCookie(accessCookie);
+        response.addCookie(refreshCookie);
+
+        return SuccessResponse.builder()
                 .status(HttpStatus.OK.value())
                 .message("User logged in successfully !")
-                .data(token)
                 .build();
     }
 

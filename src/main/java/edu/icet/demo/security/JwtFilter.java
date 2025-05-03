@@ -2,7 +2,6 @@ package edu.icet.demo.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.icet.demo.dto.response.ErrorResponse;
-import edu.icet.demo.service.impl.JWTService;
 import edu.icet.demo.service.impl.MyUserDetailService;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
@@ -36,6 +35,7 @@ public class JwtFilter extends OncePerRequestFilter {
     private final ObjectMapper objectMapper;
 
     private static final List<String> EXCLUDE_URLS = List.of(
+            "/api/v1/auth/signup",
             "/api/v1/auth/login",
             "/api/v1/auth/refresh"
     );

@@ -1,4 +1,4 @@
-package edu.icet.demo.service.impl;
+package edu.icet.demo.security;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -38,7 +38,7 @@ public class JWTService {
                 .add(claims)
                 .subject(userName)
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + 24 * 60 * 60 * 1000))
+                .expiration(new Date(System.currentTimeMillis() + 15 * 60 * 1000))
                 .and()
                 .signWith(getKey())
                 .compact();

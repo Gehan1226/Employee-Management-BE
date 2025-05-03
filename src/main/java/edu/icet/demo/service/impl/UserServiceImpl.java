@@ -1,17 +1,17 @@
 package edu.icet.demo.service.impl;
 
-import edu.icet.demo.dto.auth.AccessToken;
-import edu.icet.demo.dto.auth.UserCreateRequest;
-import edu.icet.demo.dto.auth.UserLoginRequest;
-import edu.icet.demo.dto.auth.UserResponse;
+import edu.icet.demo.dto.auth.*;
 import edu.icet.demo.dto.enums.SecurityAuthorities;
 import edu.icet.demo.dto.response.PaginatedResponse;
+import edu.icet.demo.entity.RefreshTokenEntity;
 import edu.icet.demo.entity.UserEntity;
 import edu.icet.demo.entity.UserRoleEntity;
 import edu.icet.demo.exception.*;
 import edu.icet.demo.repository.EmployeeRepository;
+import edu.icet.demo.repository.RefreshTokenRepository;
 import edu.icet.demo.repository.UserRepository;
 import edu.icet.demo.repository.UserRoleRepository;
+import edu.icet.demo.security.JWTService;
 import edu.icet.demo.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -24,9 +24,12 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -39,6 +42,7 @@ public class UserServiceImpl implements UserService {
     private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
     private final UserRoleRepository userRoleRepository;
     private final EmployeeRepository employeeRepository;
+    private final RefreshTokenRepository refreshTokenRepo;
 
     @Override
     public void addUser(UserCreateRequest userCreateRequest) {
@@ -77,12 +81,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public AccessToken authenticateAndGenerateToken(UserLoginRequest userLoginRequest) {
+    public AuthResponse authenticateAndGenerateToken(UserLoginRequest userLoginRequest) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         userLoginRequest.getUserName(), userLoginRequest.getPassword()));
-
-        return new AccessToken(jwtService.generateToken(userLoginRequest.getUserName()));
+        RefreshTokenEntity refreshToken = createRefreshToken(userLoginRequest.getUserName());
+        return new AuthResponse(
+                jwtService.generateToken(userLoginRequest.getUserName()),
+                refreshToken.getToken());
     }
 
     @Override
@@ -153,5 +159,18 @@ public class UserServiceImpl implements UserService {
         userResponse.setRoleList(roleList);
 
         return userResponse;
+    }
+
+    public RefreshTokenEntity createRefreshToken(String userName) {
+        try {
+            UserEntity user = userRepository.findByUserName(userName);
+            RefreshTokenEntity token = new RefreshTokenEntity();
+            token.setUser(user);
+            token.setToken(UUID.randomUUID().toString());
+            token.setExpiryDate(Instant.now().plus(7, ChronoUnit.DAYS));
+            return refreshTokenRepo.save(token);
+        } catch (Exception exception) {
+            throw new UnexpectedException("An unexpected error occurred while creating the refresh token");
+        }
     }
 }

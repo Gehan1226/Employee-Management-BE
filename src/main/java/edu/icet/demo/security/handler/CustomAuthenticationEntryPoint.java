@@ -27,9 +27,9 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
 
         String errorMessage;
         if (authException instanceof BadCredentialsException) {
-            errorMessage = "Bad credentials. Please check your username and password.";
+            errorMessage = "Unauthorized: Bad credentials. Please check your username and password.";
         } else {
-            errorMessage = "Authorization failed.";
+            errorMessage = "Unauthorized: Authorization failed.";
         }
 
         ErrorResponse errorResponse = ErrorResponse.builder()

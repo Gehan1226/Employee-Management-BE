@@ -35,9 +35,12 @@ public class JwtFilter extends OncePerRequestFilter {
     private final ObjectMapper objectMapper;
 
     private static final List<String> EXCLUDE_URLS = List.of(
-            "/api/v1/auth/signup",
             "/api/v1/auth/login",
-            "/api/v1/auth/refresh"
+            "/api/v1/auth/refresh",
+            "/api/v1/auth/signup",
+            "/api/v1/employees/**",
+            "/api/v1/departments/**",
+            "/api/v1/roles/**"
     );
 
     @Override

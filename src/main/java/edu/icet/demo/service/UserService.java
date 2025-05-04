@@ -18,5 +18,7 @@ public interface UserService {
 
     boolean deleteByEmail(String email);
 
-    UserResponse getUserByName(String name);
+    UserResponse getUser();
+
+    AuthResponse refresh(String refreshToken);
 }

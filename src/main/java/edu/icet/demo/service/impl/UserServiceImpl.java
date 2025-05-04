@@ -1,7 +1,6 @@
 package edu.icet.demo.service.impl;
 
 import edu.icet.demo.dto.auth.*;
-import edu.icet.demo.dto.enums.SecurityAuthorities;
 import edu.icet.demo.dto.response.PaginatedResponse;
 import edu.icet.demo.entity.RefreshTokenEntity;
 import edu.icet.demo.entity.UserEntity;
@@ -21,6 +20,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -147,18 +147,36 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserResponse getUserByName(String name) {
-        UserEntity userEntity = userRepository.findByUserName(name);
-        if (userEntity == null) {
-            throw new DataNotFoundException("User with name '%s' not found.".formatted(name));
+    public UserResponse getUser() {
+        String userName = SecurityContextHolder.getContext().getAuthentication().getName();
+        if (userName == null) {
+            throw new DataNotFoundException("User not found in the security context");
         }
-        UserResponse userResponse = modelMapper.map(userEntity, UserResponse.class);
 
-        List<SecurityAuthorities> roleList = new ArrayList<>();
-        userEntity.getRoleList().forEach(role -> roleList.add(role.getName()));
-        userResponse.setRoleList(roleList);
+        try {
+            UserEntity userEntity = userRepository.findByUserName(userName);
+            if (userEntity == null) {
+                throw new DataNotFoundException("User with username " + userName + " not found");
+            }
+            return modelMapper.map(userEntity, UserResponse.class);
+        } catch (Exception exception) {
+            throw new UnexpectedException("An unexpected error occurred while retrieving the user");
+        }
+    }
 
-        return userResponse;
+    @Override
+    public AuthResponse refresh(String refreshToken) {
+        RefreshTokenEntity token = refreshTokenRepo.findByToken(refreshToken);
+        if (token == null) {
+            throw new DataNotFoundException("Refresh token is invalid");
+        }
+
+        if (token.isExpired()) {
+            refreshTokenRepo.delete(token);
+            throw new UnauthorizedException("Refresh token is expired");
+        }
+        String accessToken = jwtService.generateToken(token.getUser().getUserName());
+        return new AuthResponse(accessToken, token.getToken());
     }
 
     public RefreshTokenEntity createRefreshToken(String userName) {

@@ -124,6 +124,7 @@ public class TaskServiceImpl implements TaskService {
                     response.getNumber()
             );
         } catch (Exception e) {
+            log.error(e.getMessage());
             throw new UnexpectedException("An unexpected error occurred while retrieving tasks");
         }
     }

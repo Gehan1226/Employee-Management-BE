@@ -1,15 +1,13 @@
 package edu.icet.demo.service.impl;
 
 import edu.icet.demo.dto.auth.*;
+import edu.icet.demo.dto.enums.SecurityAuthorities;
 import edu.icet.demo.dto.response.PaginatedResponse;
 import edu.icet.demo.entity.RefreshTokenEntity;
 import edu.icet.demo.entity.UserEntity;
 import edu.icet.demo.entity.UserRoleEntity;
 import edu.icet.demo.exception.*;
-import edu.icet.demo.repository.EmployeeRepository;
-import edu.icet.demo.repository.RefreshTokenRepository;
-import edu.icet.demo.repository.UserRepository;
-import edu.icet.demo.repository.UserRoleRepository;
+import edu.icet.demo.repository.*;
 import edu.icet.demo.security.JWTService;
 import edu.icet.demo.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -43,6 +41,7 @@ public class UserServiceImpl implements UserService {
     private final UserRoleRepository userRoleRepository;
     private final EmployeeRepository employeeRepository;
     private final RefreshTokenRepository refreshTokenRepo;
+    private final ManagerRepository managerRepository;
 
     @Override
     public void addUser(UserCreateRequest userCreateRequest) {
@@ -158,7 +157,13 @@ public class UserServiceImpl implements UserService {
             if (userEntity == null) {
                 throw new DataNotFoundException("User with username " + userName + " not found");
             }
-            return modelMapper.map(userEntity, UserResponse.class);
+            UserResponse map = modelMapper.map(userEntity, UserResponse.class);
+            List<SecurityAuthorities> roleList = new ArrayList<>();
+            for (UserRoleEntity role : userEntity.getRoleList()) {
+                roleList.add(role.getName());
+            }
+            map.setRoleList(roleList);
+            return map;
         } catch (Exception exception) {
             throw new UnexpectedException("An unexpected error occurred while retrieving the user");
         }

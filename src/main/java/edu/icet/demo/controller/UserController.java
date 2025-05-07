@@ -125,7 +125,7 @@ public class UserController {
         accessCookie.setHttpOnly(true);
         accessCookie.setSecure(true);
         accessCookie.setPath("/");
-        accessCookie.setMaxAge(15 * 60);
+        accessCookie.setMaxAge(7 * 24 * 60 * 60);
         response.addCookie(accessCookie);
 
         Cookie refreshCookie = new Cookie(REFRESH_TOKEN_COOKIE_NAME, authResponse.getRefreshToken());

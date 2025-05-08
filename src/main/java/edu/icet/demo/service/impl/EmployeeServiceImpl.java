@@ -213,7 +213,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         }
 
         if (!departmentRepository.existsById(request.getDepartmentId())) {
-            throw new DataNotFoundException("Department with ID %d not found."
+            throw new DataNotFoundException(DEPARTMENT_NOT_FOUND
                     .formatted(request.getDepartmentId()));
         }
 

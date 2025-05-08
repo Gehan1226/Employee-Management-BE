@@ -4,11 +4,14 @@ import edu.icet.demo.dto.enums.LeaveStatus;
 import edu.icet.demo.dto.leave.LeaveRequest;
 import edu.icet.demo.dto.leave.LeaveResponse;
 import edu.icet.demo.entity.EmployeeEntity;
+import edu.icet.demo.entity.LeaveBalanceEntity;
 import edu.icet.demo.entity.LeaveRequestEntity;
 import edu.icet.demo.entity.LeaveTypeEntity;
+import edu.icet.demo.exception.DataIntegrityException;
 import edu.icet.demo.exception.DataNotFoundException;
 import edu.icet.demo.exception.UnexpectedException;
 import edu.icet.demo.repository.EmployeeRepository;
+import edu.icet.demo.repository.LeaveBalanceRepository;
 import edu.icet.demo.repository.LeaveRequestRepository;
 import edu.icet.demo.repository.LeaveTypeRepository;
 import edu.icet.demo.service.LeaveService;
@@ -18,6 +21,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -28,6 +32,7 @@ public class LeaveServiceImpl implements LeaveService {
     private final EmployeeRepository employeeRepository;
     private final LeaveRequestRepository leaveRequestRepository;
     private final LeaveTypeRepository leaveTypeRepository;
+    private final LeaveBalanceRepository leaveBalanceRepository;
     private final ModelMapper modelMapper;
 
     @Override
@@ -39,6 +44,18 @@ public class LeaveServiceImpl implements LeaveService {
         LeaveTypeEntity leaveType = leaveTypeRepository.findById(leaveRequest.getLeaveTypeId())
                 .orElseThrow(() -> new DataNotFoundException(
                         "Leave type not found with ID: " + leaveRequest.getLeaveTypeId()));
+
+        LeaveBalanceEntity leaveBalance = leaveBalanceRepository
+                .findByEmployeeIdAndLeaveTypeId(employee.getId(), leaveType.getId())
+                .orElseThrow(() -> new DataNotFoundException(
+                        "Leave balance not found with employee ID: " + employee.getId() +
+                                " and leave type ID: " + leaveType.getId()
+                ));
+
+        if (leaveBalance.getUsedDays() >= leaveBalance.getTotalDays()) {
+            throw new DataIntegrityException("Leave balance is already full.");
+        }
+
         try {
             LeaveRequestEntity entity = modelMapper.map(leaveRequest, LeaveRequestEntity.class);
             entity.setId(null);

@@ -4,13 +4,9 @@ import edu.icet.demo.dto.employee.EmployeeCreateRequest;
 import edu.icet.demo.dto.employee.EmployeeResponse;
 import edu.icet.demo.dto.employee.EmployeeUpdateRequest;
 import edu.icet.demo.dto.response.PaginatedResponse;
-import edu.icet.demo.entity.DepartmentEntity;
-import edu.icet.demo.entity.EmployeeEntity;
-import edu.icet.demo.entity.RoleEntity;
+import edu.icet.demo.entity.*;
 import edu.icet.demo.exception.*;
-import edu.icet.demo.repository.DepartmentRepository;
-import edu.icet.demo.repository.EmployeeRepository;
-import edu.icet.demo.repository.RoleRepository;
+import edu.icet.demo.repository.*;
 import edu.icet.demo.service.EmployeeService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,35 +29,27 @@ public class EmployeeServiceImpl implements EmployeeService {
     private final EmployeeRepository employeeRepository;
     private final RoleRepository roleRepository;
     private final DepartmentRepository departmentRepository;
+    private final LeaveTypeRepository leaveTypeRepository;
+    private final LeaveBalanceRepository leaveBalanceRepository;
     private final ModelMapper mapper;
     private static final String ERROR_MESSAGE = "An unexpected error occurred while fetching employees.";
     private static final String DEPARTMENT_NOT_FOUND = "Department with ID %d not found.";
 
     @Override
-    public void addEmployee(EmployeeCreateRequest employeeCreateRequest) {
-        if (employeeRepository.existsByEmail(employeeCreateRequest.getEmail())) {
-            throw new DataDuplicateException(
-                    "An employee with the email '" + employeeCreateRequest.getEmail() + "' already exists.");
-        }
-        if (!departmentRepository.existsById(employeeCreateRequest.getDepartmentId())) {
-            throw new DataNotFoundException(DEPARTMENT_NOT_FOUND
-                    .formatted(employeeCreateRequest.getDepartmentId()));
-        }
-        if (!roleRepository.existsById(employeeCreateRequest.getRoleId())) {
-            throw new DataNotFoundException("Role with ID %d not found."
-                    .formatted(employeeCreateRequest.getRoleId()));
-        }
+    @Transactional
+    public void addEmployee(EmployeeCreateRequest request) {
+        validateRequest(request);
+
+        EmployeeEntity employeeEntity = createEmployeeEntity(request);
+
         try {
-            EmployeeEntity employeeEntity = mapper.map(employeeCreateRequest, EmployeeEntity.class);
-            employeeEntity.setDepartment(DepartmentEntity.builder().id(employeeCreateRequest.getDepartmentId()).build());
-            employeeEntity.setRole(RoleEntity.builder().id(employeeCreateRequest.getRoleId()).build());
             employeeRepository.save(employeeEntity);
+            saveDefaultLeaveBalances(employeeEntity);
         } catch (DataIntegrityViolationException ex) {
-            log.error(ex.getMessage());
-            throw new DataIntegrityException(
-                    "A data integrity violation occurred while saving the employee");
+            log.error("Data integrity violation: {}", ex.getMessage(), ex);
+            throw new DataIntegrityException("A data integrity violation occurred while saving the employee");
         } catch (Exception ex) {
-            log.error(ex.getMessage());
+            log.error("Unexpected exception: {}", ex.getMessage(), ex);
             throw new UnexpectedException("An unexpected error occurred while saving the employee");
         }
     }
@@ -216,6 +204,47 @@ public class EmployeeServiceImpl implements EmployeeService {
             log.error(e.getMessage(), e);
             throw new UnexpectedException(ERROR_MESSAGE);
         }
+    }
+
+    private void validateRequest(EmployeeCreateRequest request) {
+        if (employeeRepository.existsByEmail(request.getEmail())) {
+            throw new DataDuplicateException("An employee with the email '%s' already exists."
+                    .formatted(request.getEmail()));
+        }
+
+        if (!departmentRepository.existsById(request.getDepartmentId())) {
+            throw new DataNotFoundException("Department with ID %d not found."
+                    .formatted(request.getDepartmentId()));
+        }
+
+        if (!roleRepository.existsById(request.getRoleId())) {
+            throw new DataNotFoundException("Role with ID %d not found."
+                    .formatted(request.getRoleId()));
+        }
+    }
+
+    private EmployeeEntity createEmployeeEntity(EmployeeCreateRequest request) {
+        EmployeeEntity entity = mapper.map(request, EmployeeEntity.class);
+        entity.setDepartment(DepartmentEntity.builder().id(request.getDepartmentId()).build());
+        entity.setRole(RoleEntity.builder().id(request.getRoleId()).build());
+        return entity;
+    }
+
+    private void saveDefaultLeaveBalances(EmployeeEntity employee) {
+        List<LeaveTypeEntity> leaveTypes = leaveTypeRepository.findAll();
+
+        List<LeaveBalanceEntity> leaveBalances = leaveTypes.stream()
+                .map(type -> {
+                    LeaveBalanceEntity lb = new LeaveBalanceEntity();
+                    lb.setEmployee(employee);
+                    lb.setLeaveType(type);
+                    lb.setTotalDays(type.getDefaultDays());
+                    lb.setUsedDays(0);
+                    return lb;
+                })
+                .toList();
+
+        leaveBalanceRepository.saveAll(leaveBalances);
     }
 
 }

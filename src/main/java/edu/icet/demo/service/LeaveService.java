@@ -1,5 +1,6 @@
 package edu.icet.demo.service;
 
+import edu.icet.demo.dto.enums.LeaveStatus;
 import edu.icet.demo.dto.leave.LeaveRequest;
 import edu.icet.demo.dto.leave.LeaveResponse;
 
@@ -11,7 +12,7 @@ public interface LeaveService {
 
     void cancelLeave(Long id);
 
-    List<LeaveResponse> getLeavesByEmployeeId(Long id);
+    List<LeaveResponse> getLeavesByEmployeeId(Long id, LeaveStatus status);
 
-    List<LeaveResponse> getLeavesByDepartmentId(Long id);
+    List<LeaveResponse> getLeavesByDepartmentId(Long id, LeaveStatus status);
 }

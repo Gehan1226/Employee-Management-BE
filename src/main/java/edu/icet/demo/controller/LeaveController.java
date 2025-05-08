@@ -1,5 +1,6 @@
 package edu.icet.demo.controller;
 
+import edu.icet.demo.dto.enums.LeaveStatus;
 import edu.icet.demo.dto.leave.LeaveRequest;
 import edu.icet.demo.dto.leave.LeaveResponse;
 import edu.icet.demo.dto.response.SuccessResponse;
@@ -33,11 +34,28 @@ public class LeaveController {
     }
 
     @GetMapping("by-employee-id/{id}")
-    public SuccessResponseWithData<List<LeaveResponse>> getLeavesByEmployeeId(@PathVariable Long id) {
-        List<LeaveResponse> leaves = leaveService.getLeavesByEmployeeId(id);
-        return SuccessResponseWithData.<List<LeaveResponse>>builder().status(HttpStatus.OK.value()).message("Leaves fetched successfully!").data(leaves).build();
+    public SuccessResponseWithData<List<LeaveResponse>> getLeavesByEmployeeId(
+            @PathVariable Long id,
+            @RequestParam(required = false, defaultValue = "PENDING") LeaveStatus status) {
+        List<LeaveResponse> leaves = leaveService.getLeavesByEmployeeId(id, status);
+        return SuccessResponseWithData.<List<LeaveResponse>>builder()
+                .status(HttpStatus.OK.value())
+                .message("Leaves fetched successfully!")
+                .data(leaves)
+                .build();
     }
 
+    @GetMapping("by-department-id/{id}")
+    public SuccessResponseWithData<List<LeaveResponse>> getLeavesByDepartmentId(
+            @PathVariable Long id,
+            @RequestParam(required = false, defaultValue = "PENDING") LeaveStatus status) {
+        List<LeaveResponse> leaves = leaveService.getLeavesByDepartmentId(id, status);
+        return SuccessResponseWithData.<List<LeaveResponse>>builder()
+                .status(HttpStatus.OK.value())
+                .message("Leaves fetched successfully!")
+                .data(leaves)
+                .build();
+    }
 
 
 }

@@ -18,6 +18,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -65,9 +66,9 @@ public class LeaveServiceImpl implements LeaveService {
     }
 
     @Override
-    public List<LeaveResponse> getLeavesByEmployeeId(Long id) {
+    public List<LeaveResponse> getLeavesByEmployeeId(Long id, LeaveStatus status) {
         try {
-            List<LeaveRequestEntity> entities = leaveRequestRepository.findByEmployeeId(id);
+            List<LeaveRequestEntity> entities = leaveRequestRepository.findByEmployeeIdAndStatus(id, status);
             return entities.stream().map(entity -> modelMapper.map(entity, LeaveResponse.class)).toList();
         } catch (Exception e) {
             throw new UnexpectedException("An unexpected error occurred while retrieving leaves");
@@ -75,7 +76,16 @@ public class LeaveServiceImpl implements LeaveService {
     }
 
     @Override
-    public List<LeaveResponse> getLeavesByDepartmentId(Long id) {
-        return null;
+    public List<LeaveResponse> getLeavesByDepartmentId(Long id, LeaveStatus status) {
+        try {
+            List<LeaveRequestEntity> leaveEntities = leaveRequestRepository.findByDepartmentId(id, status);
+
+            return leaveEntities.stream()
+                    .map(entity -> modelMapper.map(entity, LeaveResponse.class))
+                    .toList();
+        } catch (Exception e) {
+            log.error("Error getting leaves by department ID: {}", id, e);
+            throw new UnexpectedException("An unexpected error occurred while fetching leaves for department ID: " + id);
+        }
     }
 }

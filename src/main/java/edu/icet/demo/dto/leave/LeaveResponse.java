@@ -2,7 +2,6 @@ package edu.icet.demo.dto.leave;
 
 import edu.icet.demo.dto.employee.EmployeeResponse;
 import edu.icet.demo.dto.enums.LeaveStatus;
-import edu.icet.demo.entity.LeaveTypeEntity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

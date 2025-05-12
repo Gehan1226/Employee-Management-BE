@@ -1,24 +1,20 @@
 package edu.icet.demo.service.impl;
 
 import edu.icet.demo.dto.enums.LeaveStatus;
+import edu.icet.demo.dto.leave.LeaveApprovedRequest;
 import edu.icet.demo.dto.leave.LeaveRequest;
 import edu.icet.demo.dto.leave.LeaveResponse;
-import edu.icet.demo.entity.EmployeeEntity;
-import edu.icet.demo.entity.LeaveBalanceEntity;
-import edu.icet.demo.entity.LeaveRequestEntity;
-import edu.icet.demo.entity.LeaveTypeEntity;
+import edu.icet.demo.entity.*;
 import edu.icet.demo.exception.DataIntegrityException;
 import edu.icet.demo.exception.DataNotFoundException;
 import edu.icet.demo.exception.UnexpectedException;
-import edu.icet.demo.repository.EmployeeRepository;
-import edu.icet.demo.repository.LeaveBalanceRepository;
-import edu.icet.demo.repository.LeaveRequestRepository;
-import edu.icet.demo.repository.LeaveTypeRepository;
+import edu.icet.demo.repository.*;
 import edu.icet.demo.service.LeaveService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -33,6 +29,7 @@ public class LeaveServiceImpl implements LeaveService {
     private final LeaveRequestRepository leaveRequestRepository;
     private final LeaveTypeRepository leaveTypeRepository;
     private final LeaveBalanceRepository leaveBalanceRepository;
+    private final LeaveApprovalRepository leaveApprovalRepository;
     private final ModelMapper modelMapper;
 
     @Override
@@ -103,6 +100,32 @@ public class LeaveServiceImpl implements LeaveService {
         } catch (Exception e) {
             log.error("Error getting leaves by department ID: {}", id, e);
             throw new UnexpectedException("An unexpected error occurred while fetching leaves for department ID: " + id);
+        }
+    }
+
+    @Override
+    @Transactional
+    public void approveLeave(LeaveApprovedRequest leaveApprovedRequest) {
+        LeaveRequestEntity leaveRequestEntity = leaveRequestRepository.findById(leaveApprovedRequest.getLeaveRequestId())
+                .orElseThrow(() -> new DataNotFoundException(
+                        "Leave request not found with ID: " + leaveApprovedRequest.getLeaveRequestId()
+                ));
+
+        EmployeeEntity employeeEntity = employeeRepository.findById(leaveApprovedRequest.getApprovedBYEmployeeId())
+                .orElseThrow(() -> new DataNotFoundException(
+                        "Employee not found with ID: " + leaveApprovedRequest.getApprovedBYEmployeeId()
+                ));
+
+        try {
+            LeaveApprovalEntity map = modelMapper.map(leaveApprovedRequest, LeaveApprovalEntity.class);
+            map.setId(null);
+            map.setLeaveRequestEntity(leaveRequestEntity);
+            map.setApprovedBy(employeeEntity);
+            leaveApprovalRepository.save(map);
+            leaveRequestEntity.setStatus(LeaveStatus.APPROVED);
+            leaveRequestRepository.save(leaveRequestEntity);
+        } catch (Exception e) {
+            throw new UnexpectedException("An unexpected error occurred while approving leave");
         }
     }
 }

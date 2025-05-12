@@ -3,6 +3,7 @@ package edu.icet.demo.service.impl;
 import edu.icet.demo.dto.auth.*;
 import edu.icet.demo.dto.enums.SecurityAuthorities;
 import edu.icet.demo.dto.response.PaginatedResponse;
+import edu.icet.demo.entity.EmployeeEntity;
 import edu.icet.demo.entity.RefreshTokenEntity;
 import edu.icet.demo.entity.UserEntity;
 import edu.icet.demo.entity.UserRoleEntity;
@@ -46,9 +47,14 @@ public class UserServiceImpl implements UserService {
     @Override
     public void addUser(UserCreateRequest userCreateRequest) {
 
-        if (!employeeRepository.existsByEmail(userCreateRequest.getEmail())) {
+        EmployeeEntity employeeEntity = employeeRepository.findByEmail(userCreateRequest.getEmail());
+        if (employeeEntity == null) {
             throw new DataNotFoundException(
-                    "Employee with email '%s' not found".formatted(userCreateRequest.getEmail()));
+                    String.format(
+                            "A Employee with the email '%s' not found.",
+                            userCreateRequest.getEmail()
+                    )
+            );
         }
         if (userRepository.existsByUserNameOrEmail(userCreateRequest.getUserName(), userCreateRequest.getEmail())) {
             throw new DataDuplicateException(
@@ -71,6 +77,8 @@ public class UserServiceImpl implements UserService {
             UserEntity userEntity = modelMapper.map(userCreateRequest, UserEntity.class);
             userEntity.setRoleList(userRoleEntities);
             userRepository.save(userEntity);
+            employeeEntity.setUser(userEntity);
+            employeeRepository.save(employeeEntity);
         } catch (DataIntegrityViolationException exception) {
             throw new DataDuplicateException(
                     "Database constraint violation. Please check that all provided values are valid and unique!");

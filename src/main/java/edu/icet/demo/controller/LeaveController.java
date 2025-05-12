@@ -1,6 +1,7 @@
 package edu.icet.demo.controller;
 
 import edu.icet.demo.dto.enums.LeaveStatus;
+import edu.icet.demo.dto.leave.LeaveApprovedRequest;
 import edu.icet.demo.dto.leave.LeaveRequest;
 import edu.icet.demo.dto.leave.LeaveResponse;
 import edu.icet.demo.dto.response.SuccessResponse;
@@ -57,5 +58,9 @@ public class LeaveController {
                 .build();
     }
 
-
+    @PostMapping("/approve")
+    public SuccessResponse approveLeave(@RequestBody LeaveApprovedRequest leaveApprovedRequest) {
+        leaveService.approveLeave(leaveApprovedRequest);
+        return SuccessResponse.builder().status(HttpStatus.OK.value()).message("Leave approved successfully!").build();
+    }
 }

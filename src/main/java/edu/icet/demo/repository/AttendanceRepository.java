@@ -9,5 +9,7 @@ import java.time.LocalDate;
 @Repository
 public interface AttendanceRepository extends JpaRepository<AttendanceEntity, Long> {
 
+    AttendanceEntity findByEmployeeIdAndDate(Long employeeId, LocalDate date);
+
     boolean existsByEmployeeIdAndDate(Long employeeId, LocalDate date);
 }

@@ -15,6 +15,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+
 @Service
 @RequiredArgsConstructor
 public class AttendanceServiceImpl implements AttendanceService {
@@ -43,9 +45,13 @@ public class AttendanceServiceImpl implements AttendanceService {
     }
 
     @Override
-    public AttendanceResponse getAttendanceByEmployeeId(Long id) {
-        AttendanceEntity attendanceEntity = attendanceRepository.findById(id).
-                orElseThrow(() -> new DataNotFoundException("Attendance for employee with ID " + id + " not found."));
-        return mapper.convertValue(attendanceEntity, AttendanceResponse.class);
+    public AttendanceResponse getAttendanceByEmployeeId(Long employeeId, LocalDate date) {
+        try{
+            AttendanceEntity attendanceEntity = attendanceRepository.findByEmployeeIdAndDate(employeeId, date);
+            return mapper.convertValue(attendanceEntity, AttendanceResponse.class);
+        } catch (Exception ex) {
+            throw new DataNotFoundException("Attendance for employee with ID " + employeeId + " not found.");
+        }
+
     }
 }

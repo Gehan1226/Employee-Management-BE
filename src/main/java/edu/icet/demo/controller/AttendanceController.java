@@ -6,9 +6,12 @@ import edu.icet.demo.dto.response.SuccessResponse;
 import edu.icet.demo.dto.response.SuccessResponseWithData;
 import edu.icet.demo.service.AttendanceService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDate;
 
 @RestController
 @RequestMapping("/api/v1/attendances")
@@ -26,12 +29,15 @@ public class AttendanceController {
                 .message("Attendance marked successfully!").build();
     }
 
-    @GetMapping("/employee/{id}")
-    public SuccessResponseWithData<AttendanceResponse> getAttendanceByEmployeeId(@PathVariable Long id) {
+    @GetMapping("/employee/{employeeId}")
+    public SuccessResponseWithData<AttendanceResponse> getAttendanceByEmployeeId(
+            @PathVariable Long employeeId,
+            @RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+
         return SuccessResponseWithData.<AttendanceResponse>builder()
                 .status(HttpStatus.OK.value())
                 .message("Attendance retrieved.")
-                .data(attendanceService.getAttendanceByEmployeeId(id))
+                .data(attendanceService.getAttendanceByEmployeeId(employeeId, date))
                 .build();
     }
 }
